@@ -1,0 +1,224 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:discover="clr-namespace:YomiYa.Features.Discover"
+             xmlns:models="clr-namespace:YomiYa.Domain.Models;assembly=JXALib"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="discover:PluginPageViewModel"
+             x:Class="YomiYa.Features.Discover.PluginPageView">
+
+    <Design.DataContext>
+        <discover:PluginPageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="MangaCardTemplate" DataType="models:SManga">
+            <Button Classes="MangaCard"
+                    Command="{Binding $parent[ItemsControl].((discover:PluginPageViewModel)DataContext).OpenMangaCommand}"
+                    CommandParameter="{Binding}">
+                <Grid>
+                    <Image Source="{Binding Cover}" Stretch="UniformToFill" />
+
+                    <Button Classes="FavoriteButton"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Command="{Binding $parent[ItemsControl].((discover:PluginPageViewModel)DataContext).ToggleFavoriteCommand}"
+                            CommandParameter="{Binding}">
+                        <PathIcon Width="24" Height="24"
+                                  Foreground="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteColorConverter}}"
+                                  Data="{StaticResource HeartFilled}" />
+                    </Button>
+
+                    <Border Classes="TitleOverlay">
+                        <TextBlock Classes="MangaTitle" Text="{Binding Title}" />
+                    </Border>
+                </Grid>
+            </Button>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="MangaItemsPanelTemplate">
+            <UniformGrid VerticalAlignment="Top"
+                         Columns="{Binding Columns}"
+                         ColumnSpacing="24"
+                         RowSpacing="24" />
+        </ItemsPanelTemplate>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.PageTitle">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="12 0 0 0" />
+        </Style>
+
+        <Style Selector="TextBox.SearchBox">
+            <Setter Property="Padding" Value="32 8 8 8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <DataValidationErrors>
+                            <Border Name="PART_Border" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}" />
+                        </DataValidationErrors>
+                        <PathIcon Data="{StaticResource SearchRegular}"
+                                  Foreground="{DynamicResource TextControlPlaceholderForeground}" Width="16"
+                                  Height="16" HorizontalAlignment="Left" Margin="12 0 0 0" />
+                        <ScrollViewer Margin="{TemplateBinding Padding}">
+                            <Panel>
+                                <TextBlock Name="PART_Watermark"
+                                           IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                                           Text="{TemplateBinding Watermark}"
+                                           Foreground="{DynamicResource TextControlPlaceholderForeground}"
+                                           VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                <TextPresenter Name="PART_TextPresenter" Text="{TemplateBinding Text, Mode=TwoWay}"
+                                               VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            </Panel>
+                        </ScrollViewer>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.BackButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="CornerRadius" Value="18" />
+        </Style>
+        <Style Selector="Button.BackButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+        </Style>
+
+        <Style Selector="TabItem">
+            <Setter Property="Padding" Value="16 8" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="BorderThickness" Value="0 0 0 2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="TabItem:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+        <Style Selector="TabItem:selected">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        </Style>
+
+        <Style Selector="Button.MangaCard">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.15" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.MangaCard:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.03)" />
+        </Style>
+        <Style Selector="Button.MangaCard /template/ ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 0 10 0 #10000000" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.MangaCard:pressed /template/ ContentPresenter">
+            <Setter Property="RenderTransform" Value="scale(0.98)"/>
+            <Setter Property="BoxShadow" Value="0 0  5 0 #20000000"/>
+        </Style>
+        <Style Selector="Border.TitleOverlay">
+            <Setter Property="Background" Value="#90000000" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Height" Value="80" />
+        </Style>
+        <Style Selector="TextBlock.MangaTitle">
+            <Setter Property="Foreground" Value="#EAEAEA" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+
+        <Style Selector="Button.FavoriteButton">
+            <Setter Property="Background" Value="#A0000000" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.FavoriteButton:pointerover">
+            <Setter Property="Background" Value="#D0000000" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+        <Grid RowDefinitions="Auto Auto *" Margin="5">
+
+            <Grid Grid.Row="0" ColumnDefinitions="Auto *">
+                <Button Classes="BackButton" Command="{Binding BackCommand}">
+                    <PathIcon Data="{StaticResource ArrowLeft}" />
+                </Button>
+                <TextBlock Grid.Column="1" Classes="PageTitle" Text="{Binding Plugin.Name}" />
+            </Grid>
+
+            <TextBox x:Name="SearchTextBox" Grid.Row="1" Classes="SearchBox" Margin="0 16 0 0"
+                     Text="{Binding SearchText, Mode=TwoWay}"
+                     Watermark="{Binding SearchMangaText}" />
+
+            <TabControl Grid.Row="2" Margin="0 8 0 0" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
+
+                <TabItem Header="{Binding PopularMangasText}"
+                         IsVisible="{Binding SearchedMangas.Count, Converter={StaticResource ZeroToVisibleConverter}}">
+                    <ScrollViewer Margin="0 16 0 0">
+                        <ItemsControl HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding PopularMangas}"
+                                      ItemTemplate="{StaticResource MangaCardTemplate}"
+                                      ItemsPanel="{StaticResource MangaItemsPanelTemplate}" />
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="{Binding LatestUpdatesText}"
+                         IsVisible="{Binding SearchedMangas.Count, Converter={StaticResource ZeroToVisibleConverter}}">
+                    <ScrollViewer Margin="0 16 0 0">
+                        <ItemsControl HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding LatestUpdatesMangas}"
+                                      ItemTemplate="{StaticResource MangaCardTemplate}"
+                                      ItemsPanel="{StaticResource MangaItemsPanelTemplate}" />
+                    </ScrollViewer>
+                </TabItem>
+
+                <TabItem Header="Mangas Encontrados"
+                         IsVisible="{Binding SearchedMangas.Count, Converter={StaticResource AnyToVisibleConverter}}">
+                    <ScrollViewer Margin="0 16 0 0">
+                        <ItemsControl HorizontalAlignment="Stretch"
+                                      ItemsSource="{Binding SearchedMangas}"
+                                      ItemTemplate="{StaticResource MangaCardTemplate}"
+                                      ItemsPanel="{StaticResource MangaItemsPanelTemplate}" />
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Grid>
+</UserControl>

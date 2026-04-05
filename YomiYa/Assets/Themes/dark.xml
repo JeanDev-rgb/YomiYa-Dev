@@ -1,0 +1,16 @@
+﻿<Theme Name="Oscuro" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#2D2D2D</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#3C3C3C</Color>
+    <Color Key="ControlFillColorDefaultBrush">#1E1E1E</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#E0E0E0</Color>
+    <Color Key="TextFillColorSecondaryBrush">#9E9E9E</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#007ACC</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#FFFFFF</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#555555</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#3A3A3A</Color>
+
+    <Color Key="ErrorColor">#B22222</Color>
+    <Color Key="FavoriteColor">#E53935</Color>
+</Theme>

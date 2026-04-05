@@ -1,0 +1,132 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="450"
+             xmlns:ad="clr-namespace:YomiYa.Features.Ad"
+             x:DataType="ad:AdPageViewModel"
+             x:Class="YomiYa.Features.Ad.AdPageView">
+
+    <Design.DataContext>
+        <ad:AdPageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PrimaryGreen" Color="#2E8B57" />
+        <SolidColorBrush x:Key="AccentGreen" Color="#70C1B3" />
+        <SolidColorBrush x:Key="LightYellow" Color="#F3FFBD" />
+        <SolidColorBrush x:Key="LightText" Color="#D1D5DB" />
+        <SolidColorBrush x:Key="DarkText" Color="#374151" />
+        <SolidColorBrush x:Key="SubtleText" Color="#6B7280" />
+        <LinearGradientBrush x:Key="GradientTextBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+            <GradientStop Color="#70C1B3" Offset="0.0" />
+            <GradientStop Color="#F3FFBD" Offset="1.0" />
+        </LinearGradientBrush>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.H1">
+            <Setter Property="FontSize" Value="48" />
+            <Setter Property="FontWeight" Value="Black" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.Card">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="Width" Value="220" />
+            <Setter Property="MinWidth" Value="210" />
+            <Setter Property="MaxWidth" Value="240" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="BoxShadow" Value="0 4 15 0 #22000000" />
+        </Style>
+        <Style Selector="TextBlock.StepArrow">
+            <Setter Property="FontSize" Value="48" />
+            <Setter Property="Foreground" Value="{StaticResource AccentGreen}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="16,0" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer Background="{StaticResource PrimaryGreen}">
+        <StackPanel Margin="32">
+
+            <StackPanel TextBlock.TextAlignment="Center" Margin="0,32">
+                <TextBlock Classes="H1" Text="{Binding GetOneDollarFreeText}"
+                           Foreground="{StaticResource GradientTextBrush}" />
+                <TextBlock FontSize="24" FontWeight="Bold" Margin="0,4,0,0" Foreground="{StaticResource LightYellow}"
+                           Text="{Binding WithLemonCashText}" />
+                <TextBlock FontSize="14" Foreground="{StaticResource LightText}" TextWrapping="Wrap" Margin="0,16,0,0"
+                           MaxWidth="500" Text="{Binding FirstDollarIntroText}" />
+            </StackPanel>
+
+            <StackPanel Margin="0,48">
+                <TextBlock FontSize="28" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,24"
+                           Text="{Binding RewardIn3StepsText}" />
+                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Border Classes="Card">
+                        <StackPanel Spacing="8" TextBlock.TextAlignment="Center">
+                            <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource AccentGreen}"
+                                       Text="1" />
+                            <TextBlock FontSize="20" FontWeight="Bold" Foreground="{StaticResource DarkText}"
+                                       Text="{Binding DownloadTheAppText}" />
+                            <TextBlock FontSize="14" Foreground="{StaticResource SubtleText}" TextWrapping="Wrap"
+                                       Text="{Binding Step1DescriptionText}" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Classes="StepArrow" Text="→" />
+                    <Border Classes="Card">
+                        <StackPanel Spacing="8" TextBlock.TextAlignment="Center">
+                            <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource AccentGreen}"
+                                       Text="2" />
+                            <TextBlock FontSize="20" FontWeight="Bold" Foreground="{StaticResource DarkText}"
+                                       Text="{Binding SignUpText}" />
+                            <TextBlock FontSize="14" Foreground="{StaticResource SubtleText}" TextWrapping="Wrap"
+                                       Text="{Binding Step2DescriptionText}" />
+                        </StackPanel>
+                    </Border>
+                    <TextBlock Classes="StepArrow" Text="→" />
+                    <Border Classes="Card">
+                        <StackPanel Spacing="8" TextBlock.TextAlignment="Center">
+                            <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource AccentGreen}"
+                                       Text="3" />
+                            <TextBlock FontSize="20" FontWeight="Bold" Foreground="{StaticResource DarkText}"
+                                       Text="{Binding EnterLemontagText}" TextWrapping="Wrap" />
+                            <TextBlock FontSize="14" Foreground="{StaticResource SubtleText}" TextWrapping="Wrap">
+                                <Run Text="{Binding Step3DescriptionBefore}" />
+                                <Run Text="{Binding Lemontag}" FontWeight="Bold"
+                                     Foreground="{StaticResource PrimaryGreen}" />
+                                <Run Text="{Binding Step3DescriptionAfter}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
+
+            <Border Background="White" CornerRadius="12" Padding="48" Margin="0,48,0,0" BoxShadow="0 10 25 0 #33000000">
+                <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+                    <StackPanel Margin="0 0 40 0" Spacing="16" MaxWidth="450" VerticalAlignment="Center">
+                        <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource PrimaryGreen}"
+                                   Text="{Binding ItsYourMomentText}" TextWrapping="Wrap" />
+                        <TextBlock FontSize="16" Foreground="{StaticResource DarkText}" TextWrapping="Wrap">
+                            <Run Text="{Binding FinalCallToActionBefore}" />
+                            <Run Text="{Binding Lemontag}" FontWeight="Bold" Foreground="{StaticResource PrimaryGreen}" />
+                            <Run Text="{Binding FinalCallToActionAfter}" />
+                        </TextBlock>
+                        <Border Background="{StaticResource AccentGreen}" CornerRadius="8" Padding="24 14"
+                                HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                            <TextBlock Text="{Binding DownloadTheAppButtonText}" Foreground="White" FontWeight="Bold"
+                                       FontSize="16" />
+                        </Border>
+                    </StackPanel>
+                    <Border BorderBrush="White" BorderThickness="4" CornerRadius="12" BoxShadow="0 4 15 0 #22000000"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
+                        <Image Width="200" Height="200" Source="{Binding QrUrl}" />
+                    </Border>
+                </WrapPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

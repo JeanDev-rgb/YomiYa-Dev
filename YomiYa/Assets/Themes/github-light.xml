@@ -1,0 +1,16 @@
+﻿<Theme Name="GitHub Claro" Variant="Light">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#f6f8fa</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#ffffff</Color>
+    <Color Key="ControlFillColorDefaultBrush">#f6f8fa</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#24292e</Color>
+    <Color Key="TextFillColorSecondaryBrush">#586069</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#0366d6</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#ffffff</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#e1e4e8</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#f3f4f6</Color>
+
+    <Color Key="ErrorColor">#d73a49</Color>
+    <Color Key="FavoriteColor">#ea4aaa</Color>
+</Theme>

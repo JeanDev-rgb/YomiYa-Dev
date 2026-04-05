@@ -1,0 +1,158 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:library="clr-namespace:YomiYa.Features.Library"
+             x:DataType="library:HistoryPageViewModel"
+             x:Class="YomiYa.Features.Library.HistoryPageView">
+
+    <Design.DataContext>
+        <library:HistoryPageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+
+        <Style Selector="TextBlock.Kamoji">
+            <Setter Property="FontSize" Value="120" />
+            <Setter Property="Foreground" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.NoItemsMessage">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0 20 0 0" />
+        </Style>
+
+        <Style Selector="TextBlock.PageTitle">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="Button.HistoryItemButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+        </Style>
+
+        <Style Selector="Button.HistoryItemButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+        </Style>
+
+        <Style Selector="Button.ItemDeleteButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.15" />
+                    <BrushTransition Property="Foreground" Duration="0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.ItemDeleteButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ErrorColor}" />
+        </Style>
+        <Style Selector="Button.ItemDeleteButton:pointerover PathIcon">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <Style Selector="Button.SecondaryAction">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="12 6" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.SecondaryAction:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+        </Style>
+
+        <Style Selector="Border.CoverImageWrapper">
+            <Setter Property="Width" Value="60" />
+            <Setter Property="Height" Value="85" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="Margin" Value="0,0,16,0" />
+        </Style>
+
+        <Style Selector="TextBlock.ListItemTitle">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+        </Style>
+        <Style Selector="TextBlock.ListItemSubtitle">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="24">
+        <Grid RowDefinitions="Auto, *">
+            <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                <TextBlock Grid.Column="0" Classes="PageTitle" Text="{Binding HistoryTitle}" />
+                <Button Grid.Column="1"
+                        Content="Limpiar todo"
+                        Command="{Binding ClearHistoryCommand}"
+                        Classes="SecondaryAction"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1">
+                <ItemsControl ItemsSource="{Binding HistoryItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderThickness="0,0,0,1">
+                                <Grid ColumnDefinitions="*, Auto" MinHeight="95">
+                                    <Button Grid.Column="0" Classes="HistoryItemButton"
+                                            Command="{Binding $parent[ItemsControl].((library:HistoryPageViewModel)DataContext).OpenChapterCommand}"
+                                            CommandParameter="{Binding}">
+                                        <Grid ColumnDefinitions="Auto, *">
+                                            <Border Classes="CoverImageWrapper">
+                                                <Image Source="{Binding Manga.Cover}" Stretch="UniformToFill" />
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                                <TextBlock Classes="ListItemTitle" Text="{Binding Manga.Title}" />
+                                                <TextBlock Classes="ListItemSubtitle" Text="{Binding Chapter.Name}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+
+                                    <Button Grid.Column="1" Classes="ItemDeleteButton"
+                                            ToolTip.Tip="Eliminar del historial"
+                                            Command="{Binding $parent[ItemsControl].((library:HistoryPageViewModel)DataContext).DeleteHistoryItemCommand}"
+                                            CommandParameter="{Binding}"
+                                            Margin="10,0">
+                                        <PathIcon Data="{StaticResource TrashIcon}" Width="16" Height="16" />
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding HistoryItems.Count, Converter={StaticResource ZeroToVisibleConverter}}"
+                        HorizontalAlignment="Center"
+                        Spacing="10">
+                <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
+                <TextBlock Classes="NoItemsMessage" Text="{Binding NoHistoryAdded}" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

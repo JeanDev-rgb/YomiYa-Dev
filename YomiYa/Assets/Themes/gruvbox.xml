@@ -1,0 +1,16 @@
+﻿<Theme Name="Gruvbox" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#282828</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#3c3836</Color>
+    <Color Key="ControlFillColorDefaultBrush">#282828</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#ebdbb2</Color>
+    <Color Key="TextFillColorSecondaryBrush">#a89984</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#458588</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#ebdbb2</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#504945</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#504945</Color>
+
+    <Color Key="ErrorColor">#cc241d</Color>
+    <Color Key="FavoriteColor">#b16286</Color>
+</Theme>

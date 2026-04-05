@@ -1,0 +1,161 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:library="clr-namespace:YomiYa.Features.Library"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="library:LibraryPageViewModel"
+             x:Class="YomiYa.Features.Library.LibraryPageView">
+
+    <Design.DataContext>
+        <library:LibraryPageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.PageTitle">
+            <Setter Property="FontSize" Value="32" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="Margin" Value="0 0 0 10" />
+        </Style>
+
+        <Style Selector="Button.MangaCard">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.15" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.MangaCard /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BoxShadow" Value="0 0 10 0 #10000000" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0.15" />
+                    <BrushTransition Property="BorderBrush" Duration="0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.MangaCard:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.03)" />
+        </Style>
+
+        <Style Selector="Button.MangaCard:pointerover /template/ ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 0 15 2 #40000000" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        </Style>
+        
+        <Style Selector="Button.MangaCard:pressed /template/ ContentPresenter">
+            <Setter Property="RenderTransform" Value="scale(0.98)"/>
+            <Setter Property="BoxShadow" Value="0 0  5 0 #20000000"/>
+        </Style>
+
+        <Style Selector="Border.TitleOverlay">
+            <Setter Property="Background" Value="#90000000" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="Height" Value="80" />
+        </Style>
+
+        <Style Selector="TextBlock.MangaTitle">
+            <Setter Property="Foreground" Value="#EAEAEA" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+
+        <Style Selector="TextBlock.Kamoji">
+            <Setter Property="FontSize" Value="120" />
+            <Setter Property="Foreground" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.NoItemsMessage">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0 20 0 0" />
+        </Style>
+
+        <Style Selector="Button.DeleteButton">
+            <Setter Property="Background" Value="#A0000000" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="ZIndex" Value="1" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.DeleteButton:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ErrorColor}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto *" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+        <Border Grid.Row="0">
+            <TextBlock Classes="PageTitle" Text="{Binding Title}" />
+        </Border>
+
+        <ScrollViewer Grid.Row="1">
+            <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Mangas}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Button Classes="MangaCard"
+                                    Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).OpenMangaCommand}"
+                                    CommandParameter="{Binding}">
+                                <Grid>
+                                    <Image Source="{Binding Cover}" Stretch="UniformToFill" />
+                                    <Border Classes="TitleOverlay">
+                                        <TextBlock Classes="MangaTitle" Text="{Binding Title}" />
+                                    </Border>
+                                </Grid>
+                            </Button>
+
+                            <Button Classes="DeleteButton"
+                                    ToolTip.Tip="Eliminar de la biblioteca"
+                                    Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteMangaCommand}"
+                                    CommandParameter="{Binding}">
+                                <PathIcon Data="{StaticResource TrashIcon}" Width="16" Height="16" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid VerticalAlignment="Top"
+                                     Columns="{Binding Columns}"
+                                     ColumnSpacing="24"
+                                     RowSpacing="24" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1"
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding Mangas.Count, Converter={StaticResource ZeroToVisibleConverter}}"
+                    HorizontalAlignment="Center"
+                    Spacing="10">
+            <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
+            <TextBlock Classes="NoItemsMessage" Text="{Binding NoMangaAdded}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

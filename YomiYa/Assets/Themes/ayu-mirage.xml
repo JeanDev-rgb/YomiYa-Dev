@@ -1,0 +1,16 @@
+﻿<Theme Name="Ayu Mirage" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#1f2430</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#242936</Color>
+    <Color Key="ControlFillColorDefaultBrush">#1f2430</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#cbccc6</Color>
+    <Color Key="TextFillColorSecondaryBrush">#5c6773</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#5ccfe6</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#1f2430</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#3b4252</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#393f4d</Color>
+
+    <Color Key="ErrorColor">#ff3333</Color>
+    <Color Key="FavoriteColor">#ffd580</Color>
+</Theme>

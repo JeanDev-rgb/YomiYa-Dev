@@ -1,0 +1,171 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:discover="clr-namespace:YomiYa.Features.Discover"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="discover:BrowsePageViewModel"
+             x:Class="YomiYa.Features.Discover.BrowsePageView">
+
+    <Design.DataContext>
+        <discover:BrowsePageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.PageTitle">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.PrimaryAction">
+            <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+            <Setter Property="Padding" Value="16 8" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="TextBox.SearchBox">
+            <Setter Property="Padding" Value="32 8 8 8" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Watermark" Value="Buscar plugins..." />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Grid>
+                        <DataValidationErrors>
+                            <Border Name="PART_Border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}" />
+                        </DataValidationErrors>
+                        <PathIcon Data="{StaticResource SearchRegular}"
+                                  Foreground="{DynamicResource TextControlPlaceholderForeground}"
+                                  Width="16" Height="16"
+                                  HorizontalAlignment="Left"
+                                  Margin="12 0 0 0" />
+                        <ScrollViewer Margin="{TemplateBinding Padding}">
+                            <Panel>
+                                <TextBlock Name="PART_Watermark"
+                                           IsVisible="{TemplateBinding Text, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                                           Text="{TemplateBinding Watermark}"
+                                           Foreground="{DynamicResource TextControlPlaceholderForeground}"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Left" />
+                                <TextPresenter Name="PART_TextPresenter"
+                                               Text="{TemplateBinding Text, Mode=TwoWay}"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Left" />
+                            </Panel>
+                        </ScrollViewer>
+                    </Grid>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.PluginCard">
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BoxShadow" Value="0 2 8 0 #20000000" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.15" Easing="CubicEaseOut" />
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.PluginCard:pointerover">
+            <Setter Property="RenderTransform" Value="translateY(-3px)" />
+            <Setter Property="BoxShadow" Value="0 4 15 0 #30000000" />
+        </Style>
+
+        <Style Selector="TextBlock.CardTitle">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+        <Style Selector="TextBlock.CardSubtitle">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style>
+
+        <Style Selector="Button.CardAction">
+            <Setter Property="Padding" Value="12 6" />
+            <Setter Property="Background" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.CardAction:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.Kamoji">
+            <Setter Property="FontSize" Value="100" />
+            <Setter Property="Foreground" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+        </Style>
+        <Style Selector="TextBlock.NoItemsMessage">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto Auto *" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Grid.Row="0" ColumnDefinitions="* Auto">
+            <TextBlock Grid.Column="0" Classes="PageTitle" Text="{Binding Title}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <Button Classes="PrimaryAction" Content="{Binding InstallPluginsButtonText}"
+                        Command="{Binding InstallPluginsCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <TextBox x:Name="SearchTextBox" Grid.Row="1" Classes="SearchBox" Margin="0 16 0 0"
+                 Text="{Binding SearchText, Mode=TwoWay}" />
+
+        <ScrollViewer Grid.Row="2" Margin="0 16 0 0">
+            <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Plugins}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="PluginCard">
+                            <StackPanel Spacing="8">
+                                <TextBlock Classes="CardTitle" Text="{Binding Name}" />
+                                <TextBlock Classes="CardSubtitle" Text="{Binding Version}" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
+                                            Margin="0 8 0 0">
+                                    <Button Classes="CardAction"
+                                            Content="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).OpenButtonText}"
+                                            Command="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).OpenPluginCommand}"
+                                            CommandParameter="{Binding}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" ItemSpacing="5" LineSpacing="5"
+                                   HorizontalAlignment="Stretch" ItemWidth="300" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="2"
+                    IsVisible="{Binding Plugins.Count, Converter={StaticResource ZeroToVisibleConverter}}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="10"
+                    Margin="20">
+            <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
+            <TextBlock Classes="NoItemsMessage" Text="{Binding NoPluginsInstalled}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

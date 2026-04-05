@@ -1,0 +1,48 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <StackPanel Spacing="10">
+                <PathIcon Data="{StaticResource LineHorizontal3Regular}" />
+                <PathIcon Data="{StaticResource Browse}" />
+                <PathIcon Data="{StaticResource History}" />
+                <PathIcon Data="{StaticResource SearchRegular}" />
+            </StackPanel>
+            <StackPanel Spacing="10">
+                <PathIcon Data="{StaticResource Library}" />
+                <PathIcon Data="{StaticResource More}" />
+                <PathIcon Data="{StaticResource Updates}" />
+                <PathIcon Data="{StaticResource ArrowLeft}" />
+            </StackPanel>
+            <StackPanel Spacing="10">
+                <PathIcon Data="{StaticResource CoverError}" />
+                <PathIcon Data="{StaticResource Dollar}" />
+                <PathIcon Data="{StaticResource HeartFilled}" />
+                <PathIcon Data="{StaticResource ArrowRight}" />
+            </StackPanel>
+            <StackPanel Spacing="10">
+                <PathIcon Data="{StaticResource FilterRegular}" />
+                <PathIcon Data="{StaticResource TrashIcon}" />
+            </StackPanel>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <Style>
+        <Style.Resources>
+            <StreamGeometry x:Key="Dollar">M11.8,10.9c-2.27-.59-3-1.2-3-2.15c0-1.09,1.01-1.85,2.7-1.85c1.78,0,2.44,.85,2.5,2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94,.42-3.5,1.68-3.5,3.61c0,2.31,1.91,3.46,4.7,4.13c2.5,.6,3,1.48,3,2.41c0,.69-.49,1.79-2.7,1.79c-2.06,0-2.87-.92-2.98-2.1h-2.2c.12,2.19,1.76,3.42,3.68,3.83V21h3v-2.15c2.14-.46,3.5-1.6,3.5-3.55c0-2.84-2.43-3.81-4.7-4.4Z</StreamGeometry>
+            <StreamGeometry x:Key="LineHorizontal3Regular">M2 4.5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h15a.5.5 0 0 1 0 1h-15a.5.5 0 0 1-.5-.5m.5 4.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1z</StreamGeometry>
+            <StreamGeometry x:Key="Browse">m6.5 17.5 7.51-3.49L17.5 6.5 9.99 9.99zm5.5-6.6c.61 0 1.1.49 1.1 1.1s-.49 1.1-1.1 1.1-1.1-.49-1.1-1.1.49-1.1 1.1-1.1M12 0A12.003 12.003 0 0 0 0 12a12.003 12.003 0 0 0 12 12 12.003 12.003 0 0 0 12-12A12.003 12.003 0 0 0 12 0m0 21.6A9.6 9.6 0 0 1 2.4 12 9.6 9.6 0 0 1 12 2.4a9.6 9.6 0 0 1 9.6 9.6 9.6 9.6 0 0 1-9.6 9.6</StreamGeometry>
+            <StreamGeometry x:Key="History">M12 8v5l4.28 2.54.72-1.21-3.5-2.08V8zm1-5a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.95 8.95 0 0 0 13 21a9 9 0 0 0 0-18m0 0</StreamGeometry>
+            <StreamGeometry x:Key="Library">M899.84 90.84H360.3c-49.46 0-89.92 40.46-89.92 89.92v539.55c0 49.45 40.46 89.92 89.92 89.92h539.54c49.46 0 89.93-40.47 89.93-89.92V180.76c0-49.46-40.47-89.92-89.93-89.92m0 629.47H360.3V180.76h224.81v404.66L720 484.26l134.88 101.16V180.76h44.96zM180.45 270.69H90.53v629.46c0 49.46 40.47 89.93 89.92 89.93h629.47v-89.93H180.45z</StreamGeometry>
+            <StreamGeometry x:Key="More">M270.46 450.51c-49.47 0-89.94 40.48-89.94 89.95s40.47 89.95 89.94 89.95 89.95-40.48 89.95-89.95-40.48-89.95-89.95-89.95m539.7 0c-49.48 0-89.95 40.48-89.95 89.95s40.47 89.95 89.95 89.95c49.47 0 89.94-40.48 89.94-89.95s-40.47-89.95-89.94-89.95m-269.85 0c-49.47 0-89.95 40.48-89.95 89.95s40.48 89.95 89.95 89.95 89.95-40.48 89.95-89.95-40.48-89.95-89.95-89.95</StreamGeometry>
+            <StreamGeometry x:Key="Updates">m23 12-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68zM9.42 19.93l-1.43-2.41-2.74-.62.26-2.8L3.66 12l1.85-2.12-.26-2.78 2.74-.61 1.43-2.41L12 5.18l2.58-1.11 1.43 2.41 2.74.62-.26 2.79L20.34 12l-1.85 2.11.26 2.79-2.74.62-1.43 2.41L12 18.82zM11 15h2v2h-2zm0-8h2v6h-2z</StreamGeometry>
+            <StreamGeometry x:Key="CoverError">M21 5v6.59l-2.29-2.3c-.39-.39-1.03-.39-1.42 0L14 12.59 10.71 9.3a.996.996 0 0 0-1.41 0L6 12.59 3 9.58V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2m-3 6.42 3 3.01V19c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-6.58l2.29 2.29c.39.39 1.02.39 1.41 0l3.3-3.3 3.29 3.29c.39.39 1.02.39 1.41 0z</StreamGeometry>
+            <StreamGeometry x:Key="SearchRegular">M16.965 15.525L21.5 20.06l-1.44 1.44-4.535-4.535a8.5 8.5 0 1 1 1.44-1.44zM8.5 15a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13z</StreamGeometry>
+            <StreamGeometry x:Key="ArrowLeft">M10.22 3.22a.75.75 0 0 1 0 1.06L4.56 10l5.66 5.72a.75.75 0 1 1-1.06 1.06l-6.25-6.25a.75.75 0 0 1 0-1.06l6.25-6.25a.75.75 0 0 1 1.06 0z</StreamGeometry>
+            <StreamGeometry x:Key="HeartFilled">M12 20.35l-1.45-1.32C5.4 14.25 2 11.28 2 7.5 2 4.42 4.42 2 7.5 2c1.74 0 3.41.81 4.5 2.09C13.09 2.81 14.76 2 16.5 2 19.58 2 22 4.42 22 7.5c0 3.78-3.4 6.75-8.55 11.54L12 20.35z</StreamGeometry>
+            <StreamGeometry x:Key="ArrowRight">M13.78 3.22a.75.75 0 0 1 1.06 0l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 1 1-1.06-1.06L19.44 10l-5.66-5.72a.75.75 0 0 1 0-1.06z</StreamGeometry>
+            <StreamGeometry x:Key="FilterRegular">M4.25 5.5C4.25 5.22386 4.47386 5 4.75 5H19.25C19.5261 5 19.75 5.22386 19.75 5.5C19.75 5.77614 19.5261 6 19.25 6H4.75C4.47386 6 4.25 5.77614 4.25 5.5ZM7.25 11.5C7.25 11.2239 7.47386 11 7.75 11H16.25C16.5261 11 16.75 11.2239 16.75 11.5C16.75 11.7761 16.5261 12 16.25 12H7.75C7.47386 12 7.25 11.7761 7.25 11.5ZM10.25 17.5C10.25 17.2239 10.4739 17 10.75 17H13.25C13.5261 17 13.75 17.2239 13.75 17.5C13.75 17.7761 13.5261 18 13.25 18H10.75C10.4739 18 10.25 17.7761 10.25 17.5Z</StreamGeometry>
+            <StreamGeometry x:Key="TrashIcon">M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z</StreamGeometry>
+        </Style.Resources>
+    </Style>
+</Styles>

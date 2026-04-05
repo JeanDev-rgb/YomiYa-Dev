@@ -1,0 +1,16 @@
+﻿<Theme Name="Nord" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#2E3440</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#434C5E</Color>
+    <Color Key="ControlFillColorDefaultBrush">#3B4252</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#D8DEE9</Color>
+    <Color Key="TextFillColorSecondaryBrush">#E5E9F0</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#88C0D0</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#2E3440</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#4C566A</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#4C566A</Color>
+
+    <Color Key="ErrorColor">#BF616A</Color>
+    <Color Key="FavoriteColor">#BF616A</Color>
+</Theme>

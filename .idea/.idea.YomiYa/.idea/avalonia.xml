@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="YomiYa/App.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Assets/Icons/Icons.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Assets/Styles/Buttons/ChapterButtonStyles.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Ad/AdPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Discover/BrowsePageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Discover/ChapterListPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Discover/PluginPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Library/HistoryPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Library/LibraryPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Main/MainWindow.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Manga/UpdatesPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Navigation/SideBarMenuView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Reader/ReaderView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Settings/MorePageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Ad/AdPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Discover/BrowsePageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Discover/ChapterListPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Discover/PluginPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Library/HistoryPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Library/LibraryPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Main/MainWindow.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Mangas/UpdatesPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Navigation/SideBarMenuView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Reader/ReaderView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Views/Settings/MorePageView.axaml" value="YomiYa/YomiYa.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

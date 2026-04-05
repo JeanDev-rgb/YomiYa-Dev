@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+                xmlns="">
+        <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="metadata">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" use="required" type="xsd:string"/>
+                            <xsd:attribute name="type" type="xsd:string"/>
+                            <xsd:attribute name="mimetype" type="xsd:string"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="assembly">
+                        <xsd:complexType>
+                            <xsd:attribute name="alias" type="xsd:string"/>
+                            <xsd:attribute name="name" type="xsd:string"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+                            <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+                            <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+                            <xsd:attribute ref="xml:space"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="Browse" xml:space="preserve">
+    <value>探索</value>
+  </data>
+    <data name="Delete" xml:space="preserve">
+    <value>削除</value>
+  </data>
+    <data name="InstallPlugins" xml:space="preserve">
+    <value>プラグインをインストール</value>
+  </data>
+    <data name="Open" xml:space="preserve">
+    <value>開く</value>
+  </data>
+    <data name="Refresh" xml:space="preserve">
+    <value>更新</value>
+  </data>
+    <data name="History" xml:space="preserve">
+    <value>履歴</value>
+  </data>
+    <data name="Library" xml:space="preserve">
+    <value>ライブラリ</value>
+  </data>
+    <data name="More" xml:space="preserve">
+    <value>その他</value>
+  </data>
+    <data name="NoMangaAdded" xml:space="preserve">
+    <value>マンガが追加されていません</value>
+  </data>
+    <data name="NoPluginsInstalled" xml:space="preserve">
+    <value>プラグインがインストールされていません</value>
+  </data>
+    <data name="Updates" xml:space="preserve">
+    <value>アップデート</value>
+  </data>
+    <data name="SelectPluginFiles" xml:space="preserve">
+    <value>プラグインファイルを選択</value>
+  </data>
+    <data name="Back" xml:space="preserve">
+    <value>戻る</value>
+  </data>
+    <data name="PopularMangas" xml:space="preserve">
+    <value>人気の漫画</value>
+  </data>
+    <data name="LatestUpdates" xml:space="preserve">
+    <value>最新のアップデート</value>
+  </data>
+    <data name="SearchManga" xml:space="preserve">
+    <value>漫画を検索...</value>
+  </data>
+    <data name="Reward1Dollar" xml:space="preserve">
+    <value>1ドル稼ぐ</value>
+  </data>
+    <data name="GetOneDollarFree" xml:space="preserve">
+    <value>1ドルを無料でゲット</value>
+  </data>
+    <data name="WithLemonCash" xml:space="preserve">
+    <value>Lemon Cashで 🍋</value>
+  </data>
+    <data name="CreateYourAccountDescription" xml:space="preserve">
+    <value>迅速かつ安全にアカウントを作成します。あなたのデータは保護されています。</value>
+  </data>
+    <data name="FinalCallToAction" xml:space="preserve">
+    <value>乗り遅れないで。コードをスキャンして登録し、最初の1ドルを受け取るためにLemontag {0} を入力することを忘れないでください！</value>
+  </data>
+    <data name="DownloadTheApp" xml:space="preserve">
+    <value>アプリをダウンロード！</value>
+  </data>
+    <data name="EnterLemontag" xml:space="preserve">
+    <value>Lemontagを入力</value>
+  </data>
+    <data name="Step3Description" xml:space="preserve">
+    <value>報酬を受け取るには、{0} を使用することが不可欠です。</value>
+  </data>
+    <data name="ItsYourMoment" xml:space="preserve">
+    <value>あなたの瞬間です！</value>
+  </data>
+    <data name="Step1Description" xml:space="preserve">
+    <value>QRコードをスキャンするか、リンクを使用してください。これがあなたの仮想通貨への第一歩です！</value>
+  </data>
+    <data name="SignUp" xml:space="preserve">
+    <value>登録する</value>
+  </data>
+    <data name="RewardIn3Steps" xml:space="preserve">
+    <value>3つの簡単なステップであなたの報酬を</value>
+  </data>
+    <data name="FirstDollarIntro" xml:space="preserve">
+    <value>仮想通貨での最初の1ドルまであと3ステップ！このユニークな機会をお見逃しなく。</value>
+  </data>
+    <data name="AdditionalSettings" xml:space="preserve">
+        <value>追加設定</value>
+    </data>
+    <data name="ApplicationLanguage" xml:space="preserve">
+        <value>アプリケーションの言語</value>
+    </data>
+    <data name="Host" xml:space="preserve">
+        <value>ホスト:</value>
+    </data>
+    <data name="ManualProxyConfiguration" xml:space="preserve">
+        <value>手動プロキシ設定</value>
+    </data>
+    <data name="Password" xml:space="preserve">
+        <value>パスワード:</value>
+    </data>
+    <data name="Port" xml:space="preserve">
+        <value>ポート:</value>
+    </data>
+    <data name="Reset" xml:space="preserve">
+        <value>リセット</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>保存</value>
+    </data>
+    <data name="UsernameOptional" xml:space="preserve">
+        <value>ユーザー名 (任意):</value>
+    </data>
+    <data name="NoHistoryAdded" xml:space="preserve">
+        <value>履歴はまだありません</value>
+    </data>
+</root>

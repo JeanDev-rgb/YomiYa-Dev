@@ -1,0 +1,16 @@
+﻿<Theme Name="Monokai" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#272822</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#3E3D32</Color>
+    <Color Key="ControlFillColorDefaultBrush">#272822</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#F8F8F2</Color>
+    <Color Key="TextFillColorSecondaryBrush">#75715E</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#A6E22E</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#272822</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#75715E</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#3E3D32</Color>
+
+    <Color Key="ErrorColor">#F92672</Color>
+    <Color Key="FavoriteColor">#FD971F</Color>
+</Theme>

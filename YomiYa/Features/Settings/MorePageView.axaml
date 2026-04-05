@@ -1,0 +1,115 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="540"
+             xmlns:settings="clr-namespace:YomiYa.Features.Settings"
+             x:DataType="settings:MorePageViewModel"
+             x:Class="YomiYa.Features.Settings.MorePageView">
+
+    <Design.DataContext>
+        <settings:MorePageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.PageTitle">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="Margin" Value="0 0 0 20" />
+        </Style>
+        <Style Selector="TextBlock.SectionHeader">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Margin" Value="0 20 0 10" />
+            <Setter Property="Padding" Value="0 0 0 5" />
+        </Style>
+
+        <Style Selector="TextBlock.FormFieldLabel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style Selector="ComboBox.Settings">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="Padding" Value="8" />
+        </Style>
+        <Style Selector="TextBox.Settings">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="MinWidth" Value="250" />
+        </Style>
+
+        <Style Selector="Button.PrimaryAction">
+            <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+            <Setter Property="Padding" Value="16 8" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.SecondaryAction">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="16 8" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.SecondaryAction:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+        </Style>
+
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="32">
+        <StackPanel Spacing="10" MaxWidth="600">
+            <TextBlock Classes="PageTitle" Text="{Binding AdditionalSettingsText}" />
+
+            <TextBlock Classes="SectionHeader" Text="Tema de la Aplicación" />
+            <ComboBox Classes="Settings" ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding SelectedTheme}" />
+
+            <Button Content="Importar Tema..."
+                    Command="{Binding ImportThemeCommand}"
+                    HorizontalAlignment="Left"
+                    Margin="0 10 0 0"
+                    Classes="SecondaryAction" />
+
+            <TextBlock Classes="SectionHeader" Text="{Binding ApplicationLanguageText}" />
+            <ComboBox Classes="Settings" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
+
+            <TextBlock Classes="SectionHeader" Text="{Binding ManualProxyConfigurationText}" />
+
+            <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding HostText}"
+                           Margin="5" />
+                <TextBox Grid.Row="0" Grid.Column="1" Classes="Settings" Text="{Binding ProxyHost}" Margin="5" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding PortText}"
+                           Margin="5" />
+                <TextBox Grid.Row="1" Grid.Column="1" Classes="Settings" Text="{Binding ProxyPort}" Margin="5" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Classes="FormFieldLabel"
+                           Text="{Binding UsernameOptionalText}" Margin="5" />
+                <TextBox Grid.Row="2" Grid.Column="1" Classes="Settings" Text="{Binding ProxyUsername}"
+                         Margin="5" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding PasswordText}"
+                           Margin="5" />
+                <TextBox Grid.Row="3" Grid.Column="1" Classes="Settings" Text="{Binding ProxyPassword}"
+                         PasswordChar="*" Margin="5" />
+
+                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                            Spacing="10" Margin="0 10 0 0">
+                    <Button Classes="SecondaryAction" Content="{Binding ResetText}"
+                            Command="{Binding ResetProxyCommand}" />
+                    <Button Classes="PrimaryAction" Content="{Binding SaveText}" Command="{Binding SaveProxyCommand}" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

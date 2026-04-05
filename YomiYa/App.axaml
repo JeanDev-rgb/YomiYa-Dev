@@ -1,0 +1,30 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="YomiYa.App"
+             xmlns:core="using:YomiYa.Core"
+             xmlns:sty="clr-namespace:FluentAvalonia.Styling;assembly=FluentAvalonia"
+             xmlns:converters="clr-namespace:YomiYa.Converters"
+             RequestedThemeVariant="Dark">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Resources>
+        <converters:ZeroToVisibleConverter x:Key="ZeroToVisibleConverter" />
+        <converters:BoolToFavoriteColorConverter x:Key="BoolToFavoriteColorConverter" />
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <converters:AnyToVisibleConverter x:Key="AnyToVisibleConverter" />
+        <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+        <converters:HalfValueConverter x:Key="HalfValueConverter" />
+        <converters:ReadStatusToBrushConverter x:Key="ReadStatusToBrushConverter" />
+        <converters:ReadStatusToFontWeightConverter x:Key="ReadStatusToFontWeightConverter" />
+    </Application.Resources>
+
+    <Application.DataTemplates>
+        <core:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <sty:FluentAvaloniaTheme PreferUserAccentColor="True" />
+        <StyleInclude Source="/Assets/Icons/Icons.axaml" />
+        <StyleInclude Source="/Assets/Styles/Buttons/ChapterButtonStyles.axaml" />
+    </Application.Styles>
+</Application>

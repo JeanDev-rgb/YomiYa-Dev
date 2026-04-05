@@ -1,0 +1,16 @@
+﻿<Theme Name="Everforest Oscuro" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#2f383e</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#374145</Color>
+    <Color Key="ControlFillColorDefaultBrush">#2f383e</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#d3c6aa</Color>
+    <Color Key="TextFillColorSecondaryBrush">#859289</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#a7c080</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#2f383e</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#4a555b</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#4a555b</Color>
+
+    <Color Key="ErrorColor">#e67e80</Color>
+    <Color Key="FavoriteColor">#d699b6</Color>
+</Theme>

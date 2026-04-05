@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:main="clr-namespace:YomiYa.Features.Main"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="YomiYa.Features.Main.MainWindow"
+        x:DataType="main:MainWindowViewModel"
+        MinWidth="900"
+        MinHeight="600"
+        Icon="/Assets/YomiYa.ico"
+        Background="{DynamicResource ControlFillColorDefaultBrush}"
+        Title="YomiYa - Lector de Mangas Online">
+
+    <Design.DataContext>
+        <main:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto, *">
+        <Border Padding="5" 
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" 
+                BorderThickness="0,0,0,1">
+            <TextBlock Text="{Binding $parent[Window].Title}"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       FontFamily="Times New"
+                       Margin="7 0" />
+        </Border>
+        <Grid Grid.Row="1">
+            <TransitioningContentControl Content="{Binding CurrentPage}" />
+        </Grid>
+    </Grid>
+
+</Window>

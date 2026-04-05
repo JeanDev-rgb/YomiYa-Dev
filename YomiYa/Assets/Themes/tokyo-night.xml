@@ -1,0 +1,16 @@
+﻿<Theme Name="Tokyo Night" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#1a1b26</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#24283b</Color>
+    <Color Key="ControlFillColorDefaultBrush">#1a1b26</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#c0caf5</Color>
+    <Color Key="TextFillColorSecondaryBrush">#565f89</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#7aa2f7</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#1a1b26</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#3b4261</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#414868</Color>
+
+    <Color Key="ErrorColor">#f7768e</Color>
+    <Color Key="FavoriteColor">#bb9af7</Color>
+</Theme>

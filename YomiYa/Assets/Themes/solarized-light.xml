@@ -1,0 +1,16 @@
+﻿<Theme Name="Solarized Claro" Variant="Light">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#fdf6e3</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#eee8d5</Color>
+    <Color Key="ControlFillColorDefaultBrush">#fdf6e3</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#657b83</Color>
+    <Color Key="TextFillColorSecondaryBrush">#93a1a1</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#268bd2</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#fdf6e3</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#93a1a1</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#eee8d5</Color>
+
+    <Color Key="ErrorColor">#dc322f</Color>
+    <Color Key="FavoriteColor">#cb4b16</Color>
+</Theme>

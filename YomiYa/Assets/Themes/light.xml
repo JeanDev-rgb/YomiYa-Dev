@@ -1,0 +1,16 @@
+﻿<Theme Name="Claro" Variant="Light">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#F5F5F5</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#FFFFFF</Color>
+    <Color Key="ControlFillColorDefaultBrush">#FFFFFF</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#212121</Color>
+    <Color Key="TextFillColorSecondaryBrush">#757575</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#007ACC</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#FFFFFF</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#BDBDBD</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#E0E0E0</Color>
+
+    <Color Key="ErrorColor">#D32F2F</Color>
+    <Color Key="FavoriteColor">#E53935</Color>
+</Theme>

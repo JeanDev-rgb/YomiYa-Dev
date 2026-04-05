@@ -1,0 +1,16 @@
+﻿<Theme Name="Dracula" Variant="Dark">
+    <Color Key="ApplicationPageBackgroundThemeBrush">#282a36</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#44475a</Color>
+    <Color Key="ControlFillColorDefaultBrush">#282a36</Color>
+
+    <Color Key="TextFillColorPrimaryBrush">#f8f8f2</Color>
+    <Color Key="TextFillColorSecondaryBrush">#6272a4</Color>
+
+    <Color Key="AccentFillColorDefaultBrush">#bd93f9</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#f8f8f2</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#6272a4</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#44475a</Color>
+
+    <Color Key="ErrorColor">#ff5555</Color>
+    <Color Key="FavoriteColor">#ff79c6</Color>
+</Theme>

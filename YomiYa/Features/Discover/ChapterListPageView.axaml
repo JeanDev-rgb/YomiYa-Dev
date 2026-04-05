@@ -1,0 +1,178 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:discover="clr-namespace:YomiYa.Features.Discover"
+             x:DataType="discover:ChapterListPageViewModel"
+             x:Class="YomiYa.Features.Discover.ChapterListPageView">
+
+    <Design.DataContext>
+        <discover:ChapterListPageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.PageTitle">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="12 0 0 0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="Button.BackButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="CornerRadius" Value="18" />
+        </Style>
+        <Style Selector="Button.BackButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+        </Style>
+
+        <Style Selector="Border.CoverImage">
+            <Setter Property="Width" Value="120" />
+            <Setter Property="Height" Value="180" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </Style>
+
+        <Style Selector="TextBlock.Description">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+
+        <Style Selector="Border.InfoTag">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="10 4" />
+        </Style>
+        <Style Selector="TextBlock.InfoTag">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="Button.ChapterButton">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0 0 0 1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.ChapterButton:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.ChapterName">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.ChapterScanlator">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+        <StackPanel Grid.Row="0" Spacing="16">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="5 5 10 0">
+                <Button Classes="BackButton" Command="{Binding BackCommand}">
+                    <PathIcon Data="{StaticResource ArrowLeft}" />
+                </Button>
+                <TextBlock Grid.Column="1" Classes="PageTitle" Text="{Binding Manga.Title}" />
+                <Button Grid.Column="2" Classes="BackButton">
+                    <PathIcon Data="{StaticResource FilterRegular}" />
+                    <Button.Flyout>
+                        <Flyout Placement="BottomEdgeAlignedRight">
+                            <StackPanel Spacing="10" Margin="10" MinWidth="180">
+                                <TextBlock Text="Ordenar por:" FontWeight="Bold" />
+                                <RadioButton Content="Por defecto"
+                                             IsChecked="{Binding SelectedSort, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default}"
+                                             GroupName="Sort" />
+                                <RadioButton Content="Ascendente"
+                                             IsChecked="{Binding SelectedSort, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Ascending}"
+                                             GroupName="Sort" />
+                                <RadioButton Content="Descendente"
+                                             IsChecked="{Binding SelectedSort, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Descending}"
+                                             GroupName="Sort" />
+
+                                <TextBlock Text="Mostrar:" Margin="0 10 0 0" FontWeight="Bold" />
+                                <RadioButton Content="Todos"
+                                             IsChecked="{Binding SelectedReadFilter, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ShowAll}"
+                                             GroupName="ReadFilter" />
+                                <RadioButton Content="Leídos"
+                                             IsChecked="{Binding SelectedReadFilter, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ShowRead}"
+                                             GroupName="ReadFilter" />
+                                <RadioButton Content="No leídos"
+                                             IsChecked="{Binding SelectedReadFilter, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ShowUnread}"
+                                             GroupName="ReadFilter" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto *">
+                <Border Classes="CoverImage" Grid.Column="0" Margin="16 0">
+                    <Image Source="{Binding Cover}" Stretch="UniformToFill" />
+                </Border>
+                <ScrollViewer Grid.Column="1" Margin="0 0 16 0" MaxHeight="180">
+                    <TextBlock Classes="Description" Text="{Binding Description}" />
+                </ScrollViewer>
+            </Grid>
+
+            <WrapPanel ItemSpacing="8" Margin="16 0">
+                <Border Classes="InfoTag" IsVisible="{Binding Author, Converter={StaticResource NullToBoolConverter}}">
+                    <TextBlock Classes="InfoTag" Text="{Binding Author}" />
+                </Border>
+                <Border Classes="InfoTag" IsVisible="{Binding Artist, Converter={StaticResource NullToBoolConverter}}">
+                    <TextBlock Classes="InfoTag" Text="{Binding Artist}" />
+                </Border>
+                <ItemsControl ItemsSource="{Binding Genres}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Classes="InfoTag"
+                                    IsVisible="{Binding Converter={StaticResource NullToBoolConverter}}">
+                                <TextBlock Classes="InfoTag" Text="{Binding }" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel ItemSpacing="8" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </WrapPanel>
+        </StackPanel>
+
+        <Border Grid.Row="1" Margin="0 20 0 0" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" CornerRadius="8">
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Chapters}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Classes="ChapterButton"
+                                    Command="{Binding $parent[UserControl].((discover:ChapterListPageViewModel)DataContext).OpenChapterCommand}"
+                                    CommandParameter="{Binding}">
+                                <Grid ColumnDefinitions="* Auto">
+                                    <TextBlock Grid.Column="0" Classes="ChapterName"
+                                               Foreground="{Binding IsRead, Converter={StaticResource ReadStatusToBrushConverter}}"
+                                               FontWeight="{Binding IsRead, Converter={StaticResource ReadStatusToFontWeightConverter}}"
+                                               Text="{Binding Name}" />
+                                    <TextBlock Grid.Column="1" Classes="ChapterScanlator" Text="{Binding Scanlator}" />
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

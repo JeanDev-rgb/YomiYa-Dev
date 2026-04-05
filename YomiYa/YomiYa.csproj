@@ -1,0 +1,128 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>Assets\YomiYa.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**"/>
+        <AvaloniaResource Update="Assets\Icons\Icons.axaml">
+            <SubType>Designer</SubType>
+        </AvaloniaResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Remove="Assets\I18n\Strings.en.resx"/>
+        <AvaloniaResource Remove="Assets\I18n\Strings.es.resx"/>
+        <AvaloniaResource Remove="Assets\I18n\Strings.fr.resx"/>
+        <AvaloniaResource Remove="Assets\I18n\Strings.ja.resx"/>
+        <AvaloniaResource Remove="Assets\I18n\Strings.resx"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaXaml Remove="Assets\Icons.axaml"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.0"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.0"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0"/>
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.0">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1"/>
+        <PackageReference Include="FluentAvaloniaUI" Version="2.3.0"/>
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.7"/>
+        <PackageReference Include="Polly" Version="8.6.2" />
+        <PackageReference Include="ScrapySharp" Version="3.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Update="Assets\I18n\Strings.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Strings.resx</DependentUpon>
+        </AvaloniaResource>
+        <AvaloniaResource Update="Assets\Icons.axaml">
+            <SubType>Designer</SubType>
+        </AvaloniaResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Assets\Themes\*.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="Assets\I18n\Strings.zh.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Strings.zh.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Librerías\JXALib\JXALib.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Views\Manga\UpdatesPageView.axaml.cs">
+            <DependentUpon>UpdatesPageView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Main\MainWindow.axaml.cs">
+          <DependentUpon>MainWindow.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Navigation\SideBarMenuView.axaml.cs">
+          <DependentUpon>SideBarMenuView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Library\HistoryPageView.axaml.cs">
+          <DependentUpon>HistoryPageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Library\LibraryPageView.axaml.cs">
+          <DependentUpon>LibraryPageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Discover\BrowsePageView.axaml.cs">
+          <DependentUpon>BrowsePageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Discover\ChapterListPageView.axaml.cs">
+          <DependentUpon>ChapterListPageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Discover\PluginPageView.axaml.cs">
+          <DependentUpon>PluginPageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Reader\ReaderView.axaml.cs">
+          <DependentUpon>ReaderView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Settings\MorePageView.axaml.cs">
+          <DependentUpon>MorePageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Ad\AdPageView.axaml.cs">
+          <DependentUpon>AdPageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Features\Manga\UpdatesPageView.axaml.cs">
+          <DependentUpon>UpdatesPageView.axaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Features\Library\HistoryPageView.axaml" />
+      <AdditionalFiles Include="Features\Library\LibraryPageView.axaml" />
+    </ItemGroup>
+</Project>
