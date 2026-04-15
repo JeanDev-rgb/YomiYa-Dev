@@ -17,14 +17,16 @@
             <Setter Property="FontWeight" Value="Light" />
             <Setter Property="Margin" Value="0 0 0 20" />
         </Style>
-        <Style Selector="TextBlock.SectionHeader">
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-            <Setter Property="Margin" Value="0 20 0 10" />
-            <Setter Property="Padding" Value="0 0 0 5" />
+        <Style Selector="Expander">
+            <Setter Property="Background" Value="{DynamicResource LayerFillColorDefaultBrush}" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Margin" Value="0 5" />
         </Style>
-
+        <Style Selector="Expander /template/ ToggleButton">
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
         <Style Selector="TextBlock.FormFieldLabel">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Right" />
@@ -43,7 +45,6 @@
             <Setter Property="Padding" Value="8" />
             <Setter Property="MinWidth" Value="250" />
         </Style>
-
         <Style Selector="Button.PrimaryAction">
             <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
@@ -66,63 +67,86 @@
 
     <ScrollViewer>
         <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="32">
-            <StackPanel Spacing="10" MaxWidth="600">
+            <StackPanel Spacing="10" MaxWidth="700">
                 <TextBlock Classes="PageTitle" Text="{Binding AdditionalSettingsText}" />
 
-                <TextBlock Classes="SectionHeader" Text="{Binding ApplicationThemeText}" />
-                <ComboBox Classes="Settings" ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding SelectedTheme}" />
-
-                <Button Content="{Binding ImportThemeText}"
-                        Command="{Binding ImportThemeCommand}"
-                        HorizontalAlignment="Left"
-                        Margin="0 10 0 0"
-                        Classes="SecondaryAction" />
-
-                <TextBlock Classes="SectionHeader" Text="{Binding ApplicationLanguageText}" />
-                <ComboBox Classes="Settings" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" />
-
-                <TextBlock Classes="SectionHeader" Text="{Binding CloudSynchronizationText}" />
-                <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto" Margin="0,5,0,5">
-                    <Button Grid.Column="0" 
-                            Classes="SecondaryAction" 
-                            Content="{Binding SignInWithGoogleDriveText}" 
-                            Command="{Binding LoginGoogleCommand}" />
-                    
-                    <TextBlock Grid.Column="1" 
-                               Text="{Binding SyncStatusMessage}" 
-                               VerticalAlignment="Center" 
-                               Margin="15,0,0,0"
-                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                </Grid>
-
-                <TextBlock Classes="SectionHeader" Text="{Binding ManualProxyConfigurationText}" />
-                <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
-
-                    <TextBlock Grid.Row="0" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding HostText}"
-                               Margin="5" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Classes="Settings" Text="{Binding ProxyHost}" Margin="5" />
-
-                    <TextBlock Grid.Row="1" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding PortText}"
-                               Margin="5" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Classes="Settings" Text="{Binding ProxyPort}" Margin="5" />
-
-                    <TextBlock Grid.Row="2" Grid.Column="0" Classes="FormFieldLabel"
-                               Text="{Binding UsernameOptionalText}" Margin="5" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Classes="Settings" Text="{Binding ProxyUsername}"
-                             Margin="5" />
-
-                    <TextBlock Grid.Row="3" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding PasswordText}"
-                               Margin="5" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Classes="Settings" Text="{Binding ProxyPassword}"
-                             PasswordChar="*" Margin="5" />
-
-                    <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
-                                Spacing="10" Margin="0 10 0 0">
-                        <Button Classes="SecondaryAction" Content="{Binding ResetText}"
-                                Command="{Binding ResetProxyCommand}" />
-                        <Button Classes="PrimaryAction" Content="{Binding SaveText}" Command="{Binding SaveProxyCommand}" />
+                <Expander Header="{Binding ApplicationThemeText}">
+                    <StackPanel Spacing="10" Margin="16 0 16 16">
+                        <ComboBox Classes="Settings" ItemsSource="{Binding AvailableThemes}"
+                                  SelectedItem="{Binding SelectedTheme}" />
+                        <Button Content="{Binding ImportThemeText}"
+                                Command="{Binding ImportThemeCommand}"
+                                HorizontalAlignment="Left"
+                                Classes="SecondaryAction" />
                     </StackPanel>
-                </Grid>
+                </Expander>
+
+                <Expander Header="{Binding ApplicationLanguageText}">
+                    <StackPanel Margin="16 0 16 16">
+                        <ComboBox Classes="Settings" ItemsSource="{Binding Languages}"
+                                  SelectedItem="{Binding SelectedLanguage}" />
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="{Binding CloudSynchronizationText}">
+                    <StackPanel Spacing="15" Margin="16 0 16 16">
+                        <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto" VerticalAlignment="Center">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                                <Button Classes="SecondaryAction"
+                                        Content="{Binding SignInWithGoogleDriveText}"
+                                        Command="{Binding LoginGoogleCommand}"
+                                        IsVisible="{Binding !IsAuthenticated}" />
+                                <Button Classes="SecondaryAction"
+                                        Content="{Binding SignOutText}"
+                                        Command="{Binding LogoutGoogleCommand}"
+                                        IsVisible="{Binding IsAuthenticated}" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding SyncStatusMessage}"
+                                       VerticalAlignment="Center"
+                                       Margin="15,0,0,0"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsAuthenticated}">
+                            <Button Classes="SecondaryAction"
+                                    Content="{Binding UploadBackupText}"
+                                    Command="{Binding UploadBackupCommand}" />
+                            <Button Classes="SecondaryAction"
+                                    Content="{Binding RestoreBackupText}"
+                                    Command="{Binding RestoreBackupCommand}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+
+                <Expander Header="{Binding ManualProxyConfigurationText}">
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="16 0 16 16">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding HostText}"
+                                   Margin="5" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Classes="Settings" Text="{Binding ProxyHost}" Margin="5" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding PortText}"
+                                   Margin="5" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Classes="Settings" Text="{Binding ProxyPort}" Margin="5" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Classes="FormFieldLabel"
+                                   Text="{Binding UsernameOptionalText}" Margin="5" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Classes="Settings" Text="{Binding ProxyUsername}"
+                                 Margin="5" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="FormFieldLabel" Text="{Binding PasswordText}"
+                                   Margin="5" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Classes="Settings" Text="{Binding ProxyPassword}"
+                                 PasswordChar="*" Margin="5" />
+
+                        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right"
+                                    Spacing="10" Margin="0 10 0 0">
+                            <Button Classes="SecondaryAction" Content="{Binding ResetText}"
+                                    Command="{Binding ResetProxyCommand}" />
+                            <Button Classes="PrimaryAction" Content="{Binding SaveText}"
+                                    Command="{Binding SaveProxyCommand}" />
+                        </StackPanel>
+                    </Grid>
+                </Expander>
             </StackPanel>
         </Border>
     </ScrollViewer>

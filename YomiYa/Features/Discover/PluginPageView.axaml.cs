@@ -9,6 +9,7 @@ namespace YomiYa.Features.Discover;
 public partial class PluginPageView : UserControl
 {
     private SearchBoxKeyboardHelper? _searchHelper;
+
     public PluginPageView()
     {
         InitializeComponent();
@@ -23,9 +24,7 @@ public partial class PluginPageView : UserControl
     {
         _searchHelper?.Dispose();
         if (DataContext is ISearchableByKeyboard searchableViewModel)
-        {
             _searchHelper = new SearchBoxKeyboardHelper(SearchTextBox, searchableViewModel);
-        }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using YomiYa.Core.IO;
 
 namespace YomiYa.Core.Services;
 
 public class SyncManager(GoogleDriveSyncService googleDrive)
 {
-    private readonly string _dbPath = PathHelper.GetDatabasePath();
     private const string BackupFileName = "yomiya_backup.db"; // Nombre del archivo en Google Drive
+    private readonly string _dbPath = PathHelper.GetDatabasePath();
 
     // =========================
     // SUBIR RESPALDO
@@ -42,7 +43,7 @@ public class SyncManager(GoogleDriveSyncService googleDrive)
             if (remoteFile != null)
             {
                 // 1. Definir ruta temporal
-                string tempPath = _dbPath + ".tmp";
+                var tempPath = _dbPath + ".tmp";
 
                 // 2. Descargar el archivo de Drive al archivo temporal
                 await googleDrive.DownloadFileAsync(remoteFile.Id, tempPath);
@@ -50,12 +51,13 @@ public class SyncManager(GoogleDriveSyncService googleDrive)
                 // 3. Reemplazar la base de datos actual con la descargada
                 // IMPORTANTE: Limpiar el pool de SQLite para que libere el archivo y_omiya_library.db
                 // De lo contrario, File.Move lanzará un error de "Archivo en uso".
-                Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-                
-                File.Move(tempPath, _dbPath, overwrite: true);
+                SqliteConnection.ClearAllPools();
+
+                File.Move(tempPath, _dbPath, true);
 
                 return true;
             }
+
             return false;
         }
         catch (Exception ex)

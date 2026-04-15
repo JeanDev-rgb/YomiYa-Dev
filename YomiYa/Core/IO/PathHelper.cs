@@ -11,7 +11,7 @@ namespace YomiYa.Core.IO;
 
 public static class PathHelper
 {
-    public static string PluginsPath => System.IO.Path.Combine(AppContext.BaseDirectory, "Plugins");
+    public static string PluginsPath => Path.Combine(AppContext.BaseDirectory, "Plugins");
 
     public static async Task<List<string>?> SelectPath(string title, bool allowMultiple = false)
     {

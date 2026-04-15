@@ -153,7 +153,8 @@
             </WrapPanel>
         </StackPanel>
 
-        <Border Grid.Row="1" Margin="0 20 0 0" BorderThickness="1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" CornerRadius="8">
+        <Border Grid.Row="1" Margin="0 20 0 0" BorderThickness="1"
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" CornerRadius="8">
             <ScrollViewer>
                 <ItemsControl ItemsSource="{Binding Chapters}">
                     <ItemsControl.ItemTemplate>

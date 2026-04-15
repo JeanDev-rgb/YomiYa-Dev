@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using YomiYa.Core.Dialogs;
 using YomiYa.Core.Services;
 using YomiYa.Core.Settings;
 using YomiYa.Core.Theme;
@@ -12,8 +13,9 @@ namespace YomiYa;
 
 public class App : Application
 {
-    public static GoogleDriveSyncService DriveService { get; } = new GoogleDriveSyncService();
-    public static SyncManager SyncManager { get; } = new SyncManager(DriveService);
+    public static GoogleDriveSyncService DriveService { get; } = new();
+    public static SyncManager SyncManager { get; } = new(DriveService);
+    public static IDialogService DialogService { get; } = new DialogService();
 
     public override void Initialize()
     {

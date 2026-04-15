@@ -98,7 +98,7 @@
                     Padding="12">
                 <TransitioningContentControl Content="{Binding CurrentPage}">
                     <TransitioningContentControl.PageTransition>
-                        <CrossFade Duration="0:0:0.5"/>
+                        <CrossFade Duration="0:0:0.5" />
                     </TransitioningContentControl.PageTransition>
                 </TransitioningContentControl>
             </Border>

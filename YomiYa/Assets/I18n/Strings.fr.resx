@@ -1,10 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
-    <resheader name="version"><value>1.3</value></resheader>
-    <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-    <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
     <data name="AppTitle" xml:space="preserve"><value>YomiYa - Lecteur de Manga en Ligne</value></data>
     <data name="Browse" xml:space="preserve"><value>Parcourir</value></data>
     <data name="Delete" xml:space="preserve"><value>Supprimer</value></data>
@@ -67,4 +78,15 @@
     <data name="GoogleDriveConnected" xml:space="preserve"><value>Connecté à Google Drive</value></data>
     <data name="GoogleDriveLoginFailed" xml:space="preserve"><value>Connexion annulée ou échouée.</value></data>
     <data name="Timeout" xml:space="preserve"><value>La demande a expiré. Réessayez.</value></data>
+    <data name="SignOut" xml:space="preserve"><value>Se déconnecter</value></data>
+    <data name="UploadBackup" xml:space="preserve"><value>Télécharger la sauvegarde</value></data>
+    <data name="RestoreBackup" xml:space="preserve"><value>Restaurer la sauvegarde</value></data>
+    <data name="RestartRequired" xml:space="preserve"><value>Veuillez redémarrer l'application pour que les modifications prennent effet.</value></data>
+    <data name="UploadingBackup" xml:space="preserve"><value>Téléchargement de la sauvegarde en cours...</value></data>
+    <data name="UploadSuccessful" xml:space="preserve"><value>Sauvegarde téléchargée avec succès.</value></data>
+    <data name="UploadFailed" xml:space="preserve"><value>Échec du téléchargement de la sauvegarde.</value></data>
+    <data name="RestoringBackup" xml:space="preserve"><value>Restauration de la sauvegarde en cours...</value></data>
+    <data name="NoBackupFound" xml:space="preserve"><value>Aucune sauvegarde trouvée.</value></data>
+    <data name="RestoreSuccessful" xml:space="preserve"><value>Sauvegarde restaurée avec succès. {0}</value></data>
+    <data name="RestoreFailed" xml:space="preserve"><value>Échec de la restauration de la sauvegarde.</value></data>
 </root>

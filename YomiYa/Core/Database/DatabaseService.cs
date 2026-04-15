@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using YomiYa.Domain.Models;
 using Microsoft.Data.Sqlite;
 using Polly.Retry;
 using YomiYa.Core.IO;
 using YomiYa.Core.Resilience;
+using YomiYa.Domain.Models;
 
 namespace YomiYa.Core.Database;
 
@@ -23,7 +23,10 @@ public static class DatabaseService
         if (directory is not null) Directory.CreateDirectory(directory);
     }
 
-    private static string GetConnectionString() => $"Data Source={DbPath}";
+    private static string GetConnectionString()
+    {
+        return $"Data Source={DbPath}";
+    }
 
     public static async Task InitializeDatabase()
     {
@@ -103,7 +106,7 @@ public static class DatabaseService
             command.Parameters.AddWithValue("$artist", manga.Artist ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("$description", manga.Description ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("$genre",
-                manga.Genre != null ? string.Join(",", manga.Genre) : (object)DBNull.Value);
+                manga.Genre != null ? string.Join(",", manga.Genre) : DBNull.Value);
             command.Parameters.AddWithValue("$status", manga.Status);
             command.Parameters.AddWithValue("$thumbnail_url", manga.ThumbnailUrl ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("$plugin", manga.Plugin);
@@ -157,7 +160,7 @@ public static class DatabaseService
     }
 
     /// <summary>
-    /// Guarda el progreso de un capítulo y actualiza su fecha en el historial.
+    ///     Guarda el progreso de un capítulo y actualiza su fecha en el historial.
     /// </summary>
     public static async Task SetChapterProgress(string chapterUrl, int lastPageRead, bool isRead)
     {
@@ -252,7 +255,6 @@ public static class DatabaseService
 
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
                 chapters.Add(new SChapter
                 {
                     Url = reader.GetString(reader.GetOrdinal("url")),
@@ -265,7 +267,6 @@ public static class DatabaseService
                     IsRead = reader.GetInt32(reader.GetOrdinal("read")) == 1,
                     LastPageRead = reader.GetInt32(reader.GetOrdinal("last_page_read"))
                 });
-            }
 
             return chapters;
         });
@@ -283,7 +284,6 @@ public static class DatabaseService
 
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
                 mangas.Add(new SManga
                 {
                     Url = reader.GetString(reader.GetOrdinal("url")),
@@ -294,7 +294,6 @@ public static class DatabaseService
                     Plugin = reader.GetString(reader.GetOrdinal("plugin")),
                     IsFavorite = true
                 });
-            }
 
             return mangas;
         });
@@ -320,7 +319,6 @@ public static class DatabaseService
 
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
                 history.Add((
                     new SManga
                     {
@@ -338,7 +336,6 @@ public static class DatabaseService
                         DateUpload = reader.GetInt64(reader.GetOrdinal("last_read"))
                     }
                 ));
-            }
 
             return history;
         });

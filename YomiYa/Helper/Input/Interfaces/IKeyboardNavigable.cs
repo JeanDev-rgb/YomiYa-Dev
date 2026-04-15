@@ -10,6 +10,6 @@ public interface IKeyboardNavigable
     IRelayCommand PreviousPageCommand { get; }
     IRelayCommand ToggleReadingModeCommand { get; }
     IRelayCommand ToggleReadingWidthCommand { get; }
-    
+
     #endregion
 }

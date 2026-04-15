@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using YomiYa.Core.Exceptions;
-using YomiYa.Source.Online;
 using YomiYa.Core.IO;
 using YomiYa.Core.Services;
+using YomiYa.Source.Online;
 
 namespace YomiYa.Core.Plugins;
 
@@ -182,7 +182,7 @@ public class PluginManager
         GC.WaitForPendingFinalizers();
 
         // Construir la ruta del archivo directamente
-        var pluginFile = System.IO.Path.Combine(PathHelper.PluginsPath, pluginName + ".dll");
+        var pluginFile = Path.Combine(PathHelper.PluginsPath, pluginName + ".dll");
 
         if (!File.Exists(pluginFile)) return false;
         try
@@ -210,7 +210,7 @@ public class PluginManager
         foreach (var pluginPath in pluginPaths)
             try
             {
-                var destPath = System.IO.Path.Combine(PathHelper.PluginsPath, System.IO.Path.GetFileName(pluginPath));
+                var destPath = Path.Combine(PathHelper.PluginsPath, Path.GetFileName(pluginPath));
                 File.Copy(pluginPath, destPath, true);
                 Console.WriteLine($"Plugin instalado {pluginPath}");
                 LoadPlugins();

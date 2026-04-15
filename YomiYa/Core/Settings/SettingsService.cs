@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using YomiYa.Core.Localization;
 
 namespace YomiYa.Core.Settings;
 
@@ -12,8 +13,8 @@ namespace YomiYa.Core.Settings;
 public static class SettingsService
 {
     // Centralizamos la configuración de rutas y del serializador
-    private static readonly string SettingsDirectory = System.IO.Path.Combine(AppContext.BaseDirectory, "Data");
-    private static readonly string SettingsFilePath = System.IO.Path.Combine(SettingsDirectory, "app-settings.json");
+    private static readonly string SettingsDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
+    private static readonly string SettingsFilePath = Path.Combine(SettingsDirectory, "app-settings.json");
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -38,6 +39,7 @@ public static class SettingsService
     {
         if (!File.Exists(SettingsFilePath))
         {
+            Settings.SelectedLanguage = LanguageHelper.CurrentLanguage;
             Save(); // Si no hay archivo, creamos uno con los valores por defecto
             return;
         }

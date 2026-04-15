@@ -138,8 +138,8 @@
             </Setter>
         </Style>
         <Style Selector="Button.MangaCard:pressed /template/ ContentPresenter">
-            <Setter Property="RenderTransform" Value="scale(0.98)"/>
-            <Setter Property="BoxShadow" Value="0 0  5 0 #20000000"/>
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+            <Setter Property="BoxShadow" Value="0 0  5 0 #20000000" />
         </Style>
         <Style Selector="Border.TitleOverlay">
             <Setter Property="Background" Value="#90000000" />

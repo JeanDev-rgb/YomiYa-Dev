@@ -18,12 +18,11 @@ public static class LanguageHelper
             var culture = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
             return culture switch
             {
-                "en" => Language.English,
                 "es" => Language.Spanish,
                 "fr" => Language.French,
                 "ja" => Language.Japanese,
                 "zh-Hans" => Language.ChineseSimplified,
-                _ => Language.Spanish
+                _ => Language.English
             };
         }
     }
@@ -38,12 +37,11 @@ public static class LanguageHelper
     {
         var langCode = language switch
         {
-            Language.English => "en",
             Language.Spanish => "es",
             Language.French => "fr",
             Language.Japanese => "ja",
             Language.ChineseSimplified => "zh-Hans",
-            _ => "es"
+            _ => "en"
         };
 
         try

@@ -11,10 +11,10 @@ namespace YomiYa.Features.Reader;
 
 public partial class ReaderView : Window
 {
-    private ReaderKeyboardHelper? _keyboardHelper;
+    private readonly DispatcherTimer _scrollDebounceTimer;
     private DispatcherTimer? _idleTimer;
     private bool _isProgrammaticScroll;
-    private readonly DispatcherTimer _scrollDebounceTimer;
+    private ReaderKeyboardHelper? _keyboardHelper;
 
     [Obsolete("Obsolete")]
     public ReaderView()
@@ -24,10 +24,7 @@ public partial class ReaderView : Window
         DataContextChanged += OnDataContextChanged;
 
         var cascadeScrollViewer = this.FindControl<ScrollViewer>("CascadeScrollViewer");
-        if (cascadeScrollViewer != null)
-        {
-            cascadeScrollViewer.ScrollChanged += CascadeScrollViewer_ScrollChanged;
-        }
+        if (cascadeScrollViewer != null) cascadeScrollViewer.ScrollChanged += CascadeScrollViewer_ScrollChanged;
 
         _scrollDebounceTimer = new DispatcherTimer
         {
@@ -39,19 +36,13 @@ public partial class ReaderView : Window
     [Obsolete("Obsolete")]
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
-        if (DataContext is ReaderViewModel oldVm)
-        {
-            oldVm.PropertyChanged -= ViewModel_PropertyChanged;
-        }
+        if (DataContext is ReaderViewModel oldVm) oldVm.PropertyChanged -= ViewModel_PropertyChanged;
         _keyboardHelper?.Dispose();
 
         if (DataContext is IKeyboardNavigable navigableViewModel)
         {
             _keyboardHelper = new ReaderKeyboardHelper(this, navigableViewModel);
-            if (DataContext is ReaderViewModel newVm)
-            {
-                newVm.PropertyChanged += ViewModel_PropertyChanged;
-            }
+            if (DataContext is ReaderViewModel newVm) newVm.PropertyChanged += ViewModel_PropertyChanged;
         }
     }
 
@@ -67,7 +58,7 @@ public partial class ReaderView : Window
     {
         _scrollDebounceTimer.Stop();
         if (DataContext is not ReaderViewModel vm) return;
-        
+
         UpdateCurrentPageFromScrollPosition(vm);
     }
 
@@ -98,13 +89,10 @@ public partial class ReaderView : Window
         }
 
         if (containerWithMaxVisibility == null) return;
-        
+
         var newIndex = CascadeItemsControl.ItemContainerGenerator.IndexFromContainer(containerWithMaxVisibility);
 
-        if (newIndex != -1 && vm.CurrentPageIndex != newIndex)
-        {
-            vm.CurrentPageIndex = newIndex;
-        }
+        if (newIndex != -1 && vm.CurrentPageIndex != newIndex) vm.CurrentPageIndex = newIndex;
     }
 
     [Obsolete("Obsolete")]
@@ -112,8 +100,8 @@ public partial class ReaderView : Window
     {
         if (DataContext is not ReaderViewModel vm) return;
 
-        if ((e.PropertyName == nameof(ReaderViewModel.ReadingMode) || e.PropertyName == nameof(ReaderViewModel.ReadingWidth)) && vm.ReadingMode == ReadingMode.Cascade)
-        {
+        if ((e.PropertyName == nameof(ReaderViewModel.ReadingMode) ||
+             e.PropertyName == nameof(ReaderViewModel.ReadingWidth)) && vm.ReadingMode == ReadingMode.Cascade)
             Dispatcher.UIThread.Post(() =>
             {
                 if (CascadeItemsControl.ItemContainerGenerator.ContainerFromIndex(vm.CurrentPageIndex) is { } container)
@@ -123,15 +111,27 @@ public partial class ReaderView : Window
                     Dispatcher.UIThread.Post(() => { _isProgrammaticScroll = false; }, DispatcherPriority.Loaded);
                 }
             });
-        }
     }
 
     private void SetupIdleTimer()
     {
         _idleTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-        _idleTimer.Tick += (s, e) => { ReaderContainerGrid.Classes.Remove("controls-visible"); _idleTimer.Stop(); };
-        ReaderContainerGrid.PointerMoved += (s, e) => { ReaderContainerGrid.Classes.Add("controls-visible"); _idleTimer.Stop(); _idleTimer.Start(); };
-        ReaderContainerGrid.PointerExited += (s, e) => { ReaderContainerGrid.Classes.Remove("controls-visible"); _idleTimer.Stop(); };
+        _idleTimer.Tick += (s, e) =>
+        {
+            ReaderContainerGrid.Classes.Remove("controls-visible");
+            _idleTimer.Stop();
+        };
+        ReaderContainerGrid.PointerMoved += (s, e) =>
+        {
+            ReaderContainerGrid.Classes.Add("controls-visible");
+            _idleTimer.Stop();
+            _idleTimer.Start();
+        };
+        ReaderContainerGrid.PointerExited += (s, e) =>
+        {
+            ReaderContainerGrid.Classes.Remove("controls-visible");
+            _idleTimer.Stop();
+        };
     }
 
     protected override void OnClosed(EventArgs e)

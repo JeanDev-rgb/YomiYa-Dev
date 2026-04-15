@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 
 namespace YomiYa.Features.Library;
 
@@ -14,9 +13,6 @@ public partial class HistoryPageView : UserControl
 
     private void HistoryPageView_AttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
-        if (DataContext is HistoryPageViewModel vm)
-        {
-            _ = vm.LoadHistoryAsync();
-        }
+        if (DataContext is HistoryPageViewModel vm) _ = vm.LoadHistoryAsync();
     }
 }

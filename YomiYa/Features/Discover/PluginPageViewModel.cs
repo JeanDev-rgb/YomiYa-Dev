@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using YomiYa.Domain.Models;
-using YomiYa.Source.Online;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Navigation;
 using YomiYa.Core.Services;
+using YomiYa.Domain.Models;
 using YomiYa.Helper.Input.Interfaces;
+using YomiYa.Source.Online;
 
 namespace YomiYa.Features.Discover;
 
@@ -27,11 +26,13 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 
     #endregion
 
+    public IRelayCommand SearchCommand => SearchMangaCommand;
+
     #region Properties
 
     [ObservableProperty] private ParsedHttpSource? _plugin;
     [ObservableProperty] private int _columns = 5;
-    [ObservableProperty] private int _selectedTabIndex = 0;
+    [ObservableProperty] private int _selectedTabIndex;
     [ObservableProperty] private ObservableCollection<SManga> _popularMangas = [];
     [ObservableProperty] private ObservableCollection<SManga> _latestUpdatesMangas = [];
     [ObservableProperty] private ObservableCollection<SManga> _searchedMangas = [];
@@ -66,10 +67,7 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 
         manga.IsFavorite = !manga.IsFavorite;
 
-        if (manga.IsFavorite)
-        {
-            await MangaDetailsHelper.GetOrFetchDetailsAsync(manga);
-        }
+        if (manga.IsFavorite) await MangaDetailsHelper.GetOrFetchDetailsAsync(manga);
 
         // Ahora usamos el nuevo método, que es más simple y directo.
         await DatabaseService.SetMangaFavoriteStatusAsync(manga, manga.IsFavorite);
@@ -175,6 +173,4 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     }
 
     #endregion
-
-    public IRelayCommand SearchCommand => SearchMangaCommand;
 }

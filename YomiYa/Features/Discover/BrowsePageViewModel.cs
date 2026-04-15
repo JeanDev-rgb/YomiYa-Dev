@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using YomiYa.Source.Online;
 using YomiYa.Core.Common;
 using YomiYa.Core.IO;
 using YomiYa.Core.Localization;
@@ -10,12 +9,12 @@ using YomiYa.Core.Navigation;
 using YomiYa.Core.Plugins;
 using YomiYa.Core.Services;
 using YomiYa.Helper.Input.Interfaces;
+using YomiYa.Source.Online;
 
 namespace YomiYa.Features.Discover;
 
 public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
 {
-
     #region Constructor
 
     public BrowsePageViewModel()
@@ -25,6 +24,8 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     }
 
     #endregion
+
+    public IRelayCommand SearchCommand => SearchMangaCommand;
 
     #region Properties
 
@@ -72,19 +73,13 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         {
             var plugins = PluginManager.GetAllPlugins();
             Plugins.Clear();
-            foreach (var source in plugins)
-            {
-                Plugins.Add(source);
-            }
+            foreach (var source in plugins) Plugins.Add(source);
         }
         else
         {
             var plugin = PluginManager.GetPlugin(SearchText);
             Plugins.Clear();
-            if (string.IsNullOrWhiteSpace(plugin!.Name))
-            {
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(plugin!.Name)) return;
             Plugins.Add(plugin);
         }
     }
@@ -117,6 +112,4 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     }
 
     #endregion
-
-    public IRelayCommand SearchCommand => SearchMangaCommand;
 }

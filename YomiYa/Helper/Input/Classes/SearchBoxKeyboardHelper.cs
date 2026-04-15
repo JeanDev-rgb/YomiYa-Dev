@@ -18,16 +18,16 @@ public class SearchBoxKeyboardHelper : IDisposable
         _targetControl.KeyDown += OnKeyDownHandler;
     }
 
+    public void Dispose()
+    {
+        _targetControl.KeyDown -= OnKeyDownHandler;
+        GC.SuppressFinalize(this);
+    }
+
     private void OnKeyDownHandler(object? sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter) return;
         if (_viewModel.SearchCommand.CanExecute(null)) _viewModel.SearchCommand.Execute(null);
         e.Handled = true;
-    }
-
-    public void Dispose()
-    {
-        _targetControl.KeyDown -= OnKeyDownHandler;
-        GC.SuppressFinalize(this);
     }
 }

@@ -4,12 +4,12 @@ using Avalonia.Data.Converters;
 
 namespace YomiYa.Converters;
 
-public class AnyToVisibleConverter: IValueConverter
+public class AnyToVisibleConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is int count and 0)
-            return false; 
+            return false;
         return true; // Para IsVisible
     }
 

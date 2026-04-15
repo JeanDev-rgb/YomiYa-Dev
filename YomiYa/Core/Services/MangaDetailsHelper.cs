@@ -6,8 +6,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using YomiYa.Domain.Models;
 using YomiYa.Core.Plugins;
+using YomiYa.Domain.Models;
 
 namespace YomiYa.Core.Services;
 
@@ -19,7 +19,7 @@ namespace YomiYa.Core.Services;
 public static class MangaDetailsHelper
 {
     private static readonly string CacheDirectory =
-        System.IO.Path.Combine(AppContext.BaseDirectory, "Cache", "MangaDetailsCache");
+        Path.Combine(AppContext.BaseDirectory, "Cache", "MangaDetailsCache");
 
     // Semáforos para evitar que se descarguen los detalles del mismo manga simultáneamente.
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> Semaphores = new();
@@ -41,7 +41,6 @@ public static class MangaDetailsHelper
 
         // Intento rápido de carga desde caché sin bloqueo.
         if (File.Exists(cachePath))
-        {
             try
             {
                 var json = await File.ReadAllTextAsync(cachePath);
@@ -57,7 +56,6 @@ public static class MangaDetailsHelper
                 Console.WriteLine(
                     $"Error al leer caché de detalles de manga '{cachePath}'. Se reintentará la descarga. Error: {ex.Message}");
             }
-        }
 
         var semaphore = Semaphores.GetOrAdd(cachePath, _ => new SemaphoreSlim(1, 1));
         await semaphore.WaitAsync();
@@ -77,8 +75,11 @@ public static class MangaDetailsHelper
             }
 
             // Si no está en caché, obtener de la red.
+            if (manga.Plugin is null) return;
             var plugin = PluginManager.GetPlugin(manga.Plugin);
-            var details = await plugin!.GetMangaDetails(manga.Url);
+            if (plugin is null) return;
+
+            var details = await plugin.GetMangaDetails(manga.Url);
             ApplyDetails(manga, details);
 
             // Guardar en la caché de archivos para la próxima vez.
@@ -106,6 +107,6 @@ public static class MangaDetailsHelper
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(url));
         var sb = new StringBuilder();
         foreach (var b in hash) sb.Append(b.ToString("x2"));
-        return System.IO.Path.Combine(CacheDirectory, $"{sb}.json");
+        return Path.Combine(CacheDirectory, $"{sb}.json");
     }
 }

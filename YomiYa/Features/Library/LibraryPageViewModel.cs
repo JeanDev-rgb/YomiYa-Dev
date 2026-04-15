@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using YomiYa.Domain.Models;
 using YomiYa.Core.Common;
 using YomiYa.Core.Database;
-using YomiYa.Core.Imaging;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Navigation;
 using YomiYa.Core.Plugins;
 using YomiYa.Core.Services;
+using YomiYa.Domain.Models;
 using YomiYa.Features.Discover;
 
 namespace YomiYa.Features.Library;
@@ -22,7 +22,7 @@ public partial class LibraryPageViewModel : ViewModelBase
     public LibraryPageViewModel()
     {
         LocalizedTexts();
-        LoadMangasByDatabase();
+        _ = LoadMangasByDatabase();
     }
 
     #endregion
@@ -67,16 +67,16 @@ public partial class LibraryPageViewModel : ViewModelBase
 
     #region Methods
 
-    private async void LoadMangasByDatabase()
+    private async Task LoadMangasByDatabase()
     {
         try
         {
-            var mangas = await DatabaseService.GetLibraryMangasAsync();
-            foreach (var manga in mangas)
-            {
-                Mangas.Add(manga);
-                _ = manga.LoadCoverAsync();
-            }
+            var mangasFromDb = await DatabaseService.GetLibraryMangasAsync();
+            var coverLoadTasks = mangasFromDb.Select(manga => manga.LoadCoverAsync()).ToList();
+
+            await Task.WhenAll(coverLoadTasks);
+
+            foreach (var manga in mangasFromDb) Mangas.Add(manga);
         }
         catch (Exception e)
         {

@@ -13,16 +13,16 @@
 
     <UserControl.Styles>
         <Style Selector="TextBlock.PageTitle">
-            <Setter Property="FontSize" Value="32" />
+            <Setter Property="FontSize" Value="28" />
             <Setter Property="FontWeight" Value="Light" />
-            <Setter Property="Margin" Value="0 0 0 10" />
+            <Setter Property="Margin" Value="0 0 0 20" />
         </Style>
 
         <Style Selector="Button.MangaCard">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="RenderTransform" Value="scale(1.0)" />
             <Setter Property="Transitions">
                 <Transitions>
                     <TransformOperationsTransition Property="RenderTransform" Duration="0.15" Easing="CubicEaseOut" />
@@ -34,128 +34,124 @@
             <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BoxShadow" Value="0 0 10 0 #10000000" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
             <Setter Property="Transitions">
                 <Transitions>
-                    <BoxShadowsTransition Property="BoxShadow" Duration="0.15" />
                     <BrushTransition Property="BorderBrush" Duration="0.15" />
                 </Transitions>
             </Setter>
         </Style>
 
         <Style Selector="Button.MangaCard:pointerover">
-            <Setter Property="RenderTransform" Value="scale(1.03)" />
+            <Setter Property="RenderTransform" Value="scale(1.02)" />
         </Style>
 
         <Style Selector="Button.MangaCard:pointerover /template/ ContentPresenter">
-            <Setter Property="BoxShadow" Value="0 0 15 2 #40000000" />
             <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
         </Style>
-        
-        <Style Selector="Button.MangaCard:pressed /template/ ContentPresenter">
-            <Setter Property="RenderTransform" Value="scale(0.98)"/>
-            <Setter Property="BoxShadow" Value="0 0  5 0 #20000000"/>
+
+        <Style Selector="Button.MangaCard:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.99)" />
         </Style>
 
         <Style Selector="Border.TitleOverlay">
             <Setter Property="Background" Value="#90000000" />
             <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="Height" Value="80" />
+            <Setter Property="Height" Value="100" />
         </Style>
 
         <Style Selector="TextBlock.MangaTitle">
-            <Setter Property="Foreground" Value="#EAEAEA" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
             <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="FontSize" Value="15" />
-            <Setter Property="Padding" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="12" />
         </Style>
 
         <Style Selector="TextBlock.Kamoji">
-            <Setter Property="FontSize" Value="120" />
+            <Setter Property="FontSize" Value="100" />
             <Setter Property="Foreground" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
         <Style Selector="TextBlock.NoItemsMessage">
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="22" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0 20 0 0" />
         </Style>
 
         <Style Selector="Button.DeleteButton">
-            <Setter Property="Background" Value="#A0000000" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="Width" Value="32" />
-            <Setter Property="Height" Value="32" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
             <Setter Property="Margin" Value="8" />
-            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="CornerRadius" Value="20" />
             <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="HorizontalAlignment" Value="Right" />
             <Setter Property="ZIndex" Value="1" />
             <Setter Property="Transitions">
                 <Transitions>
                     <BrushTransition Property="Background" Duration="0.15" />
+                    <BrushTransition Property="Foreground" Duration="0.15" />
                 </Transitions>
             </Setter>
         </Style>
         <Style Selector="Button.DeleteButton:pointerover">
-            <Setter Property="Background" Value="{DynamicResource ErrorColor}" />
+            <Setter Property="Background" Value="{DynamicResource AccentFillColorErrorBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto *" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
-        <Border Grid.Row="0">
-            <TextBlock Classes="PageTitle" Text="{Binding Title}" />
-        </Border>
+    <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="32">
+        <Grid RowDefinitions="Auto, *">
+            <TextBlock Grid.Row="0" Classes="PageTitle" Text="{Binding Title}" />
 
-        <ScrollViewer Grid.Row="1">
-            <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Mangas}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Button Classes="MangaCard"
-                                    Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).OpenMangaCommand}"
-                                    CommandParameter="{Binding}">
-                                <Grid>
-                                    <Image Source="{Binding Cover}" Stretch="UniformToFill" />
-                                    <Border Classes="TitleOverlay">
+            <ScrollViewer Grid.Row="1">
+                <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Mangas}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Button Classes="MangaCard"
+                                        Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).OpenMangaCommand}"
+                                        CommandParameter="{Binding}">
+                                    <Grid>
+                                        <Image Source="{Binding Cover}" Stretch="UniformToFill" />
+                                        <Border Classes="TitleOverlay" />
                                         <TextBlock Classes="MangaTitle" Text="{Binding Title}" />
-                                    </Border>
-                                </Grid>
-                            </Button>
+                                    </Grid>
+                                </Button>
 
-                            <Button Classes="DeleteButton"
-                                    ToolTip.Tip="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteFromLibraryButtonText}"
-                                    Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteMangaCommand}"
-                                    CommandParameter="{Binding}">
-                                <PathIcon Data="{StaticResource TrashIcon}" Width="16" Height="16" />
-                            </Button>
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                                <Button Classes="DeleteButton"
+                                        ToolTip.Tip="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteFromLibraryButtonText}"
+                                        Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteMangaCommand}"
+                                        CommandParameter="{Binding}">
+                                    <PathIcon Data="{StaticResource TrashIcon}" Width="16" Height="16" />
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid VerticalAlignment="Top"
-                                     Columns="{Binding Columns}"
-                                     ColumnSpacing="24"
-                                     RowSpacing="24" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </ScrollViewer>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid VerticalAlignment="Top"
+                                         Columns="{Binding Columns}"
+                                         ColumnSpacing="20"
+                                         RowSpacing="20" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
 
-        <StackPanel Grid.Row="1"
-                    VerticalAlignment="Center"
-                    IsVisible="{Binding Mangas.Count, Converter={StaticResource ZeroToVisibleConverter}}"
-                    HorizontalAlignment="Center"
-                    Spacing="10">
-            <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
-            <TextBlock Classes="NoItemsMessage" Text="{Binding NoMangaAdded}" />
-        </StackPanel>
-    </Grid>
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding Mangas.Count, Converter={StaticResource ZeroToVisibleConverter}}"
+                        HorizontalAlignment="Center"
+                        Spacing="10">
+                <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
+                <TextBlock Classes="NoItemsMessage" Text="{Binding NoMangaAdded}" />
+            </StackPanel>
+        </Grid>
+    </Border>
 </UserControl>

@@ -15,7 +15,7 @@
         <Style Selector="TextBlock.PageTitle">
             <Setter Property="FontSize" Value="28" />
             <Setter Property="FontWeight" Value="Light" />
-            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0 0 0 20" />
         </Style>
 
         <Style Selector="Button.PrimaryAction">
@@ -27,12 +27,11 @@
         </Style>
 
         <Style Selector="TextBox.SearchBox">
-            <Setter Property="Padding" Value="32 8 8 8" />
+            <Setter Property="Padding" Value="36 8 8 8" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
-            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Watermark" Value="{Binding SearchPluginsWatermark}" />
             <Setter Property="Template">
                 <ControlTemplate>
@@ -68,23 +67,29 @@
             </Setter>
         </Style>
 
-        <Style Selector="Border.PluginCard">
+        <Style Selector="Button.PluginCard">
             <Setter Property="Padding" Value="16" />
-            <Setter Property="Margin" Value="0" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
-            <Setter Property="BoxShadow" Value="0 2 8 0 #20000000" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="Transitions">
                 <Transitions>
                     <TransformOperationsTransition Property="RenderTransform" Duration="0.15" Easing="CubicEaseOut" />
-                    <BoxShadowsTransition Property="BoxShadow" Duration="0.15" />
+                    <BrushTransition Property="BorderBrush" Duration="0.15" />
                 </Transitions>
             </Setter>
         </Style>
 
-        <Style Selector="Border.PluginCard:pointerover">
-            <Setter Property="RenderTransform" Value="translateY(-3px)" />
-            <Setter Property="BoxShadow" Value="0 4 15 0 #30000000" />
+        <Style Selector="Button.PluginCard:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.02)" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        </Style>
+
+        <Style Selector="Button.PluginCard:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.99)" />
         </Style>
 
         <Style Selector="TextBlock.CardTitle">
@@ -97,22 +102,12 @@
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         </Style>
 
-        <Style Selector="Button.CardAction">
-            <Setter Property="Padding" Value="12 6" />
-            <Setter Property="Background" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-            <Setter Property="CornerRadius" Value="4" />
-        </Style>
-        <Style Selector="Button.CardAction:pointerover">
-            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
-        </Style>
-
         <Style Selector="TextBlock.Kamoji">
             <Setter Property="FontSize" Value="100" />
             <Setter Property="Foreground" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
         </Style>
         <Style Selector="TextBlock.NoItemsMessage">
-            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontSize" Value="22" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         </Style>
     </UserControl.Styles>
@@ -126,26 +121,21 @@
             </StackPanel>
         </Grid>
 
-        <TextBox x:Name="SearchTextBox" Grid.Row="1" Classes="SearchBox" Margin="0 16 0 0"
+        <TextBox x:Name="SearchTextBox" Grid.Row="1" Classes="SearchBox" Margin="0 0 0 20"
                  Text="{Binding SearchText, Mode=TwoWay}" />
 
-        <ScrollViewer Grid.Row="2" Margin="0 16 0 0">
+        <ScrollViewer Grid.Row="2">
             <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Plugins}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Classes="PluginCard">
+                        <Button Classes="PluginCard"
+                                Command="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).OpenPluginCommand}"
+                                CommandParameter="{Binding}">
                             <StackPanel Spacing="8">
                                 <TextBlock Classes="CardTitle" Text="{Binding Name}" />
                                 <TextBlock Classes="CardSubtitle" Text="{Binding Version}" />
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8"
-                                            Margin="0 8 0 0">
-                                    <Button Classes="CardAction"
-                                            Content="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).OpenButtonText}"
-                                            Command="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).OpenPluginCommand}"
-                                            CommandParameter="{Binding}" />
-                                </StackPanel>
                             </StackPanel>
-                        </Border>
+                        </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 

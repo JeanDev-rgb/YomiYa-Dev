@@ -16,6 +16,8 @@ public partial class MainWindow : AppWindow
         LanguageHelper.LanguageChanged += OnLanguageChanged;
     }
 
+    public static MainWindow? Instance { get; private set; }
+
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
         UpdateTitle();
@@ -25,6 +27,4 @@ public partial class MainWindow : AppWindow
     {
         Title = LanguageHelper.GetText("AppTitle");
     }
-
-    public static MainWindow? Instance { get; private set; }
 }

@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
+                id="root"
                 xmlns="">
         <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -179,5 +180,38 @@
     </data>
     <data name="NoHistoryAdded" xml:space="preserve">
         <value>暫無歷史記錄</value>
+    </data>
+    <data name="SignOut" xml:space="preserve">
+        <value>登出</value>
+    </data>
+    <data name="UploadBackup" xml:space="preserve">
+        <value>上传备份</value>
+    </data>
+    <data name="RestoreBackup" xml:space="preserve">
+        <value>恢复备份</value>
+    </data>
+    <data name="RestartRequired" xml:space="preserve">
+        <value>请重新启动应用程序以使更改生效。</value>
+    </data>
+    <data name="UploadingBackup" xml:space="preserve">
+        <value>正在上传备份...</value>
+    </data>
+    <data name="UploadSuccessful" xml:space="preserve">
+        <value>备份上传成功。</value>
+    </data>
+    <data name="UploadFailed" xml:space="preserve">
+        <value>备份上传失败。</value>
+    </data>
+    <data name="RestoringBackup" xml:space="preserve">
+        <value>正在恢复备份...</value>
+    </data>
+    <data name="NoBackupFound" xml:space="preserve">
+        <value>未找到备份。</value>
+    </data>
+    <data name="RestoreSuccessful" xml:space="preserve">
+        <value>备份恢复成功。{0}</value>
+    </data>
+    <data name="RestoreFailed" xml:space="preserve">
+        <value>备份恢复失败。</value>
     </data>
 </root>

@@ -12,11 +12,9 @@ namespace YomiYa.Core.Theme;
 
 public static class ThemeManager
 {
-    public static Dictionary<string, (string FilePath, ThemeVariant Variant, bool IsExternal)> AvailableThemes { get; } = new();
-    
     private static readonly Assembly AppAssembly = Assembly.GetExecutingAssembly();
     private static readonly string ResourcePrefix = $"{AppAssembly.GetName().Name}.Assets.Themes.";
-    
+
     // Hacemos pública la ruta para que sea accesible desde el ViewModel
     public static readonly string ExternalThemesDirectory = Path.Combine(AppContext.BaseDirectory, "Themes");
 
@@ -24,6 +22,9 @@ public static class ThemeManager
     {
         ReloadAvailableThemes(); // Cambiamos el nombre de la llamada inicial
     }
+
+    public static Dictionary<string, (string FilePath, ThemeVariant Variant, bool IsExternal)>
+        AvailableThemes { get; } = new();
 
     // Hacemos el método público y le cambiamos el nombre para que sea más claro
     public static void ReloadAvailableThemes()
@@ -35,36 +36,30 @@ public static class ThemeManager
             .Where(name => name.StartsWith(ResourcePrefix) && name.EndsWith(".xml"));
 
         foreach (var resourceName in resourceNames)
-        {
             try
             {
                 using var stream = AppAssembly.GetManifestResourceStream(resourceName);
                 if (stream == null) continue;
-                
+
                 var doc = XDocument.Load(stream);
                 var themeName = doc.Root?.Attribute("Name")?.Value;
                 if (string.IsNullOrEmpty(themeName)) continue;
 
                 var fileName = resourceName.Substring(ResourcePrefix.Length);
                 var variant = GetVariantFromString(doc.Root?.Attribute("Variant")?.Value);
-                
+
                 AvailableThemes[themeName] = (fileName, variant, false);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al cargar el tema incrustado {resourceName}: {ex.Message}");
             }
-        }
 
         // 2. Cargar temas externos (del usuario)
-        if (!Directory.Exists(ExternalThemesDirectory))
-        {
-            Directory.CreateDirectory(ExternalThemesDirectory);
-        }
-        
+        if (!Directory.Exists(ExternalThemesDirectory)) Directory.CreateDirectory(ExternalThemesDirectory);
+
         var externalThemeFiles = Directory.GetFiles(ExternalThemesDirectory, "*.xml");
         foreach (var file in externalThemeFiles)
-        {
             try
             {
                 var doc = XDocument.Load(file);
@@ -72,14 +67,13 @@ public static class ThemeManager
                 if (string.IsNullOrEmpty(themeName)) continue;
 
                 var variant = GetVariantFromString(doc.Root?.Attribute("Variant")?.Value);
-                
+
                 AvailableThemes[themeName] = (file, variant, true);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al cargar el tema externo {file}: {ex.Message}");
             }
-        }
     }
 
     public static void ApplyTheme(string themeFilePathOrName)
@@ -93,7 +87,7 @@ public static class ThemeManager
         try
         {
             XDocument doc;
-            bool isExternal = File.Exists(themeFilePathOrName);
+            var isExternal = File.Exists(themeFilePathOrName);
 
             if (isExternal)
             {
@@ -103,14 +97,16 @@ public static class ThemeManager
             {
                 var fullResourceName = ResourcePrefix + themeFilePathOrName;
                 using var stream = AppAssembly.GetManifestResourceStream(fullResourceName);
-                if (stream == null) {
+                if (stream == null)
+                {
                     Console.WriteLine($"El recurso '{fullResourceName}' no se encontró.");
                     ApplyDefaultTheme();
                     return;
                 }
+
                 doc = XDocument.Load(stream);
             }
-            
+
             var variant = GetVariantFromString(doc.Root?.Attribute("Variant")?.Value);
             Application.Current.RequestedThemeVariant = variant;
 
@@ -119,9 +115,7 @@ public static class ThemeManager
                 var key = colorElement.Attribute("Key")?.Value;
                 var colorHex = colorElement.Value;
                 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(colorHex))
-                {
                     Application.Current.Resources[key] = Color.Parse(colorHex);
-                }
             }
         }
         catch (Exception ex)
@@ -133,10 +127,7 @@ public static class ThemeManager
     private static void ApplyDefaultTheme()
     {
         var darkTheme = AvailableThemes.Values.FirstOrDefault(v => v.FilePath.EndsWith("dark.xml"));
-        if (!string.IsNullOrEmpty(darkTheme.FilePath))
-        {
-            ApplyTheme(darkTheme.FilePath);
-        }
+        if (!string.IsNullOrEmpty(darkTheme.FilePath)) ApplyTheme(darkTheme.FilePath);
     }
 
     private static ThemeVariant GetVariantFromString(string? variantStr)

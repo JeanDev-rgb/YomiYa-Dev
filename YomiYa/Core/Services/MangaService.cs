@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using YomiYa.Core.Database;
+using YomiYa.Core.Imaging;
 using YomiYa.Domain.Models;
 using YomiYa.Source.Models;
 using YomiYa.Source.Online;
-using YomiYa.Core.Database;
-using YomiYa.Core.Imaging;
 
 namespace YomiYa.Core.Services;
 
@@ -20,7 +20,7 @@ public static class MangaService
     public static List<SChapter>? ChapterList { get; set; }
     public static int ChapterIndex { get; set; }
     private static CancellationTokenSource _searchCancellationTokenSource = new();
-    
+
     // Limitamos a 4 descargas de imágenes simultáneas para controlar el uso de RAM y red.
     private static readonly SemaphoreSlim ImageDownloadSemaphore = new(4);
 
@@ -41,11 +41,12 @@ public static class MangaService
     public static void SearchManga(string searchText, IProgress<SManga> progress)
     {
         if (SelectedPlugin is null) return;
-        
+
         _searchCancellationTokenSource.Cancel();
         _searchCancellationTokenSource = new CancellationTokenSource();
-        
-        _ = FetchAndReportMangasAsync(progress, page => SelectedPlugin.SearchManga(searchText, page), _searchCancellationTokenSource.Token);
+
+        _ = FetchAndReportMangasAsync(progress, page => SelectedPlugin.SearchManga(searchText, page),
+            _searchCancellationTokenSource.Token);
     }
 
     #endregion
@@ -94,7 +95,8 @@ public static class MangaService
         }
     }
 
-    private static async Task<SManga?> ProcessMangaAsync(SManga manga, ParsedHttpSource plugin, CancellationToken cancellationToken)
+    private static async Task<SManga?> ProcessMangaAsync(SManga manga, ParsedHttpSource plugin,
+        CancellationToken cancellationToken)
     {
         manga.Plugin = plugin.Name;
 
@@ -121,7 +123,7 @@ public static class MangaService
         await ImageDownloadSemaphore.WaitAsync(cancellationToken);
         try
         {
-            manga.Cover = await manga.ThumbnailUrl.LoadImageAsync(cancellationToken, isCover: true);
+            manga.Cover = await manga.ThumbnailUrl.LoadImageAsync(cancellationToken, true);
         }
         finally
         {

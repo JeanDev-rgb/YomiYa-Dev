@@ -1,10 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
-    <resheader name="version"><value>2.0</value></resheader>
-    <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-    <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
     <data name="AppTitle" xml:space="preserve"><value>YomiYa - オンライン漫画リーダー</value></data>
     <data name="Browse" xml:space="preserve"><value>探索</value></data>
     <data name="Delete" xml:space="preserve"><value>削除</value></data>
@@ -67,4 +78,15 @@
     <data name="GoogleDriveConnected" xml:space="preserve"><value>Google Drive に接続されました</value></data>
     <data name="GoogleDriveLoginFailed" xml:space="preserve"><value>ログインがキャンセルされたか、失敗しました。</value></data>
     <data name="Timeout" xml:space="preserve"><value>リクエストがタイムアウトしました。再試行してください。</value></data>
+    <data name="SignOut" xml:space="preserve"><value>サインアウト</value></data>
+    <data name="UploadBackup" xml:space="preserve"><value>バックアップをアップロード</value></data>
+    <data name="RestoreBackup" xml:space="preserve"><value>バックアップを復元</value></data>
+    <data name="RestartRequired" xml:space="preserve"><value>変更を有効にするには、アプリケーションを再起動してください。</value></data>
+    <data name="UploadingBackup" xml:space="preserve"><value>バックアップをアップロードしています...</value></data>
+    <data name="UploadSuccessful" xml:space="preserve"><value>バックアップが正常にアップロードされました。</value></data>
+    <data name="UploadFailed" xml:space="preserve"><value>バックアップのアップロードに失敗しました。</value></data>
+    <data name="RestoringBackup" xml:space="preserve"><value>バックアップを復元しています...</value></data>
+    <data name="NoBackupFound" xml:space="preserve"><value>バックアップが見つかりません。</value></data>
+    <data name="RestoreSuccessful" xml:space="preserve"><value>バックアップが正常に復元されました。{0}</value></data>
+    <data name="RestoreFailed" xml:space="preserve"><value>バックアップの復元に失敗しました。</value></data>
 </root>

@@ -6,8 +6,11 @@
     <Color Key="TextFillColorPrimaryBrush">#cdd6f4</Color>
     <Color Key="TextFillColorSecondaryBrush">#a6adc8</Color>
 
-    <Color Key="AccentFillColorDefaultBrush">#89b4fa</Color> <Color Key="TextOnAccentFillColorPrimaryBrush">#1e1e2e</Color>
+    <Color Key="AccentFillColorDefaultBrush">#89b4fa</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#1e1e2e</Color>
     <Color Key="ControlStrokeColorDefaultBrush">#313244</Color>
     <Color Key="ControlFillColorSecondaryBrush">#585b70</Color>
 
-    <Color Key="ErrorColor">#f38ba8</Color> <Color Key="FavoriteColor">#cba6f7</Color> </Theme>
+    <Color Key="ErrorColor">#f38ba8</Color>
+    <Color Key="FavoriteColor">#cba6f7</Color>
+</Theme>

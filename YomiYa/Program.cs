@@ -3,7 +3,6 @@ using Avalonia;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Settings;
-using YomiYa.Core.Theme;
 
 namespace YomiYa;
 
@@ -23,7 +22,7 @@ internal static class Program
 
         // Aplica el idioma guardado
         LanguageHelper.SetLanguage(SettingsService.Settings.SelectedLanguage);
-        
+
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }

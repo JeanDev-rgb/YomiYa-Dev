@@ -14,10 +14,7 @@ public class ReadStatusToBrushConverter : IValueConverter
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         // Si el valor es 'true', devuelve el pincel para texto leído (gris)
-        if (value is bool isRead && isRead)
-        {
-            return ReadBrush;
-        }
+        if (value is bool isRead && isRead) return ReadBrush;
         // De lo contrario, devuelve el pincel para texto no leído (blanco)
         return UnreadBrush;
     }

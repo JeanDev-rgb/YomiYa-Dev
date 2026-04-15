@@ -8,11 +8,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using YomiYa.Core.Database;
 using YomiYa.Core.Imaging;
-using YomiYa.Domain.Models;
-using YomiYa.Source.Online;
 using YomiYa.Core.Services;
 using YomiYa.Domain.Enums;
+using YomiYa.Domain.Models;
 using YomiYa.Helper.Input.Interfaces;
+using YomiYa.Source.Online;
 
 namespace YomiYa.Features.Reader;
 
@@ -59,14 +59,26 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     #region Commands
 
     [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
-    private void PreviousPage() => CurrentPageIndex--;
+    private void PreviousPage()
+    {
+        CurrentPageIndex--;
+    }
 
-    private bool CanGoToPreviousPage() => CurrentPageIndex > 0;
+    private bool CanGoToPreviousPage()
+    {
+        return CurrentPageIndex > 0;
+    }
 
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
-    private void NextPage() => CurrentPageIndex++;
+    private void NextPage()
+    {
+        CurrentPageIndex++;
+    }
 
-    private bool CanGoToNextPage() => CurrentPageIndex < Pages.Count - 1;
+    private bool CanGoToNextPage()
+    {
+        return CurrentPageIndex < Pages.Count - 1;
+    }
 
     [RelayCommand(CanExecute = nameof(CanGoToPreviousChapter))]
     private void PreviousChapter()
@@ -75,7 +87,10 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
         _ = InitializeChapterAsync();
     }
 
-    private bool CanGoToPreviousChapter() => ChapterIndex > 0;
+    private bool CanGoToPreviousChapter()
+    {
+        return ChapterIndex > 0;
+    }
 
     [RelayCommand(CanExecute = nameof(CanGoToNextChapter))]
     private void NextChapter()
@@ -84,7 +99,10 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
         _ = InitializeChapterAsync();
     }
 
-    private bool CanGoToNextChapter() => ChapterIndex < _chapterList.Count - 1;
+    private bool CanGoToNextChapter()
+    {
+        return ChapterIndex < _chapterList.Count - 1;
+    }
 
     [RelayCommand]
     private void ToggleReadingMode()
@@ -142,7 +160,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     }
 
     /// <summary>
-    /// Carga todas las imágenes de una lista de páginas y devuelve una nueva lista con los datos.
+    ///     Carga todas las imágenes de una lista de páginas y devuelve una nueva lista con los datos.
     /// </summary>
     private async Task<List<Page>> LoadAllPageBitmapsAsync(List<Page> pagesToLoad)
     {
@@ -152,14 +170,12 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     }
 
     /// <summary>
-    /// Carga el bitmap para una sola página y devuelve un nuevo objeto Page con la imagen.
+    ///     Carga el bitmap para una sola página y devuelve un nuevo objeto Page con la imagen.
     /// </summary>
     private async Task<Page> LoadPageBitmapAsync(Page page)
     {
-        if (page.Data is not null || string.IsNullOrEmpty(page.ImageUrl))
-        {
-            return page; // Si no hay nada que cargar, la devolvemos como está
-        }
+        if (page.Data is not null ||
+            string.IsNullOrEmpty(page.ImageUrl)) return page; // Si no hay nada que cargar, la devolvemos como está
 
         try
         {
@@ -182,7 +198,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
             SelectedChapter.LastPageRead = value;
             SelectedChapter.IsRead = value >= Pages.Count - 1;
-            
+
             // Esperamos a que la operación de guardado termine y manejamos posibles errores.
             await DatabaseService.SetChapterProgress(SelectedChapter.Url, SelectedChapter.LastPageRead,
                 SelectedChapter.IsRead);
@@ -195,10 +211,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
     public void Dispose()
     {
-        foreach (var page in Pages)
-        {
-            page.Dispose();
-        }
+        foreach (var page in Pages) page.Dispose();
 
         Pages.Clear();
         GC.SuppressFinalize(this);

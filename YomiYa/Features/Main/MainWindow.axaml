@@ -16,9 +16,9 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto, *">
-        <Border Padding="5" 
-                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" 
-                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" 
+        <Border Padding="5"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                 BorderThickness="0,0,0,1">
             <TextBlock Text="{Binding $parent[Window].Title}"
                        FontSize="18"

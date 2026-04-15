@@ -7,40 +7,39 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using YomiYa.Core.Database;
-using YomiYa.Domain.Models;
-using YomiYa.Source.Online;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Navigation;
 using YomiYa.Core.Services;
 using YomiYa.Domain.Enums;
+using YomiYa.Domain.Models;
+using YomiYa.Source.Online;
 
 namespace YomiYa.Features.Discover;
 
 public partial class ChapterListPageViewModel : ViewModelBase
 {
+    private List<SChapter> _allChapters = [];
+    [ObservableProperty] private string _allText = LanguageHelper.GetText("All");
+    [ObservableProperty] private string? _artist;
+    [ObservableProperty] private string _ascendingText = LanguageHelper.GetText("Ascending");
+    [ObservableProperty] private string? _author;
     [ObservableProperty] private string _backButtonText = LanguageHelper.GetText("Back");
     [ObservableProperty] private ObservableCollection<SChapter> _chapters = [];
-    [ObservableProperty] private SManga _manga;
-    [ObservableProperty] private ParsedHttpSource _plugin;
     [ObservableProperty] private Bitmap? _cover;
-    [ObservableProperty] private string? _artist;
-    [ObservableProperty] private string? _author;
+    [ObservableProperty] private string _defaultText = LanguageHelper.GetText("Default");
+    [ObservableProperty] private string _descendingText = LanguageHelper.GetText("Descending");
     [ObservableProperty] private string? _description;
     [ObservableProperty] private List<string>? _genres;
-
-    private List<SChapter> _allChapters = [];
-
-    [ObservableProperty] private ChapterSort _selectedSort = ChapterSort.Default;
+    [ObservableProperty] private SManga _manga;
+    [ObservableProperty] private ParsedHttpSource _plugin;
+    [ObservableProperty] private string _readText = LanguageHelper.GetText("Read");
 
     [ObservableProperty] private ChapterReadFilter _selectedReadFilter = ChapterReadFilter.ShowAll;
-    
-    [ObservableProperty] private string _sortByText = LanguageHelper.GetText("SortBy");
-    [ObservableProperty] private string _defaultText = LanguageHelper.GetText("Default");
-    [ObservableProperty] private string _ascendingText = LanguageHelper.GetText("Ascending");
-    [ObservableProperty] private string _descendingText = LanguageHelper.GetText("Descending");
+
+    [ObservableProperty] private ChapterSort _selectedSort = ChapterSort.Default;
     [ObservableProperty] private string _showText = LanguageHelper.GetText("Show");
-    [ObservableProperty] private string _allText = LanguageHelper.GetText("All");
-    [ObservableProperty] private string _readText = LanguageHelper.GetText("Read");
+
+    [ObservableProperty] private string _sortByText = LanguageHelper.GetText("SortBy");
     [ObservableProperty] private string _unreadText = LanguageHelper.GetText("Unread");
 
     public ChapterListPageViewModel()
@@ -139,10 +138,7 @@ public partial class ChapterListPageViewModel : ViewModelBase
             _ => filteredChapters
         };
 
-        foreach (var chapter in sortedChapters)
-        {
-            Chapters.Add(chapter);
-        }
+        foreach (var chapter in sortedChapters) Chapters.Add(chapter);
     }
 
     [RelayCommand]
