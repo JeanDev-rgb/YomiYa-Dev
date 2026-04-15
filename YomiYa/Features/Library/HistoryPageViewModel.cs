@@ -42,6 +42,8 @@ public partial class HistoryPageViewModel : ViewModelBase
     [ObservableProperty] private string? _historyTitle;
     [ObservableProperty] private string? _randomKamoji;
     [ObservableProperty] private string? _noHistoryAdded;
+    [ObservableProperty] private string? _clearAllButtonText;
+    [ObservableProperty] private string? _deleteFromHistoryButtonText;
 
 
     /// <summary>
@@ -115,5 +117,7 @@ public partial class HistoryPageViewModel : ViewModelBase
         HistoryTitle = LanguageHelper.GetText("History");
         RandomKamoji = KamojiHelper.GetRandomKamoji();
         NoHistoryAdded = LanguageHelper.GetText("NoHistoryAdded");
+        ClearAllButtonText = LanguageHelper.GetText("ClearAll");
+        DeleteFromHistoryButtonText = LanguageHelper.GetText("DeleteFromHistory");
     }
 }

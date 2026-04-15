@@ -33,7 +33,7 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
             <Setter Property="CornerRadius" Value="18" />
-            <Setter Property="Watermark" Value="Buscar plugins..." />
+            <Setter Property="Watermark" Value="{Binding SearchPluginsWatermark}" />
             <Setter Property="Template">
                 <ControlTemplate>
                     <Grid>

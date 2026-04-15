@@ -61,6 +61,7 @@ public partial class LibraryPageViewModel : ViewModelBase
     [ObservableProperty] private string? _randomKamoji;
     [ObservableProperty] private string? _noMangaAdded;
     [ObservableProperty] private ObservableCollection<SManga> _mangas = [];
+    [ObservableProperty] private string? _deleteFromLibraryButtonText;
 
     #endregion
 
@@ -101,6 +102,7 @@ public partial class LibraryPageViewModel : ViewModelBase
         Title = LanguageHelper.GetText("Library");
         RandomKamoji = KamojiHelper.GetRandomKamoji();
         NoMangaAdded = LanguageHelper.GetText("NoMangaAdded");
+        DeleteFromLibraryButtonText = LanguageHelper.GetText("DeleteFromLibrary");
     }
 
     #endregion

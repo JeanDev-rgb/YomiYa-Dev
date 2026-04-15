@@ -3,14 +3,15 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using YomiYa.Core.Localization;
+using YomiYa.Core.Services;
 using YomiYa.Core.Settings;
 using YomiYa.Core.Theme;
 using YomiYa.Domain.Enums;
@@ -20,6 +21,15 @@ namespace YomiYa.Features.Settings;
 
 public partial class MorePageViewModel : ViewModelBase
 {
+    private readonly GoogleDriveSyncService _driveService = App.DriveService; // O por inyección
+    private readonly SyncManager _syncService = App.SyncManager;
+
+    [ObservableProperty] private bool _isAuthenticated;
+
+    [ObservableProperty] private bool _isSyncing;
+
+    [ObservableProperty] private string _syncStatusMessage = LanguageHelper.GetText("WaitingForAction");
+
     #region Constructor
 
     public MorePageViewModel()
@@ -73,6 +83,11 @@ public partial class MorePageViewModel : ViewModelBase
         ResetText = LanguageHelper.GetText("Reset");
         SaveText = LanguageHelper.GetText("Save");
         UsernameOptionalText = LanguageHelper.GetText("UsernameOptional");
+        CloudSynchronizationText = LanguageHelper.GetText("CloudSynchronization");
+        SignInWithGoogleDriveText = LanguageHelper.GetText("SignInWithGoogleDrive");
+        WaitingForAction = LanguageHelper.GetText("WaitingForAction");
+        ApplicationThemeText = LanguageHelper.GetText("ApplicationTheme");
+        ImportThemeText = LanguageHelper.GetText("ImportTheme");
     }
 
     #endregion
@@ -103,73 +118,80 @@ public partial class MorePageViewModel : ViewModelBase
     [ObservableProperty] private string _resetText = LanguageHelper.GetText("Reset");
     [ObservableProperty] private string _saveText = LanguageHelper.GetText("Save");
     [ObservableProperty] private string _usernameOptionalText = LanguageHelper.GetText("UsernameOptional");
+    [ObservableProperty] private string _cloudSynchronizationText = LanguageHelper.GetText("CloudSynchronization");
+    [ObservableProperty] private string _signInWithGoogleDriveText = LanguageHelper.GetText("SignInWithGoogleDrive");
+    [ObservableProperty] private string _waitingForAction = LanguageHelper.GetText("WaitingForAction");
+    [ObservableProperty] private string _applicationThemeText = LanguageHelper.GetText("ApplicationTheme");
+    [ObservableProperty] private string _importThemeText = LanguageHelper.GetText("ImportTheme");
 
     #endregion
 
     #region Commands
 
     [RelayCommand]
-private async Task ImportThemeAsync()
-{
-    // Obtener la ventana principal para mostrar el diálogo de archivo
-    if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || desktop.MainWindow is null)
+    private async Task ImportThemeAsync()
     {
-        return;
-    }
-
-    // --- CORRECCIÓN 1: Guardamos el tema seleccionado actualmente ---
-    var previouslySelectedTheme = SelectedTheme;
-
-    // Configurar el selector de archivos para que solo muestre archivos XML
-    var filePickerOptions = new FilePickerOpenOptions
-    {
-        Title = "Importar Temas",
-        AllowMultiple = true, // Permitir seleccionar varios temas a la vez
-        FileTypeFilter = new[] { new FilePickerFileType("Archivos de Tema XML") { Patterns = new[] { "*.xml" } } }
-    };
-
-    // Mostrar el diálogo
-    var selectedFiles = await desktop.MainWindow.StorageProvider.OpenFilePickerAsync(filePickerOptions);
-
-    if (selectedFiles.Count == 0)
-    {
-        return; // El usuario no seleccionó nada
-    }
-
-    foreach (var file in selectedFiles)
-    {
-        try
+        // Obtener la ventana principal para mostrar el diálogo de archivo
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
+            desktop.MainWindow is null)
         {
-            var destinationPath = Path.Combine(ThemeManager.ExternalThemesDirectory, file.Name);
-            
-            // Copiar el archivo seleccionado a la carpeta de temas del usuario
-            await using var sourceStream = await file.OpenReadAsync();
-            await using var destinationStream = File.Create(destinationPath);
-            await sourceStream.CopyToAsync(destinationStream);
+            return;
         }
-        catch (Exception ex)
+
+        // --- CORRECCIÓN 1: Guardamos el tema seleccionado actualmente ---
+        var previouslySelectedTheme = SelectedTheme;
+
+        // Configurar el selector de archivos para que solo muestre archivos XML
+        var filePickerOptions = new FilePickerOpenOptions
         {
-            Console.WriteLine($"Error al importar el tema '{file.Name}': {ex.Message}");
+            Title = "Importar Temas",
+            AllowMultiple = true, // Permitir seleccionar varios temas a la vez
+            FileTypeFilter = [new FilePickerFileType("Archivos de Tema XML") { Patterns = ["*.xml"] }]
+        };
+
+        // Mostrar el diálogo
+        var selectedFiles = await desktop.MainWindow.StorageProvider.OpenFilePickerAsync(filePickerOptions);
+
+        if (selectedFiles.Count == 0)
+        {
+            return; // El usuario no seleccionó nada
+        }
+
+        foreach (var file in selectedFiles)
+        {
+            try
+            {
+                var destinationPath = Path.Combine(ThemeManager.ExternalThemesDirectory, file.Name);
+
+                // Copiar el archivo seleccionado a la carpeta de temas del usuario
+                await using var sourceStream = await file.OpenReadAsync();
+                await using var destinationStream = File.Create(destinationPath);
+                await sourceStream.CopyToAsync(destinationStream);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al importar el tema '{file.Name}': {ex.Message}");
+            }
+        }
+
+        // Recargar la lista de temas para que incluya los nuevos
+        ThemeManager.ReloadAvailableThemes();
+
+        // Actualizar la lista desplegable en la interfaz
+        AvailableThemes.Clear();
+        foreach (var themeName in ThemeManager.AvailableThemes.Keys)
+        {
+            AvailableThemes.Add(themeName);
+        }
+
+        // --- CORRECCIÓN 2: Restauramos la selección anterior ---
+        // Si el tema anterior todavía existe, lo volvemos a seleccionar.
+        if (!string.IsNullOrEmpty(previouslySelectedTheme) && AvailableThemes.Contains(previouslySelectedTheme))
+        {
+            SelectedTheme = previouslySelectedTheme;
         }
     }
-    
-    // Recargar la lista de temas para que incluya los nuevos
-    ThemeManager.ReloadAvailableThemes();
-    
-    // Actualizar la lista desplegable en la interfaz
-    AvailableThemes.Clear();
-    foreach (var themeName in ThemeManager.AvailableThemes.Keys)
-    {
-        AvailableThemes.Add(themeName);
-    }
-    
-    // --- CORRECCIÓN 2: Restauramos la selección anterior ---
-    // Si el tema anterior todavía existe, lo volvemos a seleccionar.
-    if (!string.IsNullOrEmpty(previouslySelectedTheme) && AvailableThemes.Contains(previouslySelectedTheme))
-    {
-        SelectedTheme = previouslySelectedTheme;
-    }
-}
+
     [RelayCommand]
     private void SaveProxy()
     {
@@ -192,6 +214,34 @@ private async Task ImportThemeAsync()
         ProxyUsername = string.Empty;
         ProxyPassword = string.Empty;
         GlobalProxy.Proxy = null;
+    }
+
+    [RelayCommand]
+    private async Task LoginGoogleAsync()
+    {
+        if (IsSyncing) return; // Prevenir múltiples clics
+
+        IsSyncing = true;
+        SyncStatusMessage = LanguageHelper.GetText("BrowserAuthPending");;
+
+        // Creamos un token que expira en 2 minutos para que la app no se cuelgue
+        // si el usuario cierra el navegador sin hacer nada.
+        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
+
+        try
+        {
+            IsAuthenticated = await _driveService.AuthenticateAsync(cts.Token);
+            SyncStatusMessage = IsAuthenticated ? LanguageHelper.GetText("GoogleDriveConnected") : LanguageHelper.GetText("GoogleDriveLoginFailed");
+        }
+        catch (TaskCanceledException)
+        {
+            SyncStatusMessage = LanguageHelper.GetText("Timeout");
+            IsAuthenticated = false;
+        }
+        finally
+        {
+            IsSyncing = false;
+        }
     }
 
     #endregion

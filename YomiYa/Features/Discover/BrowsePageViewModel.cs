@@ -37,6 +37,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     [ObservableProperty] private string? _randomKamoji;
     [ObservableProperty] private ObservableCollection<ParsedHttpSource> _plugins = [];
     [ObservableProperty] private string? _searchText;
+    [ObservableProperty] private string? _searchPluginsWatermark;
 
     #endregion
 
@@ -112,6 +113,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         OpenButtonText = LanguageHelper.GetText("Open");
         RandomKamoji = KamojiHelper.GetRandomKamoji();
         NoPluginsInstalled = LanguageHelper.GetText("NoPluginsInstalled");
+        SearchPluginsWatermark = LanguageHelper.GetText("SearchPlugins");
     }
 
     #endregion

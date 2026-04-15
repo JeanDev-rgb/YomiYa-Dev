@@ -6,5 +6,5 @@ public enum Language
     Spanish, // es
     French, // fr
     Japanese, // ja
-    Chinese // zh
+    ChineseSimplified  // zh-Hans
 }

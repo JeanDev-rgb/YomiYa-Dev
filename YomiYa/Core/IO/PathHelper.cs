@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -25,5 +26,12 @@ public static class PathHelper
         var files = await topLevel!.StorageProvider.OpenFilePickerAsync(options);
 
         return files.Any() ? files.Select(file => file.Path.LocalPath).ToList() : null;
+    }
+
+    public static string GetDatabasePath()
+    {
+        var dbDirectory = "Data";
+        var dbName = "yomiya_library.db";
+        return Path.Combine(AppContext.BaseDirectory, dbDirectory, dbName);
     }
 }

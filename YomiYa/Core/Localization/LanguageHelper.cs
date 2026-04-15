@@ -22,7 +22,7 @@ public static class LanguageHelper
                 "es" => Language.Spanish,
                 "fr" => Language.French,
                 "ja" => Language.Japanese,
-                "zh" => Language.Chinese,
+                "zh-Hans" => Language.ChineseSimplified,
                 _ => Language.Spanish
             };
         }
@@ -33,7 +33,7 @@ public static class LanguageHelper
     /// <summary>
     ///     Cambia el idioma de la aplicación.
     /// </summary>
-    /// <param name="languageCode">Codigo del idioma, ejemplo: en, es, fr, etc.</param>
+    /// <param name="language">Codigo del idioma, ejemplo: en, es, fr, etc.</param>
     public static void SetLanguage(Language language)
     {
         var langCode = language switch
@@ -42,7 +42,7 @@ public static class LanguageHelper
             Language.Spanish => "es",
             Language.French => "fr",
             Language.Japanese => "ja",
-            Language.Chinese => "zh",
+            Language.ChineseSimplified => "zh-Hans",
             _ => "es"
         };
 

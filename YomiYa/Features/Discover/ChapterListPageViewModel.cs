@@ -33,6 +33,15 @@ public partial class ChapterListPageViewModel : ViewModelBase
     [ObservableProperty] private ChapterSort _selectedSort = ChapterSort.Default;
 
     [ObservableProperty] private ChapterReadFilter _selectedReadFilter = ChapterReadFilter.ShowAll;
+    
+    [ObservableProperty] private string _sortByText = LanguageHelper.GetText("SortBy");
+    [ObservableProperty] private string _defaultText = LanguageHelper.GetText("Default");
+    [ObservableProperty] private string _ascendingText = LanguageHelper.GetText("Ascending");
+    [ObservableProperty] private string _descendingText = LanguageHelper.GetText("Descending");
+    [ObservableProperty] private string _showText = LanguageHelper.GetText("Show");
+    [ObservableProperty] private string _allText = LanguageHelper.GetText("All");
+    [ObservableProperty] private string _readText = LanguageHelper.GetText("Read");
+    [ObservableProperty] private string _unreadText = LanguageHelper.GetText("Unread");
 
     public ChapterListPageViewModel()
     {
@@ -155,5 +164,13 @@ public partial class ChapterListPageViewModel : ViewModelBase
     protected override void UpdateLocalizedTexts()
     {
         BackButtonText = LanguageHelper.GetText("Back");
+        SortByText = LanguageHelper.GetText("SortBy");
+        DefaultText = LanguageHelper.GetText("Default");
+        AscendingText = LanguageHelper.GetText("Ascending");
+        DescendingText = LanguageHelper.GetText("Descending");
+        ShowText = LanguageHelper.GetText("Show");
+        AllText = LanguageHelper.GetText("All");
+        ReadText = LanguageHelper.GetText("Read");
+        UnreadText = LanguageHelper.GetText("Unread");
     }
 }

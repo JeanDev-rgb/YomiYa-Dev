@@ -209,7 +209,7 @@
                     </ScrollViewer>
                 </TabItem>
 
-                <TabItem Header="Mangas Encontrados"
+                <TabItem Header="{Binding FoundMangasText}"
                          IsVisible="{Binding SearchedMangas.Count, Converter={StaticResource AnyToVisibleConverter}}">
                     <ScrollViewer Margin="0 16 0 0">
                         <ItemsControl HorizontalAlignment="Stretch"

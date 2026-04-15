@@ -40,6 +40,7 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     [ObservableProperty] private string _popularMangasText = LanguageHelper.GetText("PopularMangas");
     [ObservableProperty] private string _searchMangaText = LanguageHelper.GetText("SearchManga");
     [ObservableProperty] private string? _searchText;
+    [ObservableProperty] private string _foundMangasText = LanguageHelper.GetText("FoundMangas");
 
     #endregion
 
@@ -170,6 +171,7 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
         LatestUpdatesText = LanguageHelper.GetText("LatestUpdates");
         PopularMangasText = LanguageHelper.GetText("PopularMangas");
         SearchMangaText = LanguageHelper.GetText("SearchManga");
+        FoundMangasText = LanguageHelper.GetText("FoundMangas");
     }
 
     #endregion

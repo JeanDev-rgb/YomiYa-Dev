@@ -92,25 +92,25 @@
                     <Button.Flyout>
                         <Flyout Placement="BottomEdgeAlignedRight">
                             <StackPanel Spacing="10" Margin="10" MinWidth="180">
-                                <TextBlock Text="Ordenar por:" FontWeight="Bold" />
-                                <RadioButton Content="Por defecto"
+                                <TextBlock Text="{Binding SortByText}" FontWeight="Bold" />
+                                <RadioButton Content="{Binding DefaultText}"
                                              IsChecked="{Binding SelectedSort, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default}"
                                              GroupName="Sort" />
-                                <RadioButton Content="Ascendente"
+                                <RadioButton Content="{Binding AscendingText}"
                                              IsChecked="{Binding SelectedSort, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Ascending}"
                                              GroupName="Sort" />
-                                <RadioButton Content="Descendente"
+                                <RadioButton Content="{Binding DescendingText}"
                                              IsChecked="{Binding SelectedSort, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Descending}"
                                              GroupName="Sort" />
 
-                                <TextBlock Text="Mostrar:" Margin="0 10 0 0" FontWeight="Bold" />
-                                <RadioButton Content="Todos"
+                                <TextBlock Text="{Binding ShowText}" Margin="0 10 0 0" FontWeight="Bold" />
+                                <RadioButton Content="{Binding AllText}"
                                              IsChecked="{Binding SelectedReadFilter, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ShowAll}"
                                              GroupName="ReadFilter" />
-                                <RadioButton Content="Leídos"
+                                <RadioButton Content="{Binding ReadText}"
                                              IsChecked="{Binding SelectedReadFilter, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ShowRead}"
                                              GroupName="ReadFilter" />
-                                <RadioButton Content="No leídos"
+                                <RadioButton Content="{Binding UnreadText}"
                                              IsChecked="{Binding SelectedReadFilter, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=ShowUnread}"
                                              GroupName="ReadFilter" />
                             </StackPanel>

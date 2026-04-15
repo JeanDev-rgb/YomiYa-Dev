@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 using YomiYa.Domain.Models;
 using Microsoft.Data.Sqlite;
 using Polly.Retry;
+using YomiYa.Core.IO;
 using YomiYa.Core.Resilience;
 
 namespace YomiYa.Core.Database;
 
 public static class DatabaseService
 {
-    private const string DbDirectory = "Data";
-    private const string DbName = "yomiya_library.db";
-    private static readonly string DbPath = Path.Combine(AppContext.BaseDirectory, DbDirectory, DbName);
+    private static readonly string DbPath = PathHelper.GetDatabasePath();
 
     private static readonly AsyncRetryPolicy DbRetryPolicy = ResiliencePolicies.GetDatabaseRetryPolicy();
 
@@ -344,7 +343,7 @@ public static class DatabaseService
             return history;
         });
     }
-    
+
     public static async Task DeleteHistoryItemAsync(string chapterUrl)
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
@@ -379,7 +378,7 @@ public static class DatabaseService
             await command.ExecuteNonQueryAsync();
         });
     }
-    
+
     // --- MÉTODO NUEVO PARA ELIMINAR MANGAS ---
     public static async Task DeleteMangaAsync(string url)
     {
@@ -387,11 +386,11 @@ public static class DatabaseService
         {
             await using var connection = new SqliteConnection(GetConnectionString());
             await connection.OpenAsync();
-            
+
             var command = connection.CreateCommand();
             command.CommandText = "DELETE FROM mangas WHERE Url = $url";
             command.Parameters.AddWithValue("$url", url);
-            
+
             await command.ExecuteNonQueryAsync();
         });
     }

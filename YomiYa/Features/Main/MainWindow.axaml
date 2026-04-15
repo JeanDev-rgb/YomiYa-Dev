@@ -9,8 +9,7 @@
         MinWidth="900"
         MinHeight="600"
         Icon="/Assets/YomiYa.ico"
-        Background="{DynamicResource ControlFillColorDefaultBrush}"
-        Title="YomiYa - Lector de Mangas Online">
+        Background="{DynamicResource ControlFillColorDefaultBrush}">
 
     <Design.DataContext>
         <main:MainWindowViewModel />

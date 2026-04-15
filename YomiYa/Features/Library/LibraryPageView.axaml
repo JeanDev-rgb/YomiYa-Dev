@@ -129,7 +129,7 @@
                             </Button>
 
                             <Button Classes="DeleteButton"
-                                    ToolTip.Tip="Eliminar de la biblioteca"
+                                    ToolTip.Tip="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteFromLibraryButtonText}"
                                     Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteMangaCommand}"
                                     CommandParameter="{Binding}">
                                 <PathIcon Data="{StaticResource TrashIcon}" Width="16" Height="16" />

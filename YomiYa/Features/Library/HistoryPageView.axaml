@@ -103,7 +103,7 @@
             <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
                 <TextBlock Grid.Column="0" Classes="PageTitle" Text="{Binding HistoryTitle}" />
                 <Button Grid.Column="1"
-                        Content="Limpiar todo"
+                        Content="{Binding ClearAllButtonText}"
                         Command="{Binding ClearHistoryCommand}"
                         Classes="SecondaryAction"
                         VerticalAlignment="Center" />
@@ -132,7 +132,7 @@
                                     </Button>
 
                                     <Button Grid.Column="1" Classes="ItemDeleteButton"
-                                            ToolTip.Tip="Eliminar del historial"
+                                            ToolTip.Tip="{Binding $parent[ItemsControl].((library:HistoryPageViewModel)DataContext).DeleteFromHistoryButtonText}"
                                             Command="{Binding $parent[ItemsControl].((library:HistoryPageViewModel)DataContext).DeleteHistoryItemCommand}"
                                             CommandParameter="{Binding}"
                                             Margin="10,0">
