@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,46 +51,6 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     #region Commands
 
     [RelayCommand]
-    private async Task ConfigurePlugin(ParsedHttpSource plugin)
-    {
-        if (plugin is not IConfigurableSource configurableSource) return;
-
-        var config = await configurableSource.GetConfigurationAsync();
-        
-        var checkBoxes = config.Select(kvp => new CheckBox
-        {
-            Content = kvp.Key,
-            IsChecked = kvp.Value
-        }).ToList();
-
-        var stackPanel = new StackPanel
-        {
-            Spacing = 10,
-            Children = { new TextBlock { Text = "Select languages to search:" } }
-        };
-
-        foreach (var checkBox in checkBoxes)
-        {
-            stackPanel.Children.Add(checkBox);
-        }
-
-        var dialog = new ContentDialog
-        {
-            Title = $"{plugin.Name} Settings",
-            Content = stackPanel,
-            PrimaryButtonText = "Save",
-            CloseButtonText = "Cancel"
-        };
-
-        var result = await dialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            var newConfig = checkBoxes.ToDictionary(cb => cb.Content!.ToString(), cb => cb.IsChecked ?? false);
-            await configurableSource.SetConfigurationAsync(newConfig);
-        }
-    }
-
-    [RelayCommand]
     private async Task InstallPlugins()
     {
         var pluginPaths = await PathHelper.SelectPath(LanguageHelper.GetText("SelectPluginFiles"), true);
@@ -97,9 +58,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         if (pluginPaths is not null && pluginPaths.Count != 0)
         {
             PluginManager.InstallPlugins(pluginPaths);
-            var installedPlugins = PluginManager.GetAllPlugins();
-            Plugins.Clear();
-            foreach (var plugin in installedPlugins) Plugins.Add(plugin);
+            LoadPlugins(); // Reutilizamos el método para evitar duplicar código
         }
     }
 
@@ -111,21 +70,42 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         NavigationHelper.NavigateTo(new PluginPageViewModel());
     }
 
+    // Nuevo comando para eliminar
+    [RelayCommand]
+    private void DeletePlugin(ParsedHttpSource? plugin)
+    {
+        if (plugin is null) return;
+
+        bool success = PluginManager.DeletePlugin(plugin.Name);
+        if (success)
+        {
+            Plugins.Remove(plugin);
+            
+            // Opcional: Si este era el plugin seleccionado actualmente, lo limpiamos
+            if (MangaService.SelectedPlugin?.Name == plugin.Name)
+            {
+                MangaService.SelectedPlugin = null;
+            }
+        }
+    }
+
     [RelayCommand]
     private void SearchManga()
     {
-        if (string.IsNullOrEmpty(SearchText))
+        var allPlugins = PluginManager.GetAllPlugins();
+
+        if (string.IsNullOrWhiteSpace(SearchText))
         {
-            var plugins = PluginManager.GetAllPlugins();
-            Plugins.Clear();
-            foreach (var source in plugins) Plugins.Add(source);
+            UpdatePluginsList(allPlugins);
         }
         else
         {
-            var plugin = PluginManager.GetPlugin(SearchText);
-            Plugins.Clear();
-            if (string.IsNullOrWhiteSpace(plugin!.Name)) return;
-            Plugins.Add(plugin);
+            // Búsqueda insensible a mayúsculas y minúsculas (parcial)
+            var filtered = allPlugins
+                .Where(p => p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+                
+            UpdatePluginsList(filtered);
         }
     }
 
@@ -136,8 +116,17 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     private void LoadPlugins()
     {
         var loadedPlugins = PluginManager.GetAllPlugins();
+        UpdatePluginsList(loadedPlugins);
+    }
+
+    // Helper para actualizar la ObservableCollection de manera limpia
+    private void UpdatePluginsList(List<ParsedHttpSource> newPlugins)
+    {
         Plugins.Clear();
-        foreach (var plugin in loadedPlugins) Plugins.Add(plugin);
+        foreach (var plugin in newPlugins)
+        {
+            Plugins.Add(plugin);
+        }
     }
 
     protected override void UpdateLocalizedTexts()
@@ -151,6 +140,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         RefreshButtonText = LanguageHelper.GetText("Refresh");
         InstallPluginsButtonText = LanguageHelper.GetText("InstallPlugins");
         OpenButtonText = LanguageHelper.GetText("Open");
+        DeleteButtonText = LanguageHelper.GetText("Delete");
         RandomKamoji = KamojiHelper.GetRandomKamoji();
         NoPluginsInstalled = LanguageHelper.GetText("NoPluginsInstalled");
         SearchPluginsWatermark = LanguageHelper.GetText("SearchPlugins");

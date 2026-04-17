@@ -3,10 +3,9 @@ using YomiYa.Domain.Models;
 
 namespace YomiYa.Source.Online;
 
-public interface IParsedHttpSource
+public interface IParsedHttpSource: ISource
 {
     HttpClient HttpClient { get; }
-    string Name { get; }
     string Version { get; }
 
     Task<List<SChapter>> GetChapters(string mangaUrl);

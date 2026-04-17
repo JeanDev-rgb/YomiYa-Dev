@@ -109,11 +109,12 @@
             <TextBlock Grid.Row="0" Classes="PageTitle" Text="{Binding Title}" />
 
             <ScrollViewer Grid.Row="1">
-                <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Mangas}">
+                <ItemsControl HorizontalAlignment="Left" VerticalAlignment="Top" ItemsSource="{Binding Mangas}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <Grid Height="450" Width="300">
                                 <Button Classes="MangaCard"
+                                        HorizontalAlignment="Stretch"
                                         Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).OpenMangaCommand}"
                                         CommandParameter="{Binding}">
                                     <Grid>

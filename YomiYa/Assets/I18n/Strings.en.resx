@@ -92,8 +92,8 @@
     <data name="ItsYourMoment" xml:space="preserve"><value>It's your moment!</value></data>
     <data name="Step1Description" xml:space="preserve"><value>Scan the QR or use the link. It's the first step towards your crypto!</value></data>
     <data name="SignUp" xml:space="preserve"><value>Sign Up</value></data>
-    <data name="RewardIn3Steps" xml:space="preserve"><value>Your Reward in 3 Simple Steps</value></data>
-    <data name="FirstDollarIntro" xml:space="preserve"><value>Your first dollar in crypto is just 3 steps away! Don't miss this unique opportunity.</value></data>
+    <data name="RewardIn3Steps" xml:space="preserve"><value>Your Reward in 4 Simple Steps</value></data>
+    <data name="FirstDollarIntro" xml:space="preserve"><value>Your first dollar in crypto is just 4 steps away! Don't miss this unique opportunity.</value></data>
     <data name="AdditionalSettings" xml:space="preserve"><value>Additional Settings</value></data>
     <data name="ApplicationLanguage" xml:space="preserve"><value>Application Language</value></data>
     <data name="Host" xml:space="preserve"><value>Host:</value></data>
@@ -126,4 +126,25 @@
     <data name="GoogleDriveConnected" xml:space="preserve"><value>Connected to Google Drive</value></data>
     <data name="GoogleDriveLoginFailed" xml:space="preserve"><value>Login cancelled or failed.</value></data>
     <data name="Timeout" xml:space="preserve"><value>Request timed out. Try again.</value></data>
+    <data name="CompleteMission" xml:space="preserve">
+        <value>Complete the Mission</value>
+    </data>
+    <data name="Step4Description" xml:space="preserve">
+        <value>Make your first deposit in fiat or crypto.</value>
+    </data>
+    <data name="RestartRequired" xml:space="preserve">
+        <value>Please restart the application for the changes to take effect.</value>
+    </data>
+    <data name="RestoreBackup" xml:space="preserve">
+        <value>Restore Backup</value>
+    </data>
+    <data name="RestoreFailed" xml:space="preserve">
+        <value>Backup restoration failed.</value>
+    </data>
+    <data name="RestoreSuccessful" xml:space="preserve">
+        <value>Backup restored successfully. {0}</value>
+    </data>
+    <data name="RestoringBackup" xml:space="preserve">
+        <value>Restoring backup...</value>
+    </data>
 </root>

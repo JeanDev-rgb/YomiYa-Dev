@@ -44,8 +44,8 @@
     <data name="ItsYourMoment" xml:space="preserve"><value>¡Es tu momento!</value></data>
     <data name="Step1Description" xml:space="preserve"><value>Escanea el QR o usa el link. ¡Es el primer paso hacia tus cripto!</value></data>
     <data name="SignUp" xml:space="preserve"><value>Regístrate</value></data>
-    <data name="RewardIn3Steps" xml:space="preserve"><value>Tu Recompensa en 3 Simples Pasos</value></data>
-    <data name="FirstDollarIntro" xml:space="preserve"><value>¡Tu primer dólar en cripto está a solo 3 pasos! No te pierdas esta oportunidad única.</value></data>
+    <data name="RewardIn3Steps" xml:space="preserve"><value>Tu Recompensa en 4 Simples Pasos</value></data>
+    <data name="FirstDollarIntro" xml:space="preserve"><value>¡Tu primer dólar en cripto está a solo 4 pasos! No te pierdas esta oportunidad única.</value></data>
     <data name="AdditionalSettings" xml:space="preserve"><value>Ajustes Adicionales</value></data>
     <data name="Host" xml:space="preserve"><value>Host:</value></data>
     <data name="ManualProxyConfiguration" xml:space="preserve"><value>Configuración de Proxy Manual</value></data>
@@ -89,4 +89,10 @@
     <data name="NoBackupFound" xml:space="preserve"><value>No se encontró ninguna copia de seguridad.</value></data>
     <data name="RestoreSuccessful" xml:space="preserve"><value>Copia de seguridad restaurada con éxito. {0}</value></data>
     <data name="RestoreFailed" xml:space="preserve"><value>Error al restaurar la copia de seguridad.</value></data>
+    <data name="CompleteMission" xml:space="preserve">
+        <value>Cumple la misión</value>
+    </data>
+    <data name="Step4Description" xml:space="preserve">
+        <value>Realiza tu primer depósito en pesos o cripto.</value>
+    </data>
 </root>

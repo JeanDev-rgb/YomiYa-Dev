@@ -16,16 +16,17 @@ namespace YomiYa.Extensions.Es;
 public class Akaya : ParsedHttpSource
 {
     protected sealed override string BaseUrl => "https://akaya.io";
-    public override string Lang => "es";
-    public override string Name => "Akaya Manga";
+    public sealed override string Lang => "es";
+    public sealed override long Id { get; set; } 
+    public sealed override string Name { get; set; } = "Akaya Manga";
     public override string Version => "1.0.1";
     private string _csrfToken = "";
-    private readonly HttpClient _httpClient;
 
-    public override HttpClient HttpClient => _httpClient;
+    public override HttpClient HttpClient { get; }
 
     public Akaya()
     {
+        Id = GenerateId.GenerateSourceId(Name, Lang);
         var rateLimitPolicy = Policy.RateLimitAsync(1, TimeSpan.FromSeconds(1));
 
         var retryPolicy = Policy
@@ -41,7 +42,7 @@ public class Akaya : ParsedHttpSource
 
         var retryHandler = new PolicyHandler(retryPolicy, redirectHandler);
 
-        _httpClient = new HttpClient(retryHandler);
+        HttpClient = new HttpClient(retryHandler);
     }
 
     private async Task GetCsrfTokenAsync()

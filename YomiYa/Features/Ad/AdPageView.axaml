@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="700"
              xmlns:ad="clr-namespace:YomiYa.Features.Ad"
              x:DataType="ad:AdPageViewModel"
              x:Class="YomiYa.Features.Ad.AdPageView">
@@ -12,121 +12,208 @@
     </Design.DataContext>
 
     <UserControl.Resources>
-        <SolidColorBrush x:Key="PrimaryGreen" Color="#2E8B57" />
-        <SolidColorBrush x:Key="AccentGreen" Color="#70C1B3" />
-        <SolidColorBrush x:Key="LightYellow" Color="#F3FFBD" />
-        <SolidColorBrush x:Key="LightText" Color="#D1D5DB" />
-        <SolidColorBrush x:Key="DarkText" Color="#374151" />
-        <SolidColorBrush x:Key="SubtleText" Color="#6B7280" />
-        <LinearGradientBrush x:Key="GradientTextBrush" StartPoint="0%,50%" EndPoint="100%,50%">
-            <GradientStop Color="#70C1B3" Offset="0.0" />
-            <GradientStop Color="#F3FFBD" Offset="1.0" />
-        </LinearGradientBrush>
+        <SolidColorBrush x:Key="LemonDarkBackground" Color="#0D1F1A" />
+        <SolidColorBrush x:Key="LemonVibrantGreen" Color="#00FF66" />
+        <SolidColorBrush x:Key="LemonCardSurface" Color="#152B24" />
+        <SolidColorBrush x:Key="LemonTextPrimary" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="LemonTextSecondary" Color="#8B9E98" />
     </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="TextBlock.H1">
-            <Setter Property="FontSize" Value="48" />
+            <Setter Property="FontSize" Value="56" />
             <Setter Property="FontWeight" Value="Black" />
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource LemonTextPrimary}" />
         </Style>
+
+        <Style Selector="TextBlock.Subtitle">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="{StaticResource LemonVibrantGreen}" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
         <Style Selector="Border.Card">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Padding" Value="20" />
-            <Setter Property="Width" Value="220" />
-            <Setter Property="MinWidth" Value="210" />
-            <Setter Property="MaxWidth" Value="240" />
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="BoxShadow" Value="0 4 15 0 #22000000" />
+            <Setter Property="Background" Value="{StaticResource LemonCardSurface}" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="24" />
+            <Setter Property="Width" Value="260" />
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.2" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
         </Style>
-        <Style Selector="TextBlock.StepArrow">
-            <Setter Property="FontSize" Value="48" />
-            <Setter Property="Foreground" Value="{StaticResource AccentGreen}" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="16,0" />
+        <Style Selector="Border.Card:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.05)" />
         </Style>
+
+        <Style Selector="TextBlock.StepNumber">
+            <Setter Property="FontSize" Value="54" />
+            <Setter Property="FontWeight" Value="Black" />
+            <Setter Property="Foreground" Value="{StaticResource LemonVibrantGreen}" />
+            <Setter Property="Opacity" Value="0.9" />
+        </Style>
+
+        <Style Selector="Button.LemonButton">
+            <Setter Property="Background" Value="{StaticResource LemonVibrantGreen}" />
+            <Setter Property="Foreground" Value="#0D1F1A" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Padding" Value="32,16" />
+            <Setter Property="CornerRadius" Value="30" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.2" />
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.1" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.LemonButton:pointerover">
+            <Setter Property="Background" Value="#33FF85" />
+        </Style>
+        <Style Selector="Button.LemonButton:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.96)" />
+        </Style>
+        
+        
+        <Style Selector="Button.NavArrow">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource LemonVibrantGreen}" />
+            <Setter Property="FontSize" Value="32" />
+            <Setter Property="Width" Value="50" />
+            <Setter Property="Height" Value="50" />
+            <Setter Property="CornerRadius" Value="25" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.2" />
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.1" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.NavArrow:pointerover">
+            <Setter Property="Background" Value="#1A00FF66" /> <Setter Property="RenderTransform" Value="scale(1.1)" />
+        </Style>
+        <Style Selector="Button.NavArrow:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.9)" />
+        </Style>
+        
     </UserControl.Styles>
 
-    <ScrollViewer Background="{StaticResource PrimaryGreen}">
-        <StackPanel Margin="32">
+    <ScrollViewer Background="{StaticResource LemonDarkBackground}">
+        <StackPanel Margin="20,40,20,60" MaxWidth="1000" HorizontalAlignment="Center">
 
-            <StackPanel TextBlock.TextAlignment="Center" Margin="0,32">
-                <TextBlock Classes="H1" Text="{Binding GetOneDollarFreeText}"
-                           Foreground="{StaticResource GradientTextBrush}" />
-                <TextBlock FontSize="24" FontWeight="Bold" Margin="0,4,0,0" Foreground="{StaticResource LightYellow}"
-                           Text="{Binding WithLemonCashText}" />
-                <TextBlock FontSize="14" Foreground="{StaticResource LightText}" TextWrapping="Wrap" Margin="0,16,0,0"
-                           MaxWidth="500" Text="{Binding FirstDollarIntroText}" />
+            <StackPanel Margin="0,0,0,60">
+                <TextBlock Classes="H1" Text="{Binding GetOneDollarFreeText}" />
+                <TextBlock Classes="Subtitle" Margin="0,8,0,0" Text="{Binding WithLemonCashText}" />
+                <TextBlock FontSize="16" Foreground="{StaticResource LemonTextSecondary}"
+                           TextWrapping="Wrap" TextAlignment="Center" Margin="0,20,0,0"
+                           MaxWidth="600" Text="{Binding FirstDollarIntroText}" />
             </StackPanel>
 
-            <StackPanel Margin="0,48">
-                <TextBlock FontSize="28" FontWeight="Bold" TextAlignment="Center" Margin="0,0,0,24"
+            <StackPanel Margin="0,0,0,80">
+                <TextBlock FontSize="28" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                           TextAlignment="Center" Margin="0,0,0,32"
                            Text="{Binding RewardIn3StepsText}" />
-                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Border Classes="Card">
-                        <StackPanel Spacing="8" TextBlock.TextAlignment="Center">
-                            <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource AccentGreen}"
-                                       Text="1" />
-                            <TextBlock FontSize="20" FontWeight="Bold" Foreground="{StaticResource DarkText}"
-                                       Text="{Binding DownloadTheAppText}" />
-                            <TextBlock FontSize="14" Foreground="{StaticResource SubtleText}" TextWrapping="Wrap"
-                                       Text="{Binding Step1DescriptionText}" />
-                        </StackPanel>
-                    </Border>
-                    <TextBlock Classes="StepArrow" Text="→" />
-                    <Border Classes="Card">
-                        <StackPanel Spacing="8" TextBlock.TextAlignment="Center">
-                            <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource AccentGreen}"
-                                       Text="2" />
-                            <TextBlock FontSize="20" FontWeight="Bold" Foreground="{StaticResource DarkText}"
-                                       Text="{Binding SignUpText}" />
-                            <TextBlock FontSize="14" Foreground="{StaticResource SubtleText}" TextWrapping="Wrap"
-                                       Text="{Binding Step2DescriptionText}" />
-                        </StackPanel>
-                    </Border>
-                    <TextBlock Classes="StepArrow" Text="→" />
-                    <Border Classes="Card">
-                        <StackPanel Spacing="8" TextBlock.TextAlignment="Center">
-                            <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource AccentGreen}"
-                                       Text="3" />
-                            <TextBlock FontSize="20" FontWeight="Bold" Foreground="{StaticResource DarkText}"
-                                       Text="{Binding EnterLemontagText}" TextWrapping="Wrap" />
-                            <TextBlock FontSize="14" Foreground="{StaticResource SubtleText}" TextWrapping="Wrap">
-                                <Run Text="{Binding Step3DescriptionBefore}" />
-                                <Run Text="{Binding Lemontag}" FontWeight="Bold"
-                                     Foreground="{StaticResource PrimaryGreen}" />
-                                <Run Text="{Binding Step3DescriptionAfter}" />
-                            </TextBlock>
-                        </StackPanel>
-                    </Border>
-                </WrapPanel>
+
+                <Grid ColumnDefinitions="Auto, *, Auto" HorizontalAlignment="Center" Margin="0,10">
+                    
+                    <Button Classes="NavArrow" Grid.Column="0" Command="{Binding PreviousStepCommand}">
+                        <TextBlock Text="❮" Margin="0,0,4,4" />
+                    </Button>
+
+                    <Carousel Grid.Column="1" SelectedIndex="{Binding CurrentStepIndex}" Margin="20,0">
+                        <Carousel.PageTransition>
+                            <CrossFade Duration="0:0:0.3" /> 
+                        </Carousel.PageTransition>
+
+                        <Border Classes="Card" Width="320">
+                            <StackPanel Spacing="12">
+                                <TextBlock Classes="StepNumber" Text="1" />
+                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                           Text="{Binding DownloadTheAppText}" />
+                                <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding Step1DescriptionText}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="Card" Width="320">
+                            <StackPanel Spacing="12">
+                                <TextBlock Classes="StepNumber" Text="2" />
+                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                           Text="{Binding SignUpText}" />
+                                <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding Step2DescriptionText}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="Card" Width="320">
+                            <StackPanel Spacing="12">
+                                <TextBlock Classes="StepNumber" Text="3" />
+                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                           Text="{Binding EnterLemontagText}" TextWrapping="Wrap" />
+                                <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
+                                           TextWrapping="Wrap">
+                                    <Run Text="{Binding Step3DescriptionBefore}" />
+                                    <Run Text="{Binding Lemontag}" FontWeight="Bold" Foreground="{StaticResource LemonVibrantGreen}" />
+                                    <Run Text="{Binding Step3DescriptionAfter}" />
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="Card" Width="320">
+                            <StackPanel Spacing="12">
+                                <TextBlock Classes="StepNumber" Text="4" />
+                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                           Text="{Binding CompleteMissionText, FallbackValue='Cumple la misión'}" />
+                                <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding Step4DescriptionText, FallbackValue='Realiza tu primer depósito o acción requerida.'}" />
+                            </StackPanel>
+                        </Border>
+
+                    </Carousel>
+
+                    <Button Classes="NavArrow" Grid.Column="2" Command="{Binding NextStepCommand}">
+                        <TextBlock Text="❯" Margin="4,0,0,4" />
+                    </Button>
+                    
+                </Grid>
             </StackPanel>
 
-            <Border Background="White" CornerRadius="12" Padding="48" Margin="0,48,0,0" BoxShadow="0 10 25 0 #33000000">
+            <Border Background="{StaticResource LemonVibrantGreen}" CornerRadius="24" Padding="40"
+                    BoxShadow="0 15 30 0 #44000000">
                 <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
-                    <StackPanel Margin="0 0 40 0" Spacing="16" MaxWidth="450" VerticalAlignment="Center">
-                        <TextBlock FontSize="36" FontWeight="Black" Foreground="{StaticResource PrimaryGreen}"
+
+                    <StackPanel Margin="0,0,40,0" Spacing="20" MaxWidth="450" VerticalAlignment="Center">
+                        <TextBlock FontSize="40" FontWeight="Black" Foreground="#0D1F1A"
                                    Text="{Binding ItsYourMomentText}" TextWrapping="Wrap" />
-                        <TextBlock FontSize="16" Foreground="{StaticResource DarkText}" TextWrapping="Wrap">
+
+                        <TextBlock FontSize="18" Foreground="#152B24" TextWrapping="Wrap" FontWeight="Medium">
                             <Run Text="{Binding FinalCallToActionBefore}" />
-                            <Run Text="{Binding Lemontag}" FontWeight="Bold" Foreground="{StaticResource PrimaryGreen}" />
+                            <Run Text="{Binding Lemontag}" FontWeight="Black" />
                             <Run Text="{Binding FinalCallToActionAfter}" />
                         </TextBlock>
-                        <Border Background="{StaticResource AccentGreen}" CornerRadius="8" Padding="24 14"
-                                HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                            <TextBlock Text="{Binding DownloadTheAppButtonText}" Foreground="White" FontWeight="Bold"
-                                       FontSize="16" />
-                        </Border>
+
+                        <Button Classes="LemonButton" Content="{Binding DownloadTheAppButtonText}"
+                                HorizontalAlignment="Left" Margin="0,10,0,0" />
                     </StackPanel>
-                    <Border BorderBrush="White" BorderThickness="4" CornerRadius="12" BoxShadow="0 4 15 0 #22000000"
+
+                    <Border Background="White" CornerRadius="16" Padding="12"
+                            BoxShadow="0 10 20 0 #33000000"
                             HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
-                        <Image Width="200" Height="200" Source="{Binding QrUrl}" />
+                        <Image Width="180" Height="180" Source="{Binding QrUrl}" />
                     </Border>
                 </WrapPanel>
             </Border>
-
         </StackPanel>
     </ScrollViewer>
 </UserControl>

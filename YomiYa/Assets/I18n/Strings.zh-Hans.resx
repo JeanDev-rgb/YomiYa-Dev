@@ -44,8 +44,8 @@
     <data name="ItsYourMoment" xml:space="preserve"><value>这是你的时刻！</value></data>
     <data name="Step1Description" xml:space="preserve"><value>扫描二维码或使用链接。这是您迈向加密货币的第一步！</value></data>
     <data name="SignUp" xml:space="preserve"><value>注册</value></data>
-    <data name="RewardIn3Steps" xml:space="preserve"><value>3个简单步骤，获取您的奖励</value></data>
-    <data name="FirstDollarIntro" xml:space="preserve"><value>您的第一笔加密货币美元仅需3个步骤！不要错过这个独一无二的机会。</value></data>
+    <data name="RewardIn3Steps" xml:space="preserve"><value>4个简单步骤，获取您的奖励</value></data>
+    <data name="FirstDollarIntro" xml:space="preserve"><value>您的第一笔加密货币美元仅需4个步骤！不要错过这个独一无二的机会。</value></data>
     <data name="ApplicationLanguage" xml:space="preserve"><value>应用程序语言</value></data>
     <data name="AdditionalSettings" xml:space="preserve"><value>附加设置</value></data>
     <data name="Host" xml:space="preserve"><value>主机：</value></data>
@@ -89,4 +89,10 @@
     <data name="NoBackupFound" xml:space="preserve"><value>未找到备份。</value></data>
     <data name="RestoreSuccessful" xml:space="preserve"><value>备份恢复成功。{0}</value></data>
     <data name="RestoreFailed" xml:space="preserve"><value>备份恢复失败。</value></data>
+    <data name="CompleteMission" xml:space="preserve">
+        <value>完成任务</value>
+    </data>
+    <data name="Step4Description" xml:space="preserve">
+        <value>完成您的首次法币或加密货币充值。</value>
+    </data>
 </root>

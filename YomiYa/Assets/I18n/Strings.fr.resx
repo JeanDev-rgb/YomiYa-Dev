@@ -44,8 +44,8 @@
     <data name="ItsYourMoment" xml:space="preserve"><value>C'est votre moment !</value></data>
     <data name="Step1Description" xml:space="preserve"><value>Scannez le QR ou utilisez le lien. C'est le premier pas vers vos cryptos !</value></data>
     <data name="SignUp" xml:space="preserve"><value>Inscrivez-vous</value></data>
-    <data name="RewardIn3Steps" xml:space="preserve"><value>Votre Récompense en 3 Étapes Simples</value></data>
-    <data name="FirstDollarIntro" xml:space="preserve"><value>Votre premier dollar en crypto n'est qu'à 3 étapes ! Ne manquez pas cette opportunité unique.</value></data>
+    <data name="RewardIn3Steps" xml:space="preserve"><value>Votre Récompense en 4 Étapes Simples</value></data>
+    <data name="FirstDollarIntro" xml:space="preserve"><value>Votre premier dollar en crypto n'est qu'à 4 étapes ! Ne manquez pas cette opportunité unique.</value></data>
     <data name="AdditionalSettings" xml:space="preserve"><value>Paramètres Supplémentaires</value></data>
     <data name="Host" xml:space="preserve"><value>Hôte:</value></data>
     <data name="ManualProxyConfiguration" xml:space="preserve"><value>Configuration Manuelle du Proxy</value></data>
@@ -89,4 +89,10 @@
     <data name="NoBackupFound" xml:space="preserve"><value>Aucune sauvegarde trouvée.</value></data>
     <data name="RestoreSuccessful" xml:space="preserve"><value>Sauvegarde restaurée avec succès. {0}</value></data>
     <data name="RestoreFailed" xml:space="preserve"><value>Échec de la restauration de la sauvegarde.</value></data>
+    <data name="CompleteMission" xml:space="preserve">
+        <value>Remplissez la mission</value>
+    </data>
+    <data name="Step4Description" xml:space="preserve">
+        <value>Effectuez votre premier dépôt en monnaie fiduciaire ou en crypto.</value>
+    </data>
 </root>

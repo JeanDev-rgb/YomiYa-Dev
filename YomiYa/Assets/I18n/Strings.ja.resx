@@ -44,8 +44,8 @@
     <data name="ItsYourMoment" xml:space="preserve"><value>あなたの瞬間です！</value></data>
     <data name="Step1Description" xml:space="preserve"><value>QRコードをスキャンするか、リンクを使用してください。これがあなたの仮想通貨への第一歩です！</value></data>
     <data name="SignUp" xml:space="preserve"><value>登録する</value></data>
-    <data name="RewardIn3Steps" xml:space="preserve"><value>3つの簡単なステップであなたの報酬を</value></data>
-    <data name="FirstDollarIntro" xml:space="preserve"><value>仮想通貨での最初の1ドルまであと3ステップ！このユニークな機会をお見逃しなく。</value></data>
+    <data name="RewardIn3Steps" xml:space="preserve"><value>4つの簡単なステップであなたの報酬を</value></data>
+    <data name="FirstDollarIntro" xml:space="preserve"><value>仮想通貨での最初の1ドルまであと4ステップ！このユニークな機会をお見逃しなく。</value></data>
     <data name="AdditionalSettings" xml:space="preserve"><value>追加設定</value></data>
     <data name="Host" xml:space="preserve"><value>ホスト:</value></data>
     <data name="ManualProxyConfiguration" xml:space="preserve"><value>手動プロキシ設定</value></data>
@@ -89,4 +89,10 @@
     <data name="NoBackupFound" xml:space="preserve"><value>バックアップが見つかりません。</value></data>
     <data name="RestoreSuccessful" xml:space="preserve"><value>バックアップが正常に復元されました。{0}</value></data>
     <data name="RestoreFailed" xml:space="preserve"><value>バックアップの復元に失敗しました。</value></data>
+    <data name="CompleteMission" xml:space="preserve">
+        <value>ミッションを完了する&lt;</value>
+    </data>
+    <data name="Step4Description" xml:space="preserve">
+        <value>初めての法定通貨または暗号資産の入金を行ってください。</value>
+    </data>
 </root>

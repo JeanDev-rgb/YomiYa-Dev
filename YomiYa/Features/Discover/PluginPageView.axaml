@@ -15,9 +15,12 @@
     <UserControl.Resources>
         <DataTemplate x:Key="MangaCardTemplate" DataType="models:SManga">
             <Button Classes="MangaCard"
+                    HorizontalAlignment="Center"
                     Command="{Binding $parent[ItemsControl].((discover:PluginPageViewModel)DataContext).OpenMangaCommand}"
                     CommandParameter="{Binding}">
-                <Grid>
+            
+                <Grid Height="525" Width="350">
+        
                     <Image Source="{Binding Cover}" Stretch="UniformToFill" />
 
                     <Button Classes="FavoriteButton"

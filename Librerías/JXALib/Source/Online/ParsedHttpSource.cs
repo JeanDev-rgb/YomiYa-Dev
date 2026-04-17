@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using HtmlAgilityPack;
 using YomiYa.Core.Exceptions;
 using YomiYa.Utils;
@@ -36,7 +37,6 @@ public abstract class ParsedHttpSource : IParsedHttpSource
     public abstract string Lang { get; }
 
     public virtual HttpClient HttpClient => _httpClient;
-    public abstract string Name { get; }
     public abstract string Version { get; }
     public abstract Task<List<SChapter>> GetChapters(string mangaUrl);
     public abstract Task<MangasPage> GetLatestUpdates(int page = 1);
@@ -91,5 +91,31 @@ public abstract class ParsedHttpSource : IParsedHttpSource
         {
             throw new HtmlParsingException($"Error al procesar el documento HTML de {url}: {ex.Message}", ex);
         }
+    }
+
+    public abstract long Id { get; set; }
+    public abstract string Name { get; set; }
+    public virtual async Task<SManga> GetMangaDetails(SManga manga)
+    {
+        if (string.IsNullOrEmpty(manga.Url))
+            throw new ArgumentException("El manga no tiene URL");
+
+        return await GetMangaDetails(manga.Url);
+    }
+
+    public virtual async Task<List<SChapter>> GetChapterList(SManga manga)
+    {
+        if (string.IsNullOrEmpty(manga.Url))
+            throw new ArgumentException("El manga no tiene URL");
+
+        return await GetChapters(manga.Url);
+    }
+
+    public virtual IObservable<List<Page>> FetchPageList(SChapter chapter)
+    {
+        if (string.IsNullOrEmpty(chapter.Url))
+            throw new ArgumentException("El capítulo no tiene URL");
+
+        return Observable.FromAsync(() => GetPages(chapter.Url));
     }
 }
