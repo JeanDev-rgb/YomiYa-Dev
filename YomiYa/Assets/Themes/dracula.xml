@@ -1,16 +1,29 @@
 ﻿<Theme Name="Dracula" Variant="Dark">
-    <Color Key="ApplicationPageBackgroundThemeBrush">#282a36</Color>
-    <Color Key="CardBackgroundFillColorDefaultBrush">#44475a</Color>
-    <Color Key="ControlFillColorDefaultBrush">#282a36</Color>
+    <!-- Fondos -->
+    <Color Key="ApplicationPageBackgroundThemeBrush">#282A36</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#44475A</Color>
+    <Color Key="ControlFillColorDefaultBrush">#21222C</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#343746</Color>
+    <Color Key="LayerFillColorDefaultBrush">#2D2F3B</Color>
 
-    <Color Key="TextFillColorPrimaryBrush">#f8f8f2</Color>
-    <Color Key="TextFillColorSecondaryBrush">#6272a4</Color>
+    <!-- Colores de Texto -->
+    <Color Key="TextFillColorPrimaryBrush">#F8F8F2</Color>
+    <Color Key="TextFillColorSecondaryBrush">#BD93F9</Color>
+    <Color Key="TextFillColorTertiaryBrush">#6272A4</Color>
+    <Color Key="TextControlPlaceholderForeground">#94A3B8</Color>
 
-    <Color Key="AccentFillColorDefaultBrush">#bd93f9</Color>
-    <Color Key="TextOnAccentFillColorPrimaryBrush">#f8f8f2</Color>
-    <Color Key="ControlStrokeColorDefaultBrush">#6272a4</Color>
-    <Color Key="ControlFillColorSecondaryBrush">#44475a</Color>
+    <!-- Color de Acento -->
+    <Color Key="AccentFillColorDefaultBrush">#BD93F9</Color>
+    <Color Key="AccentFillColorSecondaryBrush">#CAA6F9</Color>
+    <Color Key="AccentFillColorTertiaryBrush">#D6B5FA</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#F8F8F2</Color>
 
-    <Color Key="ErrorColor">#ff5555</Color>
-    <Color Key="FavoriteColor">#ff79c6</Color>
+    <!-- Bordes y Separadores -->
+    <Color Key="ControlStrokeColorDefaultBrush">#6272A4</Color>
+    <Color Key="CardStrokeColorDefaultBrush">#44475A</Color>
+
+    <!-- Colores de Estado -->
+    <Color Key="ErrorColor">#FF5555</Color>
+    <Color Key="FavoriteColor">#FF79C6</Color>
+    <Color Key="AccentFillColorErrorBrush">#FF5555</Color>
 </Theme>

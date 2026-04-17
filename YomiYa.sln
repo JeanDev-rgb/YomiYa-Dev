@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JXALib", "Librerías\JXALib\JXALib.csproj", "{1E368A24-C437-415D-9E8A-491CF884D4A7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{D69DE009-29CD-4269-8156-F95047926D49}"
+	ProjectSection(SolutionItems) = preProject
+		Plugins\novelcool-lang.json = Plugins\novelcool-lang.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ES", "ES", "{23D4F4EC-2299-4C26-84EB-73FBF80B046B}"
 EndProject

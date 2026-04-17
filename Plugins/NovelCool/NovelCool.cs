@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
 using System.Web;
 using HtmlAgilityPack;
 using ScrapySharp.Extensions;
+using YomiYa.Core.Interfaces;
 using YomiYa.Domain.Models;
 using YomiYa.Source.Models;
 using YomiYa.Source.Online;
@@ -9,14 +11,34 @@ using YomiYa.Utils;
 
 namespace YomiYa.Extensions.Es;
 
-public class NovelCool : ParsedHttpSource
+public class NovelCool : ParsedHttpSource, IConfigurableSource
 {
-    #region Properties
+    private static readonly Dictionary<string, string> LanguageUrls;
+    private readonly NovelCoolSettings _settings;
 
-    protected override string BaseUrl => "https://es.novelcool.com/";
-    public override string Lang => "es";
+    static NovelCool()
+    {
+        var langFilePath = Path.Combine(AppContext.BaseDirectory, "Plugins", "novelcool-lang.json");
+        if (File.Exists(langFilePath))
+        {
+            var json = File.ReadAllText(langFilePath);
+            LanguageUrls = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+        }
+        else
+        {
+            LanguageUrls = new Dictionary<string, string>();
+        }
+    }
+
+    public NovelCool()
+    {
+        _settings = NovelCoolSettings.Load();
+    }
+
+    protected override string BaseUrl => LanguageUrls.TryGetValue(_settings.SelectedLanguages.FirstOrDefault() ?? "es", out var url) ? url : "https://www.novelcool.com/";
+    public override string Lang => string.Join(", ", _settings.SelectedLanguages);
     public override string Name => "Novel Cool";
-    public override string Version => "1.0.0";
+    public override string Version => "1.2.0";
 
     public override HttpClient HttpClient
     {
@@ -28,9 +50,21 @@ public class NovelCool : ParsedHttpSource
         }
     }
 
-    #endregion
+    public Task<Dictionary<string, bool>> GetConfigurationAsync()
+    {
+        var config = LanguageUrls.ToDictionary(
+            lang => lang.Key,
+            lang => _settings.SelectedLanguages.Contains(lang.Key)
+        );
+        return Task.FromResult(config);
+    }
 
-    #region Public API Methods
+    public Task SetConfigurationAsync(Dictionary<string, bool> configuration)
+    {
+        _settings.SelectedLanguages = configuration.Where(c => c.Value).Select(c => c.Key).ToList();
+        _settings.Save();
+        return Task.CompletedTask;
+    }
 
     public override async Task<List<SChapter>> GetChapters(string mangaUrl)
     {
@@ -178,22 +212,18 @@ public class NovelCool : ParsedHttpSource
 
     public override async Task<MangasPage> SearchManga(string query, int page = 1, string genre = "")
     {
-        var url = $"{BaseUrl}search/?wd={query}&page={page}.html";
+        var searchTasks = _settings.SelectedLanguages.Select(lang =>
+        {
+            var url = $"{LanguageUrls[lang]}search/?wd={query}&page={page}.html";
+            return GetHtmlDocumentAsync(url);
+        });
 
-        var doc = await GetHtmlDocumentAsync(url);
-
-        var mangas = doc.DocumentNode.CssSelect("div.book-item")
-            .Select(SearchedMangaFromElement)
-            .ToList();
-
-        var hasNextPage = doc.DocumentNode
-            .CssSelect("div.page-navone div.row-item.next")
-            .Any();
+        var docs = await Task.WhenAll(searchTasks);
+        var mangas = docs.SelectMany(doc => doc.DocumentNode.CssSelect("div.book-item").Select(SearchedMangaFromElement)).ToList();
+        var hasNextPage = docs.Any(doc => doc.DocumentNode.CssSelect("div.page-navone div.row-item.next").Any());
 
         return new MangasPage(mangas, hasNextPage);
     }
-
-    #endregion
 
     #region Helper Methods
 

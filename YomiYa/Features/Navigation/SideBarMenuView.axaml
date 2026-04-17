@@ -37,7 +37,6 @@
             <Setter Property="Transitions">
                 <Transitions>
                     <BrushTransition Property="Background" Duration="0.15" />
-                    <BrushTransition Property="BorderBrush" Duration="0.15" />
                 </Transitions>
             </Setter>
         </Style>
@@ -48,16 +47,14 @@
 
         <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-            <Setter Property="BorderThickness" Value="2 0 0 0" />
         </Style>
 
         <Style Selector="ListBoxItem:selected TextBlock">
-            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
         <Style Selector="ListBoxItem:selected PathIcon">
-            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
         </Style>
     </UserControl.Styles>
 
