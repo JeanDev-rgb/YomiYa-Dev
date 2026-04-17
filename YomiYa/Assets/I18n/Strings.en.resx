@@ -147,4 +147,19 @@
     <data name="RestoringBackup" xml:space="preserve">
         <value>Restoring backup...</value>
     </data>
+    <data name="SelectLanguages" xml:space="preserve">
+        <value>Select Languages</value>
+    </data>
+    <data name="UploadBackup" xml:space="preserve">
+        <value>Upload Backup</value>
+    </data>
+    <data name="UploadFailed" xml:space="preserve">
+        <value>Backup upload failed.</value>
+    </data>
+    <data name="UploadingBackup" xml:space="preserve">
+        <value>Uploading backup...</value>
+    </data>
+    <data name="UploadSuccessful" xml:space="preserve">
+        <value>Backup uploaded successfully.</value>
+    </data>
 </root>

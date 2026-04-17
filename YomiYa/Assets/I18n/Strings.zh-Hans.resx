@@ -95,4 +95,7 @@
     <data name="Step4Description" xml:space="preserve">
         <value>完成您的首次法币或加密货币充值。</value>
     </data>
+    <data name="SelectLanguages" xml:space="preserve">
+        <value>选择语言</value>
+    </data>
 </root>

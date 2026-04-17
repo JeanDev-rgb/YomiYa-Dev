@@ -95,4 +95,7 @@
     <data name="Step4Description" xml:space="preserve">
         <value>Effectuez votre premier dépôt en monnaie fiduciaire ou en crypto.</value>
     </data>
+    <data name="SelectLanguages" xml:space="preserve">
+        <value>Sélectionner les langues</value>
+    </data>
 </root>

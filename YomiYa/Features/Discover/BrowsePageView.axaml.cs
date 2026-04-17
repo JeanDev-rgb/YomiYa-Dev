@@ -57,7 +57,7 @@ public partial class BrowsePageView : UserControl
                 // Título del menú flotante
                 stackPanel.Children.Add(new TextBlock
                 {
-                    Text = LanguageHelper.GetText("SelectLanguages") ?? "Idiomas:",
+                    Text = LanguageHelper.GetText("SelectLanguages"),
                     FontWeight = FontWeight.Bold,
                     Margin = new Thickness(0, 0, 0, 5)
                 });

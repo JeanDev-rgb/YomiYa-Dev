@@ -95,4 +95,7 @@
     <data name="Step4Description" xml:space="preserve">
         <value>Realiza tu primer depósito en pesos o cripto.</value>
     </data>
+    <data name="SelectLanguages" xml:space="preserve">
+        <value>Seleccionar idiomas</value>
+    </data>
 </root>

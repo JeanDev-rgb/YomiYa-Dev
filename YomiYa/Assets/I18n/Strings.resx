@@ -142,4 +142,7 @@
     <data name="Step4Description" xml:space="preserve">
         <value>Make your first deposit in fiat or crypto.</value>
     </data>
+    <data name="SelectLanguages" xml:space="preserve">
+        <value>Select Languages</value>
+    </data>
 </root>

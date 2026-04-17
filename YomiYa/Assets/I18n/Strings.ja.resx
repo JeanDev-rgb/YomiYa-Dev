@@ -95,4 +95,7 @@
     <data name="Step4Description" xml:space="preserve">
         <value>初めての法定通貨または暗号資産の入金を行ってください。</value>
     </data>
+    <data name="SelectLanguages" xml:space="preserve">
+        <value>言語を選択</value>
+    </data>
 </root>
