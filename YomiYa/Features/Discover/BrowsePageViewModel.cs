@@ -1,7 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FluentAvalonia.UI.Controls;
+using YomiYa.Core.Interfaces;
 using YomiYa.Core.Common;
 using YomiYa.Core.IO;
 using YomiYa.Core.Localization;
@@ -43,6 +48,46 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     #endregion
 
     #region Commands
+
+    [RelayCommand]
+    private async Task ConfigurePlugin(ParsedHttpSource plugin)
+    {
+        if (plugin is not IConfigurableSource configurableSource) return;
+
+        var config = await configurableSource.GetConfigurationAsync();
+        
+        var checkBoxes = config.Select(kvp => new CheckBox
+        {
+            Content = kvp.Key,
+            IsChecked = kvp.Value
+        }).ToList();
+
+        var stackPanel = new StackPanel
+        {
+            Spacing = 10,
+            Children = { new TextBlock { Text = "Select languages to search:" } }
+        };
+
+        foreach (var checkBox in checkBoxes)
+        {
+            stackPanel.Children.Add(checkBox);
+        }
+
+        var dialog = new ContentDialog
+        {
+            Title = $"{plugin.Name} Settings",
+            Content = stackPanel,
+            PrimaryButtonText = "Save",
+            CloseButtonText = "Cancel"
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary)
+        {
+            var newConfig = checkBoxes.ToDictionary(cb => cb.Content!.ToString(), cb => cb.IsChecked ?? false);
+            await configurableSource.SetConfigurationAsync(newConfig);
+        }
+    }
 
     [RelayCommand]
     private async Task InstallPlugins()

@@ -16,6 +16,7 @@
         <converters:HalfValueConverter x:Key="HalfValueConverter" />
         <converters:ReadStatusToBrushConverter x:Key="ReadStatusToBrushConverter" />
         <converters:ReadStatusToFontWeightConverter x:Key="ReadStatusToFontWeightConverter" />
+        <converters:TypeToBoolConverter x:Key="TypeToBoolConverter" />
     </Application.Resources>
 
     <Application.DataTemplates>

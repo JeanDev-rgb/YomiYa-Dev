@@ -1,16 +1,29 @@
 ﻿<Theme Name="Tokyo Night" Variant="Dark">
-    <Color Key="ApplicationPageBackgroundThemeBrush">#1a1b26</Color>
-    <Color Key="CardBackgroundFillColorDefaultBrush">#24283b</Color>
-    <Color Key="ControlFillColorDefaultBrush">#1a1b26</Color>
+    <!-- Fondos -->
+    <Color Key="ApplicationPageBackgroundThemeBrush">#1A1B26</Color>
+    <Color Key="CardBackgroundFillColorDefaultBrush">#24283B</Color>
+    <Color Key="ControlFillColorDefaultBrush">#1F2335</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#292E42</Color>
+    <Color Key="LayerFillColorDefaultBrush">#22263A</Color>
 
-    <Color Key="TextFillColorPrimaryBrush">#c0caf5</Color>
-    <Color Key="TextFillColorSecondaryBrush">#565f89</Color>
+    <!-- Colores de Texto -->
+    <Color Key="TextFillColorPrimaryBrush">#A9B1D6</Color>
+    <Color Key="TextFillColorSecondaryBrush">#7AA2F7</Color>
+    <Color Key="TextFillColorTertiaryBrush">#565F89</Color>
+    <Color Key="TextControlPlaceholderForeground">#7A82A8</Color>
 
-    <Color Key="AccentFillColorDefaultBrush">#7aa2f7</Color>
-    <Color Key="TextOnAccentFillColorPrimaryBrush">#1a1b26</Color>
-    <Color Key="ControlStrokeColorDefaultBrush">#3b4261</Color>
-    <Color Key="ControlFillColorSecondaryBrush">#414868</Color>
+    <!-- Color de Acento -->
+    <Color Key="AccentFillColorDefaultBrush">#7AA2F7</Color>
+    <Color Key="AccentFillColorSecondaryBrush">#8FB2F9</Color>
+    <Color Key="AccentFillColorTertiaryBrush">#A3C2FA</Color>
+    <Color Key="TextOnAccentFillColorPrimaryBrush">#1A1B26</Color>
 
-    <Color Key="ErrorColor">#f7768e</Color>
-    <Color Key="FavoriteColor">#bb9af7</Color>
+    <!-- Bordes y Separadores -->
+    <Color Key="ControlStrokeColorDefaultBrush">#565F89</Color>
+    <Color Key="CardStrokeColorDefaultBrush">#2D3248</Color>
+
+    <!-- Colores de Estado -->
+    <Color Key="ErrorColor">#F7768E</Color>
+    <Color Key="FavoriteColor">#BB9AF7</Color>
+    <Color Key="AccentFillColorErrorBrush">#F7768E</Color>
 </Theme>

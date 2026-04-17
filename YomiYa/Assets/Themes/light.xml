@@ -1,16 +1,29 @@
 ﻿<Theme Name="Claro" Variant="Light">
-    <Color Key="ApplicationPageBackgroundThemeBrush">#F5F5F5</Color>
+    <!-- Fondos -->
+    <Color Key="ApplicationPageBackgroundThemeBrush">#F0F2F5</Color>
     <Color Key="CardBackgroundFillColorDefaultBrush">#FFFFFF</Color>
-    <Color Key="ControlFillColorDefaultBrush">#FFFFFF</Color>
+    <Color Key="ControlFillColorDefaultBrush">#F8F9FA</Color>
+    <Color Key="ControlFillColorSecondaryBrush">#E9ECEF</Color>
+    <Color Key="LayerFillColorDefaultBrush">#FFFFFF</Color>
 
-    <Color Key="TextFillColorPrimaryBrush">#212121</Color>
-    <Color Key="TextFillColorSecondaryBrush">#757575</Color>
+    <!-- Colores de Texto -->
+    <Color Key="TextFillColorPrimaryBrush">#212529</Color>
+    <Color Key="TextFillColorSecondaryBrush">#495057</Color>
+    <Color Key="TextFillColorTertiaryBrush">#6C757D</Color>
+    <Color Key="TextControlPlaceholderForeground">#ADB5BD</Color>
 
-    <Color Key="AccentFillColorDefaultBrush">#007ACC</Color>
+    <!-- Color de Acento -->
+    <Color Key="AccentFillColorDefaultBrush">#007BFF</Color>
+    <Color Key="AccentFillColorSecondaryBrush">#3392FF</Color>
+    <Color Key="AccentFillColorTertiaryBrush">#66A9FF</Color>
     <Color Key="TextOnAccentFillColorPrimaryBrush">#FFFFFF</Color>
-    <Color Key="ControlStrokeColorDefaultBrush">#BDBDBD</Color>
-    <Color Key="ControlFillColorSecondaryBrush">#E0E0E0</Color>
 
-    <Color Key="ErrorColor">#D32F2F</Color>
+    <!-- Bordes y Separadores -->
+    <Color Key="ControlStrokeColorDefaultBrush">#DEE2E6</Color>
+    <Color Key="CardStrokeColorDefaultBrush">#CED4DA</Color>
+
+    <!-- Colores de Estado -->
+    <Color Key="ErrorColor">#DC3545</Color>
     <Color Key="FavoriteColor">#E53935</Color>
+    <Color Key="AccentFillColorErrorBrush">#FF4D4F</Color>
 </Theme>
