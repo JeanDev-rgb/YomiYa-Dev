@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
@@ -33,10 +34,9 @@ public class GoogleDriveSyncService
     {
         try
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "credentials.json");
-            if (!System.IO.File.Exists(path)) return;
-
-            await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            var assembly = Assembly.GetExecutingAssembly();
+            await using var stream = assembly.GetManifestResourceStream("YomiYa.credentials.json");
+            
             var secrets = await GoogleClientSecrets.FromStreamAsync(stream);
             if (secrets?.Secrets == null) return;
 
@@ -76,15 +76,11 @@ public class GoogleDriveSyncService
     {
         try
         {
-            var path = Path.Combine(AppContext.BaseDirectory, "credentials.json");
+            var assembly = Assembly.GetExecutingAssembly();
+            await using var stream = assembly.GetManifestResourceStream("YomiYa.credentials.json");
 
-            if (!System.IO.File.Exists(path))
-                throw new FileNotFoundException(
-                    "No se encontró credentials.json. Debes agregarlo desde Google Cloud Console.",
-                    path
-                );
-
-            await using var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            if (stream == null)
+                throw new Exception("No se pudo cargar credentials.json embebido.");
 
             var secrets = await GoogleClientSecrets.FromStreamAsync(stream, cancellationToken);
 

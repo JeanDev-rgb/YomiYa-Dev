@@ -125,9 +125,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="credentials.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+        <EmbeddedResource Include="credentials.json" />
     </ItemGroup>
-
+    
 </Project>
