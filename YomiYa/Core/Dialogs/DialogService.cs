@@ -16,7 +16,7 @@ public class DialogService : IDialogService
 {
     public async Task ShowRestartDialogAsync()
     {
-        var dialog = new ContentDialog
+        var dialog = new FAContentDialog
         {
             Title = "Restart Required",
             Content = "The application needs to be restarted for the changes to take effect.",
@@ -27,7 +27,7 @@ public class DialogService : IDialogService
         if (MainWindow.Instance != null)
         {
             var result = await dialog.ShowAsync(MainWindow.Instance);
-            if (result == ContentDialogResult.Primary)
+            if (result == FAContentDialogResult.Primary)
                 if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
                     var process = new Process

@@ -90,7 +90,7 @@ public partial class ReaderView : Window
 
         if (containerWithMaxVisibility == null) return;
 
-        var newIndex = CascadeItemsControl.ItemContainerGenerator.IndexFromContainer(containerWithMaxVisibility);
+        var newIndex = CascadeItemsControl.IndexFromContainer(containerWithMaxVisibility);
 
         if (newIndex != -1 && vm.CurrentPageIndex != newIndex) vm.CurrentPageIndex = newIndex;
     }
@@ -104,7 +104,7 @@ public partial class ReaderView : Window
              e.PropertyName == nameof(ReaderViewModel.ReadingWidth)) && vm.ReadingMode == ReadingMode.Cascade)
             Dispatcher.UIThread.Post(() =>
             {
-                if (CascadeItemsControl.ItemContainerGenerator.ContainerFromIndex(vm.CurrentPageIndex) is { } container)
+                if (CascadeItemsControl.ContainerFromIndex(vm.CurrentPageIndex) is { } container)
                 {
                     _isProgrammaticScroll = true;
                     container.BringIntoView();

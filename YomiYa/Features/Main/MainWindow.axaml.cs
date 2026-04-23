@@ -4,13 +4,13 @@ using YomiYa.Core.Localization;
 
 namespace YomiYa.Features.Main;
 
-public partial class MainWindow : AppWindow
+public partial class MainWindow : FAAppWindow
 {
     public MainWindow()
     {
         InitializeComponent();
         TitleBar.ExtendsContentIntoTitleBar = true;
-        TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
+        TitleBar.TitleBarHitTestType = FATitleBarHitTestType.Complex;
         Instance = this;
         UpdateTitle();
         LanguageHelper.LanguageChanged += OnLanguageChanged;
