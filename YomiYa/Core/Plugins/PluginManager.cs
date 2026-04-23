@@ -19,6 +19,44 @@ public class PluginManager
     private static readonly Dictionary<string, (ParsedHttpSource plugin, PluginLoadContext context)> _pluginLookup =
         new();
 
+    private static bool ReleaseAssemblyFileLock()
+    {
+        try
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryDeleteFileWithRetries(string filePath, int attempts = 3, int delayMs = 120)
+    {
+        for (int i = 0; i < attempts; i++)
+        {
+            try
+            {
+                if (!File.Exists(filePath)) return true;
+                File.Delete(filePath);
+                return true;
+            }
+            catch
+            {
+                ReleaseAssemblyFileLock();
+                if (i < attempts - 1)
+                {
+                    System.Threading.Thread.Sleep(delayMs);
+                }
+            }
+        }
+
+        return !File.Exists(filePath);
+    }
+
     public PluginManager()
     {
         LoadPlugins();
@@ -88,12 +126,22 @@ public class PluginManager
 
     private static void UnloadPlugins()
     {
+        // Capturamos contextos únicos antes de limpiar estructuras.
+        var contexts = _pluginLookup.Values
+            .Select(v => v.context)
+            .Distinct()
+            .ToList();
+
         foreach (var plugin in _plugins)
             if (plugin is IDisposable disposablePlugin)
                 disposablePlugin.Dispose();
 
+        foreach (var context in contexts)
+            context.Unload();
+
         _plugins.Clear();
         _pluginLookup.Clear();
+        ReleaseAssemblyFileLock();
         Console.WriteLine("Todos los plugins han sido descargados.");
     }
 
@@ -122,8 +170,7 @@ public class PluginManager
         if (!isContextShared)
         {
             pluginEntry.context.Unload();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            ReleaseAssemblyFileLock();
             
             var assemblyLocation = pluginEntry.plugin.GetType().Assembly.Location;
             if (string.IsNullOrEmpty(assemblyLocation)) 
@@ -134,7 +181,12 @@ public class PluginManager
             if (!File.Exists(assemblyLocation)) return false;
             try
             {
-                File.Delete(assemblyLocation);
+                if (!TryDeleteFileWithRetries(assemblyLocation))
+                {
+                    Console.WriteLine($"No se pudo eliminar el plugin {assemblyLocation}: archivo en uso.");
+                    return false;
+                }
+
                 Console.WriteLine($"Plugin DLL {Path.GetFileName(assemblyLocation)} eliminado.");
                 return true;
             }
@@ -159,17 +211,41 @@ public class PluginManager
 
     public static void InstallPlugins(List<string> pluginPaths)
     {
+        var pluginFiles = _pluginLookup.Values
+            .Select(v => v.plugin.GetType().Assembly.Location)
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var contextsByPath = _pluginLookup.Values
+            .GroupBy(v => v.plugin.GetType().Assembly.Location, StringComparer.OrdinalIgnoreCase)
+            .Where(g => !string.IsNullOrWhiteSpace(g.Key))
+            .ToDictionary(g => g.Key, g => g.Select(x => x.context).Distinct().ToList(), StringComparer.OrdinalIgnoreCase);
+
         foreach (var pluginPath in pluginPaths)
             try
             {
                 var destPath = Path.Combine(PathHelper.PluginsPath, Path.GetFileName(pluginPath));
+
+                if (pluginFiles.Contains(destPath))
+                {
+                    if (contextsByPath.TryGetValue(destPath, out var contexts))
+                    {
+                        foreach (var context in contexts)
+                            context.Unload();
+                    }
+
+                    ReleaseAssemblyFileLock();
+                }
+
                 File.Copy(pluginPath, destPath, true);
                 Console.WriteLine($"Plugin instalado {pluginPath}");
-                LoadPlugins();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al instalar el plugin {pluginPath}: {ex.Message}");
             }
+
+        ReloadPlugins();
     }
 }
