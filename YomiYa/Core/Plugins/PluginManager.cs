@@ -241,6 +241,17 @@ public class PluginManager
 
     public static void InstallPlugins(List<string> pluginPaths)
     {
+        var pluginFiles = _pluginLookup.Values
+            .Select(v => v.plugin.GetType().Assembly.Location)
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var contextsByPath = _pluginLookup.Values
+            .GroupBy(v => v.plugin.GetType().Assembly.Location, StringComparer.OrdinalIgnoreCase)
+            .Where(g => !string.IsNullOrWhiteSpace(g.Key))
+            .ToDictionary(g => g.Key, g => g.Select(x => x.context).Distinct().ToList(), StringComparer.OrdinalIgnoreCase);
+
         foreach (var pluginPath in pluginPaths)
             try
             {
