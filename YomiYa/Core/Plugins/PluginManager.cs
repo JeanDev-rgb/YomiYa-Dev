@@ -16,8 +16,75 @@ public class PluginManager
 {
     private static readonly List<ParsedHttpSource> _plugins = new();
 
-    private static readonly Dictionary<string, (ParsedHttpSource plugin, PluginLoadContext context)> _pluginLookup =
+    private static readonly Dictionary<string, (ParsedHttpSource plugin, PluginLoadContext context, string sourceDllPath)> _pluginLookup =
         new();
+
+    private static string ShadowPluginsPath => Path.Combine(PathHelper.PluginsPath, ".shadow");
+
+    private static bool ReleaseAssemblyFileLock()
+    {
+        try
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryDeleteFileWithRetries(string filePath, int attempts = 3, int delayMs = 120)
+    {
+        for (int i = 0; i < attempts; i++)
+        {
+            try
+            {
+                if (!File.Exists(filePath)) return true;
+                File.Delete(filePath);
+                return true;
+            }
+            catch
+            {
+                ReleaseAssemblyFileLock();
+                if (i < attempts - 1)
+                {
+                    System.Threading.Thread.Sleep(delayMs);
+                }
+            }
+        }
+
+        return !File.Exists(filePath);
+    }
+
+    private static void CleanupShadowDirectory()
+    {
+        if (!Directory.Exists(ShadowPluginsPath)) return;
+
+        try
+        {
+            foreach (var file in Directory.GetFiles(ShadowPluginsPath, "*.dll"))
+            {
+                TryDeleteFileWithRetries(file, attempts: 2, delayMs: 60);
+            }
+        }
+        catch
+        {
+            // Ignoramos errores de limpieza no críticos.
+        }
+    }
+
+    private static string CreateShadowCopy(string pluginFile)
+    {
+        Directory.CreateDirectory(ShadowPluginsPath);
+        var shadowFile = Path.Combine(
+            ShadowPluginsPath,
+            $"{Path.GetFileNameWithoutExtension(pluginFile)}_{Guid.NewGuid():N}.dll");
+        File.Copy(pluginFile, shadowFile, true);
+        return shadowFile;
+    }
 
     public PluginManager()
     {
@@ -35,14 +102,16 @@ public class PluginManager
         _plugins.Clear();
         _pluginLookup.Clear();
 
+        CleanupShadowDirectory();
         var pluginFiles = Directory.GetFiles(PathHelper.PluginsPath, "*.dll");
 
         foreach (var pluginFile in pluginFiles)
         {
             try
             {
-                var loadContext = new PluginLoadContext(pluginFile);
-                var assembly = loadContext.LoadFromAssemblyPath(pluginFile);
+                var shadowPath = CreateShadowCopy(pluginFile);
+                var loadContext = new PluginLoadContext(shadowPath);
+                var assembly = loadContext.LoadFromAssemblyPath(shadowPath);
 
                 // Cargar plugins clásicos
                 var pluginTypes = assembly.GetTypes()
@@ -60,7 +129,7 @@ public class PluginManager
                     if (_pluginLookup.ContainsKey(pluginInstance.Name)) continue;
                     
                     _plugins.Add(pluginInstance);
-                    _pluginLookup[pluginInstance.Name] = (pluginInstance, loadContext);
+                    _pluginLookup[pluginInstance.Name] = (pluginInstance, loadContext, pluginFile);
                 }
             }
             catch (Exception ex)
@@ -88,12 +157,23 @@ public class PluginManager
 
     private static void UnloadPlugins()
     {
+        // Capturamos contextos únicos antes de limpiar estructuras.
+        var contexts = _pluginLookup.Values
+            .Select(v => v.context)
+            .Distinct()
+            .ToList();
+
         foreach (var plugin in _plugins)
             if (plugin is IDisposable disposablePlugin)
                 disposablePlugin.Dispose();
 
+        foreach (var context in contexts)
+            context.Unload();
+
         _plugins.Clear();
         _pluginLookup.Clear();
+        ReleaseAssemblyFileLock();
+        CleanupShadowDirectory();
         Console.WriteLine("Todos los plugins han sido descargados.");
     }
 
@@ -122,19 +202,21 @@ public class PluginManager
         if (!isContextShared)
         {
             pluginEntry.context.Unload();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            ReleaseAssemblyFileLock();
             
-            var assemblyLocation = pluginEntry.plugin.GetType().Assembly.Location;
-            if (string.IsNullOrEmpty(assemblyLocation)) 
-            {
+            var assemblyLocation = pluginEntry.sourceDllPath;
+            if (string.IsNullOrEmpty(assemblyLocation))
                 assemblyLocation = Path.Combine(PathHelper.PluginsPath, pluginName + ".dll");
-            }
 
             if (!File.Exists(assemblyLocation)) return false;
             try
             {
-                File.Delete(assemblyLocation);
+                if (!TryDeleteFileWithRetries(assemblyLocation))
+                {
+                    Console.WriteLine($"No se pudo eliminar el plugin {assemblyLocation}: archivo en uso.");
+                    return false;
+                }
+
                 Console.WriteLine($"Plugin DLL {Path.GetFileName(assemblyLocation)} eliminado.");
                 return true;
             }
@@ -163,13 +245,15 @@ public class PluginManager
             try
             {
                 var destPath = Path.Combine(PathHelper.PluginsPath, Path.GetFileName(pluginPath));
+
                 File.Copy(pluginPath, destPath, true);
                 Console.WriteLine($"Plugin instalado {pluginPath}");
-                LoadPlugins();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al instalar el plugin {pluginPath}: {ex.Message}");
             }
+
+        ReloadPlugins();
     }
 }
