@@ -16,8 +16,10 @@ public class PluginManager
 {
     private static readonly List<ParsedHttpSource> _plugins = new();
 
-    private static readonly Dictionary<string, (ParsedHttpSource plugin, PluginLoadContext context)> _pluginLookup =
+    private static readonly Dictionary<string, (ParsedHttpSource plugin, PluginLoadContext context, string sourceDllPath)> _pluginLookup =
         new();
+
+    private static string ShadowPluginsPath => Path.Combine(PathHelper.PluginsPath, ".shadow");
 
     private static bool ReleaseAssemblyFileLock()
     {
@@ -57,6 +59,33 @@ public class PluginManager
         return !File.Exists(filePath);
     }
 
+    private static void CleanupShadowDirectory()
+    {
+        if (!Directory.Exists(ShadowPluginsPath)) return;
+
+        try
+        {
+            foreach (var file in Directory.GetFiles(ShadowPluginsPath, "*.dll"))
+            {
+                TryDeleteFileWithRetries(file, attempts: 2, delayMs: 60);
+            }
+        }
+        catch
+        {
+            // Ignoramos errores de limpieza no críticos.
+        }
+    }
+
+    private static string CreateShadowCopy(string pluginFile)
+    {
+        Directory.CreateDirectory(ShadowPluginsPath);
+        var shadowFile = Path.Combine(
+            ShadowPluginsPath,
+            $"{Path.GetFileNameWithoutExtension(pluginFile)}_{Guid.NewGuid():N}.dll");
+        File.Copy(pluginFile, shadowFile, true);
+        return shadowFile;
+    }
+
     public PluginManager()
     {
         LoadPlugins();
@@ -73,14 +102,16 @@ public class PluginManager
         _plugins.Clear();
         _pluginLookup.Clear();
 
+        CleanupShadowDirectory();
         var pluginFiles = Directory.GetFiles(PathHelper.PluginsPath, "*.dll");
 
         foreach (var pluginFile in pluginFiles)
         {
             try
             {
-                var loadContext = new PluginLoadContext(pluginFile);
-                var assembly = loadContext.LoadFromAssemblyPath(pluginFile);
+                var shadowPath = CreateShadowCopy(pluginFile);
+                var loadContext = new PluginLoadContext(shadowPath);
+                var assembly = loadContext.LoadFromAssemblyPath(shadowPath);
 
                 // Cargar plugins clásicos
                 var pluginTypes = assembly.GetTypes()
@@ -98,7 +129,7 @@ public class PluginManager
                     if (_pluginLookup.ContainsKey(pluginInstance.Name)) continue;
                     
                     _plugins.Add(pluginInstance);
-                    _pluginLookup[pluginInstance.Name] = (pluginInstance, loadContext);
+                    _pluginLookup[pluginInstance.Name] = (pluginInstance, loadContext, pluginFile);
                 }
             }
             catch (Exception ex)
@@ -142,6 +173,7 @@ public class PluginManager
         _plugins.Clear();
         _pluginLookup.Clear();
         ReleaseAssemblyFileLock();
+        CleanupShadowDirectory();
         Console.WriteLine("Todos los plugins han sido descargados.");
     }
 
@@ -172,11 +204,9 @@ public class PluginManager
             pluginEntry.context.Unload();
             ReleaseAssemblyFileLock();
             
-            var assemblyLocation = pluginEntry.plugin.GetType().Assembly.Location;
-            if (string.IsNullOrEmpty(assemblyLocation)) 
-            {
+            var assemblyLocation = pluginEntry.sourceDllPath;
+            if (string.IsNullOrEmpty(assemblyLocation))
                 assemblyLocation = Path.Combine(PathHelper.PluginsPath, pluginName + ".dll");
-            }
 
             if (!File.Exists(assemblyLocation)) return false;
             try
@@ -226,17 +256,6 @@ public class PluginManager
             try
             {
                 var destPath = Path.Combine(PathHelper.PluginsPath, Path.GetFileName(pluginPath));
-
-                if (pluginFiles.Contains(destPath))
-                {
-                    if (contextsByPath.TryGetValue(destPath, out var contexts))
-                    {
-                        foreach (var context in contexts)
-                            context.Unload();
-                    }
-
-                    ReleaseAssemblyFileLock();
-                }
 
                 File.Copy(pluginPath, destPath, true);
                 Console.WriteLine($"Plugin instalado {pluginPath}");
