@@ -140,6 +140,8 @@ namespace YomiYa.Core.IPC
                         var pages = await plugin.GetPages(urlPages);
                         response.SetPayload(pages);
                         break;
+                    
+                    
                 }
             }
             catch (Exception ex)

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using YomiYa.Core.IPC;
+﻿using YomiYa.Core.IPC;
 
 namespace YomiYa.Extensions.Es // Cambiar namespace según plugin
 {
