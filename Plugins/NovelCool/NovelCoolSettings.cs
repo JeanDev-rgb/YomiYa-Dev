@@ -8,7 +8,7 @@ public class NovelCoolSettings
     public List<string> SelectedLanguages { get; set; } = new() { "es", "en" };
 
     // Ruta donde se guardará el JSON de configuración de este plugin
-    private static readonly string SettingsFilePath = Path.Combine(AppContext.BaseDirectory, "Plugins", "novelcool-settings.json");
+    private static readonly string SettingsFilePath = Path.Combine(AppContext.BaseDirectory, "Settings", "novelcool-settings.json");
 
     public void Save()
     {
