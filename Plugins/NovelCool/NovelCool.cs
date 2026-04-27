@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using System.Web;
 using HtmlAgilityPack;
 using ScrapySharp.Extensions;
@@ -17,19 +13,14 @@ namespace YomiYa.Extensions.Es;
 public class NovelCool : ParsedHttpSource, IConfigurableSource
 {
     #region Properties
-
-    // Al ser un plugin agrupado, usamos la URL principal como BaseUrl por defecto 
-    // (aunque las peticiones iterarán sobre los dominios específicos).
     protected override string BaseUrl => "https://www.novelcool.com";
 
     public sealed override string Lang => "Multi";
     public sealed override string Name { get; set; } = "NovelCool";
-    public override string Version => "1.1.0";
+    public override string Version => "1.2.1";
 
-    // ID fijo para mantener la persistencia en la base de datos de la biblioteca
     public sealed override long Id { get; set; }
 
-    // Diccionario maestro con los idiomas soportados
     private readonly Dictionary<string, (string Code, string Url)> _supportedLanguages = new()
     {
         { "English", ("en", "https://www.novelcool.com") },
@@ -40,7 +31,6 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
         { "Français", ("fr", "https://fr.novelcool.com") }
     };
 
-    // Constructor sin parámetros requerido por PluginManager
     public NovelCool()
     {
         Id = GenerateId.GenerateSourceId(Name, Lang);
@@ -76,11 +66,13 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
             }
         }
 
-        // Medida de seguridad
         if (settings.SelectedLanguages.Count == 0)
         {
-            settings.SelectedLanguages.Add("es");
-            settings.SelectedLanguages.Add("en");
+            var culture = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+
+            var defaultLang = _supportedLanguages.Values.FirstOrDefault(v => v.Code == culture);
+            settings.SelectedLanguages.Add(defaultLang.Code ?? "en");
+
         }
 
         settings.Save();

@@ -19,7 +19,7 @@ public class Akaya : ParsedHttpSource
     public sealed override string Lang => "es";
     public sealed override long Id { get; set; } 
     public sealed override string Name { get; set; } = "Akaya Manga";
-    public override string Version => "1.0.1";
+    public override string Version => "1.1.0";
     private string _csrfToken = "";
 
     public override HttpClient HttpClient { get; }

@@ -5,7 +5,13 @@ namespace YomiYa.Extensions.Es;
 public class NovelCoolSettings
 {
     // Puedes definir aquí qué idiomas vienen activados por defecto la primera vez
-    public List<string> SelectedLanguages { get; set; } = new() { "es", "en" };
+    public List<string> SelectedLanguages { get; set; } = [];
+
+    public NovelCoolSettings()
+    {
+        var culture = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+        SelectedLanguages.Add(culture);
+    }
 
     // Ruta donde se guardará el JSON de configuración de este plugin
     private static readonly string SettingsFilePath = Path.Combine(AppContext.BaseDirectory, "Settings", "novelcool-settings.json");
