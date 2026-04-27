@@ -2,8 +2,10 @@ using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Dialogs;
 using YomiYa.Core.Services;
+using YomiYa.Core.Services.DI;
 using YomiYa.Core.Settings;
 using YomiYa.Core.Theme;
 using MainWindow = YomiYa.Features.Main.MainWindow;
@@ -26,19 +28,25 @@ public class App : Application
     {
         try
         {
+            var collection = new ServiceCollection();
+            collection.AddCommonServices();
+
+            var services = collection.BuildServiceProvider();
+            var vm = services.GetRequiredService<MainWindowViewModel>();
+
             ThemeManager.ApplyTheme(SettingsService.Settings.SelectedTheme);
             switch (ApplicationLifetime)
             {
                 case IClassicDesktopStyleApplicationLifetime desktop:
                     desktop.MainWindow = new MainWindow
                     {
-                        DataContext = new MainWindowViewModel()
+                        DataContext = vm
                     };
                     break;
                 case ISingleViewApplicationLifetime singleView:
                     singleView.MainView = new MainWindow
                     {
-                        DataContext = new MainWindowViewModel()
+                        DataContext = vm
                     };
                     break;
             }
