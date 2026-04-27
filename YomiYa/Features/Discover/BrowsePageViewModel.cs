@@ -25,9 +25,6 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         LoadPlugins();
         LocalizedTexts();
 
-        // 1. ¡LA MAGIA AQUÍ! Nos suscribimos al evento. 
-        // Cada vez que el PluginManager termine de cargar un plugin por TCP, 
-        // llamará a LoadPlugins automáticamente por nosotros.
         PluginManager.OnPluginsChanged += LoadPlugins;
     }
 

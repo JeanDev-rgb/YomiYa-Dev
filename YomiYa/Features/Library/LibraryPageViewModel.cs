@@ -42,14 +42,26 @@ public partial class LibraryPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private static void OpenManga(SManga manga)
+    private async Task OpenManga(SManga manga)
     {
-        // Nota: Se está creando una instancia de TmoManga por defecto.
-        // Considera si este es el comportamiento deseado o si el plugin
-        // debería obtenerse de otra fuente.
-        MangaService.SelectedManga = manga;
-        MangaService.SelectedPlugin = PluginManager.GetPlugin(manga.Plugin!);
-        NavigationHelper.NavigateTo(new ChapterListPageViewModel());
+        if (IsBusy) return;
+        try
+        {
+            var plugin = await PluginManager.GetPluginAsync(manga.Plugin!);
+
+            if (plugin is null)
+            {
+                return;
+            }
+
+            MangaService.SelectedManga = manga;
+            MangaService.SelectedPlugin = PluginManager.GetPlugin(manga.Plugin!);
+            NavigationHelper.NavigateTo(new ChapterListPageViewModel());
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     #endregion
@@ -62,6 +74,7 @@ public partial class LibraryPageViewModel : ViewModelBase
     [ObservableProperty] private string? _noMangaAdded;
     [ObservableProperty] private ObservableCollection<SManga> _mangas = [];
     [ObservableProperty] private string? _deleteFromLibraryButtonText;
+    [ObservableProperty] private bool _isBusy;
 
     #endregion
 

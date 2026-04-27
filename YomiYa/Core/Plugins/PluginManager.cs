@@ -123,6 +123,17 @@ public class PluginManager
         return null;
     }
 
+    public static async Task<ParsedHttpSource?> GetPluginAsync(string name)
+    {
+        if (_initializationTask != null && !_initializationTask.IsCompleted)
+        {
+            Console.WriteLine("[PluginManager] Esperando a que los plugins terminen de cargar...");
+            await _initializationTask; // Espera asíncrona (no bloquea)
+        }
+
+        return GetPlugin(name); // Llama al método original que ya tiene los datos listos
+    }
+
     public static List<ParsedHttpSource> GetAllPlugins()
     {
         return _plugins;

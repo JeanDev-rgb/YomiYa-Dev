@@ -47,7 +47,6 @@ public static class NavigationHelper
         CurrentViewModel = NavigationStack.Peek();
     }
 
-    [Obsolete("Obsolete")]
     public static void OpenReader()
     {
         try

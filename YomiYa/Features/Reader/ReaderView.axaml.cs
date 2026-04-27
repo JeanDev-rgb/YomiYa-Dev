@@ -16,7 +16,6 @@ public partial class ReaderView : Window
     private bool _isProgrammaticScroll;
     private ReaderKeyboardHelper? _keyboardHelper;
 
-    [Obsolete("Obsolete")]
     public ReaderView()
     {
         InitializeComponent();
@@ -33,7 +32,6 @@ public partial class ReaderView : Window
         _scrollDebounceTimer.Tick += ScrollDebounceTimer_Tick;
     }
 
-    [Obsolete("Obsolete")]
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
         if (DataContext is ReaderViewModel oldVm) oldVm.PropertyChanged -= ViewModel_PropertyChanged;
@@ -95,7 +93,6 @@ public partial class ReaderView : Window
         if (newIndex != -1 && vm.CurrentPageIndex != newIndex) vm.CurrentPageIndex = newIndex;
     }
 
-    [Obsolete("Obsolete")]
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (DataContext is not ReaderViewModel vm) return;

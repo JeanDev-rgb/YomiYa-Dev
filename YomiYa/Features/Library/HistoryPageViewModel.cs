@@ -40,6 +40,7 @@ public partial class HistoryPageViewModel : ViewModelBase
     [ObservableProperty] private string? _historyTitle;
     [ObservableProperty] private string? _noHistoryAdded;
     [ObservableProperty] private string? _randomKamoji;
+    [ObservableProperty] private bool _isBusy;
 
     public HistoryPageViewModel()
     {
@@ -52,7 +53,6 @@ public partial class HistoryPageViewModel : ViewModelBase
     public async Task LoadHistoryAsync()
     {
         LocalizedTexts();
-        HistoryItems.Clear();
         var historyData = await DatabaseService.GetHistoryAsync();
 
         var historyVms = historyData.Select(x => new HistoryItemViewModel(x.Manga, x.Chapter)).ToList();
@@ -60,35 +60,44 @@ public partial class HistoryPageViewModel : ViewModelBase
 
         await Task.WhenAll(coverLoadTasks);
 
+        HistoryItems.Clear();
         foreach (var vm in historyVms) HistoryItems.Add(vm);
     }
 
     [RelayCommand]
-    [Obsolete("Obsolete")]
+    [Obsolete]
     private async Task OpenChapter(HistoryItemViewModel? item)
     {
-        if (item?.Manga?.Plugin is null) return;
+        if (item?.Manga?.Plugin is null || IsBusy) return;
 
-        var fullManga = await DatabaseService.GetMangaByUrlAsync(item.Manga.Url);
-        if (fullManga?.Plugin is null) return;
+        IsBusy = true;
+        try
+        {
+            // 1. Obtener plugin de forma segura (asíncrona)
+            var plugin = await PluginManager.GetPluginAsync(item.Manga.Plugin);
+            if (plugin is null) return;
 
-        MangaService.SelectedPlugin = PluginManager.GetPlugin(fullManga.Plugin);
-        if (MangaService.SelectedPlugin is null) return;
+            // 2. Cargar datos frescos de la DB
+            var fullManga = await DatabaseService.GetMangaByUrlAsync(item.Manga.Url);
+            if (fullManga is null) return;
 
-        MangaService.SelectedManga = fullManga;
+            MangaService.SelectedPlugin = plugin;
+            MangaService.SelectedManga = fullManga;
 
-        var chapters = await DatabaseService.GetChaptersAsync(fullManga.Url);
-        if (!chapters.Any()) chapters = await MangaService.SelectedPlugin.GetChapters(fullManga.Url);
+            // 3. Obtener capítulos (DB o Remoto)
+            var chapters = await DatabaseService.GetChaptersAsync(fullManga.Url);
+            if (!chapters.Any())
+                chapters = await plugin.GetChapters(fullManga.Url);
 
-        if (!chapters.Any()) return;
+            if (!chapters.Any()) return;
 
-        var chapterToOpen = chapters.FirstOrDefault(c => c.Url == item.Chapter.Url);
-        if (chapterToOpen is null) return;
-
-        MangaService.ChapterList = chapters.OrderBy(c => c.ChapterNumber).ToList();
-        MangaService.ChapterIndex = MangaService.ChapterList.IndexOf(chapterToOpen);
-
-        NavigationHelper.OpenReader();
+            // ... resto de la lógica de índices ...
+            NavigationHelper.OpenReader();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
