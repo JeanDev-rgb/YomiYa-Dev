@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Localization;
 using YomiYa.Features.Ad;
 using YomiYa.Features.Discover;
@@ -16,10 +17,17 @@ namespace YomiYa.Features.Navigation;
 
 public partial class SideBarMenuViewModel : ViewModelBase
 {
+    private readonly IServiceProvider _serviceProvider;
+
     #region Constructor
 
-    public SideBarMenuViewModel()
+    public SideBarMenuViewModel(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
+
+        // Inicializamos la página por defecto usando el ServiceProvider
+        _currentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
+
         SelectedListItem = Items.First();
         UpdateLocalizedTexts();
     }
@@ -38,7 +46,7 @@ public partial class SideBarMenuViewModel : ViewModelBase
 
     #region Properties
 
-    [ObservableProperty] private ViewModelBase _currentPage = new LibraryPageViewModel();
+    [ObservableProperty] private ViewModelBase _currentPage;
     [ObservableProperty] private bool _isPaneOpen = true;
     [ObservableProperty] private ListItemTemplate? _selectedListItem;
 
@@ -46,7 +54,6 @@ public partial class SideBarMenuViewModel : ViewModelBase
     [
         new(typeof(LibraryPageViewModel), "Library", "Library"),
         new(typeof(BrowsePageViewModel), "Browse", "Browse"),
-        // new(typeof(UpdatesPageViewModel), "Updates", "Updates"),
         new(typeof(HistoryPageViewModel), "History", "History"),
         new(typeof(MorePageViewModel), "More", "More"),
         new(typeof(AdPageViewModel), "Dollar", "Reward1Dollar")
@@ -59,14 +66,16 @@ public partial class SideBarMenuViewModel : ViewModelBase
     partial void OnSelectedListItemChanged(ListItemTemplate? value)
     {
         if (value is null) return;
-        var instance = Activator.CreateInstance(value.ModelType);
-        if (instance is null) return;
-        CurrentPage = (ViewModelBase)instance;
+
+        // CAMBIO CLAVE: En lugar de Activator.CreateInstance, usamos el contenedor de servicios.
+        // Esto permite que los sub-viewmodels reciban sus dependencias (DI).
+        var viewModel = (ViewModelBase)_serviceProvider.GetRequiredService(value.ModelType);
+        CurrentPage = viewModel;
     }
 
     protected sealed override void UpdateLocalizedTexts()
     {
-        foreach (var item in Items) item.UpdateLabel(); // Llama al método para actualizar el texto en cada ítem
+        foreach (var item in Items) item.UpdateLabel();
     }
 
     #endregion
@@ -74,13 +83,7 @@ public partial class SideBarMenuViewModel : ViewModelBase
 
 public partial class ListItemTemplate : ObservableObject
 {
-    #region Fields
-
-    private readonly string? _translationKey; // Guardamos la clave de traducción
-
-    #endregion
-
-    #region Constructor
+    private readonly string? _translationKey;
 
     public ListItemTemplate(Type type, string iconKey, string? translationKey)
     {
@@ -89,14 +92,9 @@ public partial class ListItemTemplate : ObservableObject
         ListItemIcon = (StreamGeometry)res!;
 
         _translationKey = translationKey;
-        UpdateLabel(); // Establece el texto inicial
+        UpdateLabel();
     }
 
-    #endregion
-
-    #region Public Methods
-
-    // Actualiza el Label cuando el idioma cambia
     public void UpdateLabel()
     {
         Label = _translationKey == null
@@ -104,14 +102,7 @@ public partial class ListItemTemplate : ObservableObject
             : LanguageHelper.GetText(_translationKey);
     }
 
-    #endregion
-
-    #region Properties
-
     [ObservableProperty] private string? _label;
-
     public Type ModelType { get; set; }
     public StreamGeometry ListItemIcon { get; set; }
-
-    #endregion
 }

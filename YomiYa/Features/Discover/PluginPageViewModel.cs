@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Navigation;
@@ -15,11 +16,25 @@ namespace YomiYa.Features.Discover;
 
 public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 {
+    // Dependencias inyectadas
+    private readonly IServiceProvider _serviceProvider;
+    private readonly MangaService _mangaService;
+    private readonly IDatabaseService _databaseService;
+
     #region Constructors
 
-    public PluginPageViewModel()
+    public PluginPageViewModel(
+        IServiceProvider serviceProvider,
+        MangaService mangaService,
+        IDatabaseService databaseService)
     {
-        Plugin = MangaService.SelectedPlugin!;
+        _serviceProvider = serviceProvider;
+        _mangaService = mangaService;
+        _databaseService = databaseService;
+
+        // Usamos la instancia inyectada en lugar de acceso estático
+        Plugin = _mangaService.SelectedPlugin!;
+
         GetPopularMangas();
         GetLatestUpdates();
     }
@@ -47,21 +62,26 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 
     #region Commands
 
+    // Quitamos "static" y usamos los servicios inyectados
     [RelayCommand]
-    private static void OpenManga(SManga manga)
+    private void OpenManga(SManga manga)
     {
-        MangaService.SelectedManga = manga;
-        NavigationHelper.NavigateTo(new ChapterListPageViewModel());
+        _mangaService.SelectedManga = manga;
+
+        // Resolvemos el ViewModel dinámicamente desde el contenedor
+        var chapterListViewModel = _serviceProvider.GetRequiredService<ChapterListPageViewModel>();
+        NavigationHelper.NavigateTo(chapterListViewModel);
     }
 
     [RelayCommand]
-    private static void Back()
+    private void Back()
     {
         NavigationHelper.GoBack();
     }
 
+    // Quitamos "static" y usamos _databaseService
     [RelayCommand]
-    private static async Task ToggleFavorite(SManga? manga)
+    private async Task ToggleFavorite(SManga? manga)
     {
         if (manga is null) return;
 
@@ -69,8 +89,8 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 
         if (manga.IsFavorite) await MangaDetailsHelper.GetOrFetchDetailsAsync(manga);
 
-        // Ahora usamos el nuevo método, que es más simple y directo.
-        await DatabaseService.SetMangaFavoriteStatusAsync(manga, manga.IsFavorite);
+        // Usamos la base de datos inyectada en lugar de instanciarla con 'new'
+        await _databaseService.SetMangaFavoriteStatusAsync(manga, manga.IsFavorite);
 
         Console.WriteLine(manga.IsFavorite
             ? $"'{manga.Title}' añadido a la biblioteca."
@@ -105,7 +125,8 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
                 }
             });
 
-            MangaService.SearchManga(SearchText, progress);
+            // Usamos la instancia inyectada
+            _mangaService.SearchManga(SearchText, progress);
         }
         catch (Exception e)
         {
@@ -142,7 +163,9 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
                 Console.WriteLine(e.Message);
             }
         });
-        MangaService.GetPopularMangas(progress);
+
+        // Usamos la instancia inyectada
+        _mangaService.GetPopularMangas(progress);
     }
 
     private void GetLatestUpdates()
@@ -160,7 +183,9 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
                 Console.WriteLine(e.Message);
             }
         });
-        MangaService.GetLatestUpdates(progress);
+
+        // Usamos la instancia inyectada
+        _mangaService.GetLatestUpdates(progress);
     }
 
     protected override void UpdateLocalizedTexts()

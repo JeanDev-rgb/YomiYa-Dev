@@ -26,51 +26,59 @@ namespace YomiYa.Features.Settings;
 public partial class MorePageViewModel : ViewModelBase
 {
     private const string BackupFileName = "yomiya_backup.zip";
-    private readonly IDialogService _dialogService = App.DialogService;
-    private readonly GoogleDriveSyncService _driveService = App.DriveService;
+
+    // Dependencias inyectadas
+    private readonly IDialogService _dialogService;
+    private readonly GoogleDriveSyncService _driveService;
+    private readonly ISettingsService _settingsService;
 
     [ObservableProperty] private bool _isAuthenticated;
-
     [ObservableProperty] private bool _isSyncing;
-
     [ObservableProperty] private string _syncStatusMessage = LanguageHelper.GetText("WaitingForAction");
 
     #region Constructor
 
-    public MorePageViewModel()
+    // El contenedor de servicios inyectará automáticamente estas dependencias
+    public MorePageViewModel(
+        IDialogService dialogService,
+        GoogleDriveSyncService driveService,
+        ISettingsService settingsService)
     {
+        _dialogService = dialogService;
+        _driveService = driveService;
+        _settingsService = settingsService;
+
         AvailableThemes = new ObservableCollection<string>(ThemeManager.AvailableThemes.Keys);
 
-        var savedThemePath = SettingsService.Settings.SelectedTheme;
+        // Se usa la instancia inyectada para obtener la configuración actual
+        var savedThemePath = _settingsService.Settings.SelectedTheme;
 
-        // Encuentra el nombre del tema (la clave del diccionario) basándose en la ruta guardada.
-        // Esto funciona tanto para temas incrustados (nombre de archivo) como externos (ruta completa).
         SelectedTheme = ThemeManager.AvailableThemes
             .FirstOrDefault(t => t.Value.FilePath == savedThemePath)
-            .Key ?? "Oscuro"; // Si no se encuentra, selecciona "Oscuro" por defecto.
+            .Key ?? "Oscuro";
 
-        SelectedLanguage = SettingsService.Settings.SelectedLanguage;
+        SelectedLanguage = _settingsService.Settings.SelectedLanguage;
 
         PropertyChanged += (s, e) =>
         {
             if (e.PropertyName == nameof(SelectedLanguage))
             {
                 LanguageHelper.SetLanguage(SelectedLanguage);
-                SettingsService.Settings.SelectedLanguage = SelectedLanguage;
-                SettingsService.Save();
+                _settingsService.Settings.SelectedLanguage = SelectedLanguage;
+                _settingsService.Save();
             }
             else if (e.PropertyName == nameof(SelectedTheme) && !string.IsNullOrEmpty(SelectedTheme))
             {
-                // Asegurarse de que el tema seleccionado existe en el diccionario
                 if (ThemeManager.AvailableThemes.TryGetValue(SelectedTheme, out var themeInfo))
                 {
-                    // Aplicar y guardar usando la ruta del archivo (FilePath)
                     ThemeManager.ApplyTheme(themeInfo.FilePath);
-                    SettingsService.Settings.SelectedTheme = themeInfo.FilePath;
-                    SettingsService.Save();
+                    _settingsService.Settings.SelectedTheme = themeInfo.FilePath;
+                    _settingsService.Save();
                 }
             }
         };
+
+        UpdateLocalizedTexts();
 
         _ = CheckAuthStatusAsync();
     }
@@ -111,9 +119,7 @@ public partial class MorePageViewModel : ViewModelBase
         if (IsSyncing)
             SyncStatusMessage = LanguageHelper.GetText("BrowserAuthPending");
         else if (IsAuthenticated)
-            SyncStatusMessage = IsAuthenticated
-                ? LanguageHelper.GetText("GoogleDriveConnected")
-                : LanguageHelper.GetText("GoogleDriveLoginFailed");
+            SyncStatusMessage = LanguageHelper.GetText("GoogleDriveConnected");
         else
             SyncStatusMessage = LanguageHelper.GetText("WaitingForAction");
     }
@@ -125,36 +131,32 @@ public partial class MorePageViewModel : ViewModelBase
     public ObservableCollection<string> AvailableThemes { get; }
     public ObservableCollection<Language> Languages { get; } = new(Enum.GetValues<Language>());
 
-    [ObservableProperty] private string _selectedTheme;
+    [ObservableProperty] private string _selectedTheme = string.Empty;
     [ObservableProperty] private Language _selectedLanguage;
 
-    // Propiedades para la configuración del proxy
     [ObservableProperty] private string _proxyHost = string.Empty;
     [ObservableProperty] private int _proxyPort;
     [ObservableProperty] private string _proxyUsername = string.Empty;
     [ObservableProperty] private string _proxyPassword = string.Empty;
 
-    [ObservableProperty] private string _additionalSettingsText = LanguageHelper.GetText("AdditionalSettings");
-    [ObservableProperty] private string _applicationLanguageText = LanguageHelper.GetText("ApplicationLanguage");
-    [ObservableProperty] private string _hostText = LanguageHelper.GetText("Host");
-
-    [ObservableProperty]
-    private string _manualProxyConfigurationText = LanguageHelper.GetText("ManualProxyConfiguration");
-
-    [ObservableProperty] private string _passwordText = LanguageHelper.GetText("Password");
-    [ObservableProperty] private string _portText = LanguageHelper.GetText("Port");
-    [ObservableProperty] private string _resetText = LanguageHelper.GetText("Reset");
-    [ObservableProperty] private string _saveText = LanguageHelper.GetText("Save");
-    [ObservableProperty] private string _usernameOptionalText = LanguageHelper.GetText("UsernameOptional");
-    [ObservableProperty] private string _cloudSynchronizationText = LanguageHelper.GetText("CloudSynchronization");
-    [ObservableProperty] private string _signInWithGoogleDriveText = LanguageHelper.GetText("SignInWithGoogleDrive");
-    [ObservableProperty] private string _signOutText = LanguageHelper.GetText("SignOut");
-    [ObservableProperty] private string _waitingForAction = LanguageHelper.GetText("WaitingForAction");
-    [ObservableProperty] private string _applicationThemeText = LanguageHelper.GetText("ApplicationTheme");
-    [ObservableProperty] private string _importThemeText = LanguageHelper.GetText("ImportTheme");
-    [ObservableProperty] private string _uploadBackupText = LanguageHelper.GetText("UploadBackup");
-    [ObservableProperty] private string _restoreBackupText = LanguageHelper.GetText("RestoreBackup");
-    [ObservableProperty] private string _restartRequiredText = LanguageHelper.GetText("RestartRequired");
+    [ObservableProperty] private string _additionalSettingsText = string.Empty;
+    [ObservableProperty] private string _applicationLanguageText = string.Empty;
+    [ObservableProperty] private string _hostText = string.Empty;
+    [ObservableProperty] private string _manualProxyConfigurationText = string.Empty;
+    [ObservableProperty] private string _passwordText = string.Empty;
+    [ObservableProperty] private string _portText = string.Empty;
+    [ObservableProperty] private string _resetText = string.Empty;
+    [ObservableProperty] private string _saveText = string.Empty;
+    [ObservableProperty] private string _usernameOptionalText = string.Empty;
+    [ObservableProperty] private string _cloudSynchronizationText = string.Empty;
+    [ObservableProperty] private string _signInWithGoogleDriveText = string.Empty;
+    [ObservableProperty] private string _signOutText = string.Empty;
+    [ObservableProperty] private string _waitingForAction = string.Empty;
+    [ObservableProperty] private string _applicationThemeText = string.Empty;
+    [ObservableProperty] private string _importThemeText = string.Empty;
+    [ObservableProperty] private string _uploadBackupText = string.Empty;
+    [ObservableProperty] private string _restoreBackupText = string.Empty;
+    [ObservableProperty] private string _restartRequiredText = string.Empty;
 
     #endregion
 
@@ -181,9 +183,7 @@ public partial class MorePageViewModel : ViewModelBase
             await _driveService.DownloadFileAsync(backupFile.Id, tempZipPath);
 
             SqliteConnection.ClearAllPools();
-
             ZipFile.ExtractToDirectory(tempZipPath, AppContext.BaseDirectory, true);
-
             File.Delete(tempZipPath);
 
             SyncStatusMessage = LanguageHelper.GetText("RestoreSuccessful");
@@ -242,7 +242,6 @@ public partial class MorePageViewModel : ViewModelBase
             }
 
             await _driveService.UploadOrUpdateBackupAsync(tempZipPath, BackupFileName);
-
             File.Delete(tempZipPath);
 
             SyncStatusMessage = LanguageHelper.GetText("UploadSuccessful");
@@ -275,14 +274,12 @@ public partial class MorePageViewModel : ViewModelBase
         };
 
         var selectedFiles = await desktop.MainWindow.StorageProvider.OpenFilePickerAsync(filePickerOptions);
-
         if (selectedFiles.Count == 0) return;
 
         foreach (var file in selectedFiles)
             try
             {
                 var destinationPath = Path.Combine(ThemeManager.ExternalThemesDirectory, file.Name);
-
                 await using var sourceStream = await file.OpenReadAsync();
                 await using var destinationStream = File.Create(destinationPath);
                 await sourceStream.CopyToAsync(destinationStream);
@@ -293,7 +290,6 @@ public partial class MorePageViewModel : ViewModelBase
             }
 
         ThemeManager.ReloadAvailableThemes();
-
         AvailableThemes.Clear();
         foreach (var themeName in ThemeManager.AvailableThemes.Keys) AvailableThemes.Add(themeName);
 
@@ -332,7 +328,6 @@ public partial class MorePageViewModel : ViewModelBase
 
         IsSyncing = true;
         SyncStatusMessage = LanguageHelper.GetText("BrowserAuthPending");
-        ;
 
         using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(2));
 

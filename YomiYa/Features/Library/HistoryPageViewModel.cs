@@ -28,12 +28,17 @@ public partial class HistoryItemViewModel : ObservableObject
 
     public async Task LoadCoverAsync()
     {
-        if (!string.IsNullOrEmpty(Manga.ThumbnailUrl)) Manga.Cover = await Manga.ThumbnailUrl.LoadImageAsync();
+        if (!string.IsNullOrEmpty(Manga.ThumbnailUrl))
+            Manga.Cover = await Manga.ThumbnailUrl.LoadImageAsync();
     }
 }
 
 public partial class HistoryPageViewModel : ViewModelBase
 {
+    // Dependencias inyectadas
+    private readonly IDatabaseService _databaseService;
+    private readonly MangaService _mangaService;
+
     [ObservableProperty] private string? _clearAllButtonText;
     [ObservableProperty] private string? _deleteFromHistoryButtonText;
     [ObservableProperty] private ObservableCollection<HistoryItemViewModel> _historyItems = [];
@@ -42,10 +47,18 @@ public partial class HistoryPageViewModel : ViewModelBase
     [ObservableProperty] private string? _randomKamoji;
     [ObservableProperty] private bool _isBusy;
 
-    public HistoryPageViewModel()
+    #region Constructor
+
+    // El contenedor de DI inyectará IDatabaseService y MangaService automáticamente
+    public HistoryPageViewModel(IDatabaseService databaseService, MangaService mangaService)
     {
+        _databaseService = databaseService;
+        _mangaService = mangaService;
+
         _ = LoadHistoryAsync();
     }
+
+    #endregion
 
     /// <summary>
     ///     Carga o actualiza el historial desde la base de datos.
@@ -53,7 +66,9 @@ public partial class HistoryPageViewModel : ViewModelBase
     public async Task LoadHistoryAsync()
     {
         LocalizedTexts();
-        var historyData = await DatabaseService.GetHistoryAsync();
+
+        // Usamos la instancia de base de datos inyectada en lugar de 'new'
+        var historyData = await _databaseService.GetHistoryAsync();
 
         var historyVms = historyData.Select(x => new HistoryItemViewModel(x.Manga, x.Chapter)).ToList();
         var coverLoadTasks = historyVms.Select(vm => vm.LoadCoverAsync()).ToList();
@@ -65,7 +80,7 @@ public partial class HistoryPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    [Obsolete]
+    [Obsolete("Obsolete")]
     private async Task OpenChapter(HistoryItemViewModel? item)
     {
         if (item?.Manga?.Plugin is null || IsBusy) return;
@@ -77,21 +92,28 @@ public partial class HistoryPageViewModel : ViewModelBase
             var plugin = await PluginManager.GetPluginAsync(item.Manga.Plugin);
             if (plugin is null) return;
 
-            // 2. Cargar datos frescos de la DB
-            var fullManga = await DatabaseService.GetMangaByUrlAsync(item.Manga.Url);
+            // 2. Cargar datos frescos de la DB inyectada
+            var fullManga = await _databaseService.GetMangaByUrlAsync(item.Manga.Url);
             if (fullManga is null) return;
 
-            MangaService.SelectedPlugin = plugin;
-            MangaService.SelectedManga = fullManga;
+            // Actualizamos la instancia compartida de MangaService
+            _mangaService.SelectedPlugin = plugin;
+            _mangaService.SelectedManga = fullManga;
 
             // 3. Obtener capítulos (DB o Remoto)
-            var chapters = await DatabaseService.GetChaptersAsync(fullManga.Url);
+            var chapters = await _databaseService.GetChaptersAsync(fullManga.Url);
             if (!chapters.Any())
                 chapters = await plugin.GetChapters(fullManga.Url);
 
             if (!chapters.Any()) return;
 
-            // ... resto de la lógica de índices ...
+            // Asignamos la lista de capítulos al MangaService para que el ReaderViewModel los tome
+            _mangaService.ChapterList = chapters.OrderBy(c => c.ChapterNumber).ToList();
+
+            // Buscamos el índice del capítulo actual basándonos en la URL
+            var chapterIndex = _mangaService.ChapterList.FindIndex(c => c.Url == item.Chapter.Url);
+            _mangaService.ChapterIndex = chapterIndex >= 0 ? chapterIndex : 0;
+
             NavigationHelper.OpenReader();
         }
         finally
@@ -105,14 +127,16 @@ public partial class HistoryPageViewModel : ViewModelBase
     {
         if (item is null) return;
 
-        await DatabaseService.DeleteHistoryItemAsync(item.Chapter.Url);
+        // Usamos la DB inyectada
+        await _databaseService.DeleteHistoryItemAsync(item.Chapter.Url);
         HistoryItems.Remove(item);
     }
 
     [RelayCommand]
     private async Task ClearHistory()
     {
-        await DatabaseService.ClearHistoryAsync();
+        // Usamos la DB inyectada
+        await _databaseService.ClearHistoryAsync();
         HistoryItems.Clear();
     }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Common;
 using YomiYa.Core.IO;
 using YomiYa.Core.Localization;
@@ -18,10 +19,17 @@ namespace YomiYa.Features.Discover;
 
 public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
 {
+    // Dependencias inyectadas
+    private readonly IServiceProvider _serviceProvider;
+    private readonly MangaService _mangaService;
+
     #region Constructor
 
-    public BrowsePageViewModel()
+    public BrowsePageViewModel(IServiceProvider serviceProvider, MangaService mangaService)
     {
+        _serviceProvider = serviceProvider;
+        _mangaService = mangaService;
+
         LoadPlugins();
         LocalizedTexts();
 
@@ -52,24 +60,28 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     [RelayCommand]
     private async Task InstallPlugins()
     {
-        // NOTA IMPORTANTE: Asegúrate de que en PathHelper. SelectPath el filtro 
+        // NOTA IMPORTANTE: Asegúrate de que en PathHelper.SelectPath el filtro 
         // esté configurado para buscar archivos ".exe" y no ".dll".
         var pluginPaths = await PathHelper.SelectPath(LanguageHelper.GetText("SelectPluginFiles"), true);
 
         if (pluginPaths is not null && pluginPaths.Count != 0)
         {
             PluginManager.InstallPlugins(pluginPaths);
-            // 2. ELIMINAMOS LoadPlugins() de aquí. 
-            // Ya no lo necesitamos porque el evento OnPluginsChanged lo hará en el momento exacto.
         }
     }
 
+    // CAMBIO CLAVE: Se quitó el "static" para poder acceder a los servicios inyectados
     [RelayCommand]
-    private static void OpenPlugin(ParsedHttpSource? plugin)
+    private void OpenPlugin(ParsedHttpSource? plugin)
     {
         if (plugin is null) return;
-        MangaService.SelectedPlugin = plugin;
-        NavigationHelper.NavigateTo(new PluginPageViewModel());
+
+        // Usamos la instancia inyectada en lugar del acceso estático
+        _mangaService.SelectedPlugin = plugin;
+
+        // Resolvemos el ViewModel del plugin desde el contenedor
+        var pluginViewModel = _serviceProvider.GetRequiredService<PluginPageViewModel>();
+        NavigationHelper.NavigateTo(pluginViewModel);
     }
 
     [RelayCommand]
@@ -80,14 +92,11 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         bool success = PluginManager.DeletePlugin(plugin.Name);
         if (success)
         {
-            // Opcional: Si este era el plugin seleccionado actualmente, lo limpiamos
-            if (MangaService.SelectedPlugin?.Name == plugin.Name)
+            // Usamos la instancia inyectada
+            if (_mangaService.SelectedPlugin?.Name == plugin.Name)
             {
-                MangaService.SelectedPlugin = null;
+                _mangaService.SelectedPlugin = null;
             }
-            
-            // Ya no necesitamos hacer Plugins.Remove(plugin) manualmente aquí,
-            // porque DeletePlugin tocará el "timbre" (OnPluginsChanged) y la lista se recargará sola.
         }
     }
 
@@ -105,7 +114,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
             var filtered = allPlugins
                 .Where(p => p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 .ToList();
-                
+
             UpdatePluginsList(filtered);
         }
     }
@@ -117,7 +126,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     private void LoadPlugins()
     {
         var loadedPlugins = PluginManager.GetAllPlugins();
-        
+
         // Si tienes texto en el buscador, mantenemos el filtro al recargar
         if (!string.IsNullOrWhiteSpace(SearchText))
         {
