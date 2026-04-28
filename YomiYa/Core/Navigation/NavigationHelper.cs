@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Features;
 using YomiYa.Features.Navigation;
 using YomiYa.Features.Reader;
@@ -9,12 +10,13 @@ namespace YomiYa.Core.Navigation;
 public static class NavigationHelper
 {
     private static ViewModelBase _currentViewModel;
-
     private static readonly Stack<ViewModelBase> NavigationStack = new();
 
     static NavigationHelper()
     {
-        _currentViewModel = new SideBarMenuViewModel();
+        // Resolvemos el ViewModel inicial desde el contenedor de servicios global
+        // Esto asegura que SideBarMenuViewModel reciba su IServiceProvider inyectado
+        _currentViewModel = Program.ServiceProvider.GetRequiredService<SideBarMenuViewModel>();
         NavigationStack.Push(_currentViewModel);
     }
 
@@ -35,7 +37,8 @@ public static class NavigationHelper
     {
         if (viewModel is null) return;
 
-        if (NavigationStack.Count == 0 || NavigationStack.Peek() != viewModel) NavigationStack.Push(viewModel);
+        if (NavigationStack.Count == 0 || NavigationStack.Peek() != viewModel)
+            NavigationStack.Push(viewModel);
 
         CurrentViewModel = viewModel;
     }
@@ -51,16 +54,20 @@ public static class NavigationHelper
     {
         try
         {
+            // CAMBIO CLAVE: Resolvemos tanto el ViewModel como la View desde DI
+            // Esto permite que ReaderViewModel reciba sus dependencias (servicios de base de datos, etc.)
+            var readerViewModel = Program.ServiceProvider.GetRequiredService<ReaderViewModel>();
+
             var reader = new ReaderView
             {
-                DataContext = new ReaderViewModel()
+                DataContext = readerViewModel
             };
 
             reader.Show();
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine($"Error al abrir el lector: {ex.Message}");
         }
     }
 }

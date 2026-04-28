@@ -3,22 +3,14 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
-using YomiYa.Core.Dialogs;
-using YomiYa.Core.Services;
-using YomiYa.Core.Services.DI;
 using YomiYa.Core.Settings;
 using YomiYa.Core.Theme;
-using MainWindow = YomiYa.Features.Main.MainWindow;
-using MainWindowViewModel = YomiYa.Features.Main.MainWindowViewModel;
+using YomiYa.Features.Main;
 
 namespace YomiYa;
 
 public class App : Application
 {
-    public static GoogleDriveSyncService DriveService { get; } = new();
-    public static SyncManager SyncManager { get; } = new(DriveService);
-    public static IDialogService DialogService { get; } = new DialogService();
-
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -28,34 +20,33 @@ public class App : Application
     {
         try
         {
-            var collection = new ServiceCollection();
-            collection.AddCommonServices();
+            // Resolvemos las dependencias desde el Program
+            var settingsService = Program.ServiceProvider.GetRequiredService<ISettingsService>();
+            var mainViewModel = Program.ServiceProvider.GetRequiredService<MainWindowViewModel>();
 
-            var services = collection.BuildServiceProvider();
-            var vm = services.GetRequiredService<MainWindowViewModel>();
+            // Aplicar tema
+            ThemeManager.ApplyTheme(settingsService.Settings.SelectedTheme);
 
-            ThemeManager.ApplyTheme(SettingsService.Settings.SelectedTheme);
-            switch (ApplicationLifetime)
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                case IClassicDesktopStyleApplicationLifetime desktop:
-                    desktop.MainWindow = new MainWindow
-                    {
-                        DataContext = vm
-                    };
-                    break;
-                case ISingleViewApplicationLifetime singleView:
-                    singleView.MainView = new MainWindow
-                    {
-                        DataContext = vm
-                    };
-                    break;
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = mainViewModel
+                };
+            }
+            else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
+            {
+                singleView.MainView = new MainWindow
+                {
+                    DataContext = mainViewModel
+                };
             }
 
             base.OnFrameworkInitializationCompleted();
         }
         catch (Exception e)
         {
-            Console.WriteLine($"ERROR DURANTE LA INICIALIZACIÓN DE LA APLICACIÓN: {e.Message}");
+            Console.WriteLine($"ERROR EN INICIALIZACIÓN: {e.Message}");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace YomiYa.Core.Settings;
 ///     Gestiona la carga y guardado de la configuración de la aplicación en un archivo JSON.
 ///     Este servicio mantiene el estado de la configuración, que es accesible a través de la propiedad estática Settings.
 /// </summary>
-public static class SettingsService
+public class SettingsService : ISettingsService
 {
     // Centralizamos la configuración de rutas y del serializador
     private static readonly string SettingsDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
@@ -29,13 +29,13 @@ public static class SettingsService
     }
 
     // El servicio ahora "posee" el objeto de configuración
-    public static AppSettings Settings { get; private set; } = new();
+    public  AppSettings Settings { get; private set; } = new();
 
     /// <summary>
     ///     Carga la configuración desde el archivo. Si no existe, crea uno con valores por defecto.
     ///     Este método es síncrono para facilitar su uso al inicio de la aplicación.
     /// </summary>
-    public static void Load()
+    public  void Load()
     {
         if (!File.Exists(SettingsFilePath))
         {
@@ -59,7 +59,7 @@ public static class SettingsService
     /// <summary>
     ///     Guarda la configuración actual en el archivo de forma síncrona.
     /// </summary>
-    public static void Save()
+    public  void Save()
     {
         try
         {

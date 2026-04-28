@@ -18,7 +18,14 @@ namespace YomiYa.Features.Discover;
 
 public partial class ChapterListPageViewModel : ViewModelBase
 {
+    // Dependencias inyectadas
+    private readonly IDatabaseService _databaseService;
+    private readonly MangaService _mangaService;
+
     private List<SChapter> _allChapters = [];
+
+    #region Properties
+
     [ObservableProperty] private string _allText = LanguageHelper.GetText("All");
     [ObservableProperty] private string? _artist;
     [ObservableProperty] private string _ascendingText = LanguageHelper.GetText("Ascending");
@@ -33,25 +40,38 @@ public partial class ChapterListPageViewModel : ViewModelBase
     [ObservableProperty] private SManga _manga;
     [ObservableProperty] private ParsedHttpSource _plugin;
     [ObservableProperty] private string _readText = LanguageHelper.GetText("Read");
-
     [ObservableProperty] private ChapterReadFilter _selectedReadFilter = ChapterReadFilter.ShowAll;
-
     [ObservableProperty] private ChapterSort _selectedSort = ChapterSort.Default;
     [ObservableProperty] private string _showText = LanguageHelper.GetText("Show");
-
     [ObservableProperty] private string _sortByText = LanguageHelper.GetText("SortBy");
     [ObservableProperty] private string _unreadText = LanguageHelper.GetText("Unread");
 
-    public ChapterListPageViewModel()
+    #endregion
+
+    #region Constructor
+
+    // El contenedor de servicios inyectará la base de datos y el servicio de manga
+    public ChapterListPageViewModel(IDatabaseService databaseService, MangaService mangaService)
     {
-        Manga = MangaService.SelectedManga!;
-        Plugin = MangaService.SelectedPlugin!;
+        _databaseService = databaseService;
+        _mangaService = mangaService;
+
+        // Obtenemos los valores desde la instancia compartida de MangaService
+        Manga = _mangaService.SelectedManga!;
+        Plugin = _mangaService.SelectedPlugin!;
+
         _ = LoadMangaDetailsAndChaptersAsync();
     }
 
+    #endregion
+
+    #region Methods
+
     private async Task LoadMangaDetailsAndChaptersAsync()
     {
-        var dbManga = await DatabaseService.GetMangaByUrlAsync(Manga.Url);
+        // Usamos la instancia inyectada de IDatabaseService
+        var dbManga = await _databaseService.GetMangaByUrlAsync(Manga.Url);
+
         if (dbManga is { IsFavorite: true })
         {
             Manga.Author = dbManga.Author;
@@ -84,15 +104,16 @@ public partial class ChapterListPageViewModel : ViewModelBase
         {
             _allChapters.Clear();
 
-            var mangaId = await DatabaseService.InsertManga(Manga);
+            // Usamos la instancia de la base de datos inyectada en lugar de instanciarla con 'new'
+            var mangaId = await _databaseService.InsertManga(Manga);
             if (mangaId == 0) return;
 
             var remoteChapters = await Plugin.GetChapters(Manga.Url);
             if (remoteChapters.Count == 0) return;
 
-            await DatabaseService.InsertChapters(mangaId, remoteChapters);
+            await _databaseService.InsertChapters(mangaId, remoteChapters);
 
-            var allChaptersFromDb = await DatabaseService.GetChaptersAsync(Manga.Url);
+            var allChaptersFromDb = await _databaseService.GetChaptersAsync(Manga.Url);
 
             _allChapters = allChaptersFromDb.ToList();
             ApplyFiltersAndSort();
@@ -108,13 +129,11 @@ public partial class ChapterListPageViewModel : ViewModelBase
         ApplyFiltersAndSort();
     }
 
-    // ¡NUEVO! Este método se ejecutará automáticamente cuando cambie el filtro de leídos.
     partial void OnSelectedReadFilterChanged(ChapterReadFilter value)
     {
         ApplyFiltersAndSort();
     }
 
-    // El comando ya no es necesario, pero el método se mantiene para la lógica.
     private void ApplyFiltersAndSort()
     {
         Chapters.Clear();
@@ -141,22 +160,6 @@ public partial class ChapterListPageViewModel : ViewModelBase
         foreach (var chapter in sortedChapters) Chapters.Add(chapter);
     }
 
-    [RelayCommand]
-    private static void Back()
-    {
-        NavigationHelper.GoBack();
-    }
-
-    [RelayCommand]
-    [Obsolete("Obsolete")]
-    private void OpenChapter(SChapter? chapter)
-    {
-        if (chapter is null) return;
-        MangaService.ChapterList = Chapters.OrderBy(c => c.ChapterNumber).ToList();
-        MangaService.ChapterIndex = MangaService.ChapterList.IndexOf(chapter);
-        NavigationHelper.OpenReader();
-    }
-
     protected override void UpdateLocalizedTexts()
     {
         BackButtonText = LanguageHelper.GetText("Back");
@@ -169,4 +172,30 @@ public partial class ChapterListPageViewModel : ViewModelBase
         ReadText = LanguageHelper.GetText("Read");
         UnreadText = LanguageHelper.GetText("Unread");
     }
+
+    #endregion
+
+    #region Commands
+
+    [RelayCommand]
+    private static void Back()
+    {
+        NavigationHelper.GoBack();
+    }
+
+    // Le quitamos el static para poder acceder a _mangaService
+    [RelayCommand]
+    [Obsolete("Obsolete")]
+    private void OpenChapter(SChapter? chapter)
+    {
+        if (chapter is null) return;
+
+        // Guardamos los datos en el servicio Singleton compartido
+        _mangaService.ChapterList = Chapters.OrderBy(c => c.ChapterNumber).ToList();
+        _mangaService.ChapterIndex = _mangaService.ChapterList.IndexOf(chapter);
+
+        NavigationHelper.OpenReader();
+    }
+
+    #endregion
 }

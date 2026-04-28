@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Common;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
@@ -17,10 +18,23 @@ namespace YomiYa.Features.Library;
 
 public partial class LibraryPageViewModel : ViewModelBase
 {
+    // Dependencias inyectadas
+    private readonly IDatabaseService _databaseService;
+    private readonly MangaService _mangaService;
+    private readonly IServiceProvider _serviceProvider;
+
     #region Constructor
 
-    public LibraryPageViewModel()
+    // Inyectamos los servicios mediante el contenedor DI
+    public LibraryPageViewModel(
+        IDatabaseService databaseService,
+        MangaService mangaService,
+        IServiceProvider serviceProvider)
     {
+        _databaseService = databaseService;
+        _mangaService = mangaService;
+        _serviceProvider = serviceProvider;
+
         LocalizedTexts();
         _ = LoadMangasByDatabase();
     }
@@ -34,8 +48,8 @@ public partial class LibraryPageViewModel : ViewModelBase
     {
         if (mangaToDelete == null) return;
 
-        // Elimina el manga de la base de datos
-        await DatabaseService.DeleteMangaAsync(mangaToDelete.Url);
+        // Utilizamos la base de datos inyectada
+        await _databaseService.DeleteMangaAsync(mangaToDelete.Url);
 
         // Elimina el manga de la colección visible en la UI
         Mangas.Remove(mangaToDelete);
@@ -45,6 +59,8 @@ public partial class LibraryPageViewModel : ViewModelBase
     private async Task OpenManga(SManga manga)
     {
         if (IsBusy) return;
+
+        IsBusy = true;
         try
         {
             var plugin = await PluginManager.GetPluginAsync(manga.Plugin!);
@@ -54,9 +70,15 @@ public partial class LibraryPageViewModel : ViewModelBase
                 return;
             }
 
-            MangaService.SelectedManga = manga;
-            MangaService.SelectedPlugin = PluginManager.GetPlugin(manga.Plugin!);
-            NavigationHelper.NavigateTo(new ChapterListPageViewModel());
+            // Usamos la instancia del servicio inyectado
+            _mangaService.SelectedManga = manga;
+
+            // Reutilizamos la variable 'plugin' que ya obtuvimos asíncronamente
+            _mangaService.SelectedPlugin = plugin;
+
+            // Resolvemos el ViewModel de la lista de capítulos a través del proveedor
+            var chapterListVm = _serviceProvider.GetRequiredService<ChapterListPageViewModel>();
+            NavigationHelper.NavigateTo(chapterListVm);
         }
         finally
         {
@@ -84,7 +106,8 @@ public partial class LibraryPageViewModel : ViewModelBase
     {
         try
         {
-            var mangasFromDb = await DatabaseService.GetLibraryMangasAsync();
+            // Usamos la base de datos inyectada, eliminando el "new DatabaseService()"
+            var mangasFromDb = await _databaseService.GetLibraryMangasAsync();
             var coverLoadTasks = mangasFromDb.Select(manga => manga.LoadCoverAsync()).ToList();
 
             await Task.WhenAll(coverLoadTasks);

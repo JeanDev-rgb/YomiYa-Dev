@@ -11,34 +11,34 @@ using YomiYa.Source.Online;
 
 namespace YomiYa.Core.Services;
 
-public static class MangaService
+public class MangaService
 {
     #region Static Properties
 
-    public static ParsedHttpSource? SelectedPlugin { get; set; }
-    public static SManga? SelectedManga { get; set; }
-    public static List<SChapter>? ChapterList { get; set; }
-    public static int ChapterIndex { get; set; }
-    private static CancellationTokenSource _searchCancellationTokenSource = new();
+    public ParsedHttpSource? SelectedPlugin { get; set; }
+    public SManga? SelectedManga { get; set; }
+    public List<SChapter>? ChapterList { get; set; }
+    public int ChapterIndex { get; set; }
+    private CancellationTokenSource _searchCancellationTokenSource = new();
 
     // Limitamos a 4 descargas de imágenes simultáneas para controlar el uso de RAM y red.
-    private static readonly SemaphoreSlim ImageDownloadSemaphore = new(4);
+    private readonly SemaphoreSlim ImageDownloadSemaphore = new(4);
 
     #endregion
 
     #region Public Methods
 
-    public static void GetPopularMangas(IProgress<SManga> progress)
+    public void GetPopularMangas(IProgress<SManga> progress)
     {
         _ = FetchAndReportMangasAsync(progress, page => SelectedPlugin!.GetPopularManga(page));
     }
 
-    public static void GetLatestUpdates(IProgress<SManga> progress)
+    public void GetLatestUpdates(IProgress<SManga> progress)
     {
         _ = FetchAndReportMangasAsync(progress, page => SelectedPlugin!.GetLatestUpdates(page));
     }
 
-    public static void SearchManga(string searchText, IProgress<SManga> progress)
+    public void SearchManga(string searchText, IProgress<SManga> progress)
     {
         if (SelectedPlugin is null) return;
 
@@ -53,7 +53,7 @@ public static class MangaService
 
     #region Private Helper Methods
 
-    private static async Task FetchAndReportMangasAsync(IProgress<SManga> progress,
+    private async Task FetchAndReportMangasAsync(IProgress<SManga> progress,
         Func<int, Task<MangasPage>> pageFetcher, CancellationToken cancellationToken = default)
     {
         if (SelectedPlugin is null) return;
@@ -95,7 +95,7 @@ public static class MangaService
         }
     }
 
-    private static async Task<SManga?> ProcessMangaAsync(SManga manga, ParsedHttpSource plugin,
+    private async Task<SManga?> ProcessMangaAsync(SManga manga, ParsedHttpSource plugin,
         CancellationToken cancellationToken)
     {
         manga.Plugin = plugin.Name;
@@ -115,7 +115,7 @@ public static class MangaService
         return manga;
     }
 
-    private static async Task LoadCoverAsync(SManga manga, CancellationToken cancellationToken)
+    private async Task LoadCoverAsync(SManga manga, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(manga.ThumbnailUrl)) return;
 
@@ -132,9 +132,10 @@ public static class MangaService
         }
     }
 
-    private static async Task LoadFavoriteStatusAsync(SManga manga)
+    private async Task LoadFavoriteStatusAsync(SManga manga)
     {
-        var favoriteManga = await DatabaseService.GetMangaByUrlAsync(manga.Url);
+        var _databaseService = new DatabaseService();
+        var favoriteManga = await _databaseService.GetMangaByUrlAsync(manga.Url);
         manga.IsFavorite = favoriteManga?.IsFavorite ?? false;
     }
 
