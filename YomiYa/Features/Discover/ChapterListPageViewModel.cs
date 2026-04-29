@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Navigation;
@@ -51,6 +52,19 @@ public partial class ChapterListPageViewModel : ViewModelBase
     #region Constructor
 
     // El contenedor de servicios inyectará la base de datos y el servicio de manga
+    public ChapterListPageViewModel()
+    {
+        _databaseService = null!;
+        _mangaService = null!;
+
+        // Obtenemos los valores desde la instancia compartida de MangaService
+        Manga = _mangaService.SelectedManga!;
+        Plugin = _mangaService.SelectedPlugin!;
+
+        _ = LoadMangaDetailsAndChaptersAsync();
+    }
+
+    [ActivatorUtilitiesConstructor]
     public ChapterListPageViewModel(IDatabaseService databaseService, MangaService mangaService)
     {
         _databaseService = databaseService;

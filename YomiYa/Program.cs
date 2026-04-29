@@ -42,6 +42,9 @@ internal static class Program
     {
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+#if DEBUG
+            .WithDeveloperTools()
+#endif
             .WithInterFont()
             .LogToTrace();
     }

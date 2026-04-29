@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Database;
 using YomiYa.Core.Imaging;
 using YomiYa.Core.Services;
@@ -32,6 +33,19 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     #region Constructor
 
     // El contenedor de servicios inyecta las dependencias necesarias
+    public ReaderViewModel()
+    {
+        _databaseService = null!;
+        _mangaService = null!;
+
+        // Inicializamos los campos usando la instancia inyectada de MangaService
+        _plugin = _mangaService.SelectedPlugin!;
+        _chapterList = _mangaService.ChapterList!;
+        _chapterIndex = _mangaService.ChapterIndex;
+
+        _ = InitializeChapterAsync();
+    }
+    [ActivatorUtilitiesConstructor]
     public ReaderViewModel(IDatabaseService databaseService, MangaService mangaService)
     {
         _databaseService = databaseService;

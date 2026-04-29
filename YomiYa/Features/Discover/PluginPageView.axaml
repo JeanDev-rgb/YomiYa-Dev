@@ -188,7 +188,7 @@
 
             <TextBox x:Name="SearchTextBox" Grid.Row="1" Classes="SearchBox" Margin="0 16 0 0"
                      Text="{Binding SearchText, Mode=TwoWay}"
-                     Watermark="{Binding SearchMangaText}" />
+                     PlaceholderText="{Binding SearchMangaText}" />
 
             <TabControl Grid.Row="2" Margin="0 8 0 0" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
 
