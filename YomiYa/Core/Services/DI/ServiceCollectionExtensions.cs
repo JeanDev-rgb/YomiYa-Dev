@@ -38,5 +38,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<BrowsePageViewModel>();
         services.AddTransient<HistoryPageViewModel>();
         services.AddTransient<AdPageViewModel>();
+        services.AddTransient<PluginPageViewModel>();
+        services.AddTransient<ChapterListPageViewModel>();
     }
 }

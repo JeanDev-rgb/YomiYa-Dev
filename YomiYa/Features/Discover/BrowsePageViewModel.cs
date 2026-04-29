@@ -25,6 +25,16 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
 
     #region Constructor
 
+    public BrowsePageViewModel()
+    {
+        _serviceProvider = null!;
+        _mangaService = null!;
+        LoadPlugins();
+        LocalizedTexts();
+        PluginManager.OnPluginsChanged += LoadPlugins;
+    }
+
+    [ActivatorUtilitiesConstructor]
     public BrowsePageViewModel(IServiceProvider serviceProvider, MangaService mangaService)
     {
         _serviceProvider = serviceProvider;

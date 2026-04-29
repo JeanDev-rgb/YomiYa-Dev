@@ -21,6 +21,18 @@ public partial class SideBarMenuViewModel : ViewModelBase
 
     #region Constructor
 
+    public SideBarMenuViewModel()
+    {
+        _serviceProvider = null!;
+
+        // Inicializamos la página por defecto usando el ServiceProvider
+        _currentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
+
+        SelectedListItem = Items.First();
+        UpdateLocalizedTexts();
+    }
+
+    [ActivatorUtilitiesConstructor]
     public SideBarMenuViewModel(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;

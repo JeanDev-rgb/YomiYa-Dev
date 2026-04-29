@@ -26,6 +26,17 @@ public partial class LibraryPageViewModel : ViewModelBase
     #region Constructor
 
     // Inyectamos los servicios mediante el contenedor DI
+    public LibraryPageViewModel()
+    {
+        _databaseService = null!;
+        _mangaService = null!;
+        _serviceProvider = null!;
+
+        LocalizedTexts();
+        _ = LoadMangasByDatabase();
+    }
+
+    [ActivatorUtilitiesConstructor]
     public LibraryPageViewModel(
         IDatabaseService databaseService,
         MangaService mangaService,

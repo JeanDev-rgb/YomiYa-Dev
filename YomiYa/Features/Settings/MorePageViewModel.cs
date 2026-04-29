@@ -12,6 +12,7 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Dialogs;
 using YomiYa.Core.IO;
 using YomiYa.Core.Localization;
@@ -39,6 +40,48 @@ public partial class MorePageViewModel : ViewModelBase
     #region Constructor
 
     // El contenedor de servicios inyectará automáticamente estas dependencias
+    public MorePageViewModel()
+    {
+        _dialogService = null!;
+        _driveService = null!;
+        _settingsService = null!;
+
+        AvailableThemes = new ObservableCollection<string>(ThemeManager.AvailableThemes.Keys);
+
+        // Se usa la instancia inyectada para obtener la configuración actual
+        var savedThemePath = _settingsService.Settings.SelectedTheme;
+
+        SelectedTheme = ThemeManager.AvailableThemes
+            .FirstOrDefault(t => t.Value.FilePath == savedThemePath)
+            .Key ?? "Oscuro";
+
+        SelectedLanguage = _settingsService.Settings.SelectedLanguage;
+
+        PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(SelectedLanguage))
+            {
+                LanguageHelper.SetLanguage(SelectedLanguage);
+                _settingsService.Settings.SelectedLanguage = SelectedLanguage;
+                _settingsService.Save();
+            }
+            else if (e.PropertyName == nameof(SelectedTheme) && !string.IsNullOrEmpty(SelectedTheme))
+            {
+                if (ThemeManager.AvailableThemes.TryGetValue(SelectedTheme, out var themeInfo))
+                {
+                    ThemeManager.ApplyTheme(themeInfo.FilePath);
+                    _settingsService.Settings.SelectedTheme = themeInfo.FilePath;
+                    _settingsService.Save();
+                }
+            }
+        };
+
+        UpdateLocalizedTexts();
+
+        _ = CheckAuthStatusAsync();
+    }
+
+    [ActivatorUtilitiesConstructor]
     public MorePageViewModel(
         IDialogService dialogService,
         GoogleDriveSyncService driveService,

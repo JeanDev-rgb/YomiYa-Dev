@@ -23,6 +23,20 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 
     #region Constructors
 
+    public PluginPageViewModel()
+    {
+        _serviceProvider = null!;
+        _mangaService = null!;
+        _databaseService = null!;
+
+        // Usamos la instancia inyectada en lugar de acceso estático
+        Plugin = _mangaService.SelectedPlugin!;
+
+        GetPopularMangas();
+        GetLatestUpdates();
+    }
+
+    [ActivatorUtilitiesConstructor]
     public PluginPageViewModel(
         IServiceProvider serviceProvider,
         MangaService mangaService,
