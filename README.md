@@ -45,3 +45,4 @@ El proyecto se organiza en tres pilares:
 
 ## 📄 Licencia
 
+Este proyecto está bajo una licencia personalizada. Consulta el archivo [LICENSE](./LICENSE) para conocer los términos de uso y las restricciones de comercialización por terceros.
