@@ -1,48 +1,220 @@
 # YomiYa 📖
 
-**YomiYa** es un lector de manga y cómics para escritorio, moderno y ligero, desarrollado con **Avalonia UI** y **.NET 10**. Su arquitectura está diseñada para ofrecer una experiencia fluida en PC, destacando por su sistema de plugins independientes y sincronización en la nube.
+> Un lector de manga y cómics para escritorio, rápido, elegante y extensible, construido con **Avalonia UI** y **.NET 10**.
 
-## ✨ Características Principales
+---
 
-* **Lector de Escritorio Nativo**: Optimizado para Windows y entornos de escritorio mediante el uso de `WinExe` y `net10.0`.
-* **Arquitectura Decoupled**: Implementa el patrón **MVVM** utilizando el *CommunityToolkit.Mvvm* para una separación clara entre la lógica y la interfaz.
-* **Sistema de Plugins EXE**: Los plugins (como *Akaya* o *NovelCool*) funcionan como procesos externos que se comunican vía TCP, evitando que un error en el plugin cierre la aplicación principal.
-* **Sincronización con Google Drive**: Respalda tu biblioteca y progreso directamente en tu cuenta de Google usando el `appDataFolder`.
-* **Personalización Visual**: Sistema dinámico de temas que incluye presets populares como *Catppuccin*, *Tokyo Night* y *Dracula*.
-* **Inyección de Dependencias**: Gestión eficiente de servicios y ViewModels a través de un contenedor de servicios centralizado.
+<div align="center">
 
-## 🛠️ Tecnologías Utilizadas
+![Windows](https://img.shields.io/badge/Windows-Supported-0078D6?style=for-the-badge&logo=windows)
+![Linux](https://img.shields.io/badge/Linux-Supported-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![macOS](https://img.shields.io/badge/macOS-Supported-000000?style=for-the-badge&logo=apple)
 
-* **UI Framework**: [Avalonia UI 12.0.1](https://avaloniaui.net/) con soporte para `CompiledBindings`.
-* **Estética**: [FluentAvalonia](https://github.com/amwx/FluentAvalonia) para una integración visual perfecta con el estilo moderno de Windows.
-* **Persistencia**: SQLite para el manejo de la base de datos local e historial de lectura.
-* **Resiliencia**: [Polly](https://github.com/App-vNext/Polly) para el manejo de reintentos en peticiones de red.
+![Framework](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge)
+![UI](https://img.shields.io/badge/Avalonia-UI-orange?style=for-the-badge)
+![Architecture](https://img.shields.io/badge/Architecture-MVVM-00C896?style=for-the-badge)
 
-## 🚀 Estructura del Proyecto
+</div>
 
-El proyecto se organiza en tres pilares:
+---
 
-1.  **YomiYa (App)**: El ejecutable principal que contiene la interfaz de usuario y la lógica de navegación.
-2.  **JXALib (Core)**: Librería base que define los contratos (`ISource`, `ICatalogueSource`) y modelos comunes.
-3.  **Plugins**: Proyectos independientes que implementan la lógica de extracción (scraping) de sitios específicos.
+## ✨ Características
 
-## 🔧 Configuración para Desarrollo
+### 🖥️ Experiencia de Escritorio Nativa
+Desarrollado con **Avalonia UI** para ofrecer una experiencia moderna y fluida en:
 
-### Requisitos
-* [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
-* Un archivo `credentials.json` en la carpeta del proyecto para habilitar las funciones de Google Drive.
+- Windows
+- Linux
+- macOS
 
-### Instalación
-1.  Clona el repositorio.
-2.  Restaura las dependencias:
-    ```bash
-    dotnet restore
-    ```
-3.  Compila y ejecuta:
-    ```bash
-    dotnet run --project YomiYa/YomiYa.csproj
-    ```
+Compatible con arquitecturas modernas y optimizado para lectura prolongada.
 
-## 📄 Licencia
+---
 
-Este proyecto está bajo una licencia personalizada. Consulta el archivo [LICENSE](./LICENSE) para conocer los términos de uso y las restricciones de comercialización por terceros.
+### 🔌 Sistema de Plugins Aislados
+Cada fuente funciona como un proceso independiente (`EXE`/binario) conectado vía TCP.
+
+Esto permite:
+- Evitar crashes globales.
+- Actualizar plugins sin tocar el core.
+- Mejor aislamiento y estabilidad.
+- Desarrollo modular y escalable.
+
+---
+
+### ☁️ Sincronización en la Nube
+Integra respaldo automático mediante **Google Drive** usando `appDataFolder`.
+
+Sincroniza:
+- Biblioteca
+- Historial de lectura
+- Progreso
+- Configuraciones
+
+---
+
+### 🎨 Personalización Visual
+Motor dinámico de temas inspirado en setups modernos.
+
+Incluye presets como:
+- Catppuccin
+- Tokyo Night
+- Dracula
+- Nord
+- Gruvbox
+
+---
+
+### 🧩 Arquitectura Moderna
+Implementa:
+- Patrón **MVVM**
+- **Dependency Injection**
+- Navegación desacoplada
+- Servicios centralizados
+- ViewModels reactivos con `CommunityToolkit.Mvvm`
+
+---
+
+# 🛠️ Stack Tecnológico
+
+| Área | Tecnología |
+|---|---|
+| UI Framework | Avalonia UI 12 |
+| Diseño Fluent | FluentAvalonia |
+| Lenguaje | C# / .NET 10 |
+| Base de Datos | SQLite |
+| Networking | TCP Sockets |
+| Resiliencia | Polly |
+| Arquitectura | MVVM |
+| Sincronización | Google Drive API |
+
+---
+
+# 🧱 Arquitectura del Proyecto
+
+```txt
+YomiYa
+│
+├── YomiYa/          → Aplicación principal
+├── JXALib/          → Core y contratos compartidos
+└── Plugins/         → Fuentes externas desacopladas
+```
+
+---
+
+## 📦 Componentes
+
+### 🧠 YomiYa
+Aplicación principal.
+
+Contiene:
+- UI
+- Navegación
+- Gestión de biblioteca
+- Configuración
+- Comunicación con plugins
+
+---
+
+### 📚 JXALib
+Librería compartida que define:
+- Contratos
+- Interfaces
+- Modelos base
+- Comunicación común
+
+Ejemplos:
+
+```csharp
+ISource
+ICatalogueSource
+```
+
+---
+
+### 🔌 Plugins
+Módulos independientes encargados del scraping y extracción de contenido.
+
+Ejemplos:
+- Akaya
+- NovelCool
+
+Cada plugin:
+- Corre en su propio proceso.
+- Se comunica vía TCP.
+- Puede actualizarse independientemente.
+
+---
+
+# 🚀 Inicio Rápido
+
+## 📋 Requisitos
+
+- .NET 10 SDK
+- Windows, Linux o macOS
+- `credentials.json` para Google Drive
+
+---
+
+## ⚙️ Instalación
+
+### 1️⃣ Clonar repositorio
+
+```bash
+git clone https://github.com/JeanDev-rgb/YomiYa-Dev.git
+```
+
+### 2️⃣ Restaurar dependencias
+
+```bash
+dotnet restore
+```
+
+### 3️⃣ Ejecutar proyecto
+
+```bash
+dotnet run --project YomiYa/YomiYa.csproj
+```
+
+---
+
+# 🎨 Filosofía de Diseño
+
+YomiYa busca combinar:
+
+- ⚡ Rendimiento nativo
+- 🧩 Modularidad extrema
+- 🎨 Interfaces modernas
+- ☁️ Sincronización transparente
+- 📖 Experiencia de lectura limpia
+
+Todo sin depender de Electron ni tecnologías web pesadas.
+
+---
+
+# 📸 Preview
+
+```txt
+(Próximamente screenshots aquí 👀)
+```
+
+---
+
+# 📄 Licencia
+
+Este proyecto utiliza una licencia personalizada.
+
+Consulta el archivo: [Licencia Completa aquí](./LICENSE).
+
+para conocer:
+- Restricciones comerciales
+- Distribución
+- Uso de terceros
+
+---
+
+<div align="center">
+
+### ⭐ Si te gusta YomiYa, dale una estrella al proyecto ⭐
+
+</div>
