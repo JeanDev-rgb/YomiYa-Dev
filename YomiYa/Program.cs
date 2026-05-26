@@ -4,7 +4,7 @@ using Avalonia;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Settings;
-using YomiYa.Core.Services.DI; // Asegúrate de importar tus extensiones
+using YomiYa.Core.Services.DI;
 
 namespace YomiYa;
 
