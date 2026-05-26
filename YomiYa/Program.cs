@@ -1,50 +1,37 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 using Avalonia;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
 using YomiYa.Core.Settings;
-using YomiYa.Core.Services.DI;
 
 namespace YomiYa;
 
 internal static class Program
 {
-    // Propiedad global para acceder al contenedor desde App.axaml.cs
-    public static IServiceProvider ServiceProvider { get; private set; } = null!;
-
+    // Initialization code. Don't use any Avalonia, third-party APIs or any
+    // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
+    // yet and stuff might break.
     [STAThread]
     public static void Main(string[] args)
     {
-        // 1. Configurar el contenedor de servicios
-        var collection = new ServiceCollection();
-        collection.AddCommonServices();
-        collection.AddViewModels();
+        // Carga la configuración de forma síncrona
+        SettingsService.Load();
 
-        ServiceProvider = collection.BuildServiceProvider();
+        // Inicializa la base de datos
+        DatabaseService.InitializeDatabase().GetAwaiter().GetResult();
 
-        // 2. Obtener las instancias desde el contenedor (NO usar 'new')
-        var settingsService = ServiceProvider.GetRequiredService<ISettingsService>();
-        var databaseService = ServiceProvider.GetRequiredService<IDatabaseService>();
-
-        // 3. Inicialización lógica
-        settingsService.Load();
-        databaseService.InitializeDatabase().GetAwaiter().GetResult();
-
-        // 4. Aplicar idioma usando la configuración cargada
-        LanguageHelper.SetLanguage(settingsService.Settings.SelectedLanguage);
+        // Aplica el idioma guardado
+        LanguageHelper.SetLanguage(SettingsService.Settings.SelectedLanguage);
 
         BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
     }
 
-    public static AppBuilder BuildAvaloniaApp()
+    // Avalonia configuration, don't remove; also used by visual designer.
+    private static AppBuilder BuildAvaloniaApp()
     {
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
-#if DEBUG
-            .WithDeveloperTools()
-#endif
             .WithInterFont()
             .LogToTrace();
     }
