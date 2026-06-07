@@ -11,7 +11,7 @@ using YomiYa.Domain.Models;
 
 namespace YomiYa.Core.Database;
 
-public static class DatabaseService
+public class DatabaseService : IDatabaseService
 {
     private static readonly string DbPath = PathHelper.GetDatabasePath();
 
@@ -23,12 +23,12 @@ public static class DatabaseService
         if (directory is not null) Directory.CreateDirectory(directory);
     }
 
-    private static string GetConnectionString()
+    private string GetConnectionString()
     {
         return $"Data Source={DbPath}";
     }
 
-    public static async Task InitializeDatabase()
+    public async Task InitializeDatabase()
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -73,7 +73,7 @@ public static class DatabaseService
 
     // --- MÉTODOS DE INSERCIÓN Y ACTUALIZACIÓN ---
 
-    private static async Task<long?> GetMangaId(SqliteConnection connection, string mangaUrl)
+    private async Task<long?> GetMangaId(SqliteConnection connection, string mangaUrl)
     {
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -84,7 +84,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task<long> InsertManga(SManga manga)
+    public async Task<long> InsertManga(SManga manga)
     {
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -117,7 +117,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task InsertChapters(long mangaId, IEnumerable<SChapter> chapters)
+    public async Task InsertChapters(long mangaId, IEnumerable<SChapter> chapters)
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -144,7 +144,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task SetMangaFavoriteStatusAsync(SManga manga, bool isFavorite)
+    public async Task SetMangaFavoriteStatusAsync(SManga manga, bool isFavorite)
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -162,7 +162,7 @@ public static class DatabaseService
     /// <summary>
     ///     Guarda el progreso de un capítulo y actualiza su fecha en el historial.
     /// </summary>
-    public static async Task SetChapterProgress(string chapterUrl, int lastPageRead, bool isRead)
+    public async Task SetChapterProgress(string chapterUrl, int lastPageRead, bool isRead)
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -201,7 +201,7 @@ public static class DatabaseService
 
     // --- Métodos de Consulta ---
 
-    public static async Task<SManga?> GetMangaByUrlAsync(string mangaUrl)
+    public async Task<SManga?> GetMangaByUrlAsync(string mangaUrl)
     {
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -239,7 +239,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task<List<SChapter>> GetChaptersAsync(string mangaUrl)
+    public async Task<List<SChapter>> GetChaptersAsync(string mangaUrl)
     {
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -272,7 +272,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task<List<SManga>> GetLibraryMangasAsync()
+    public async Task<List<SManga>> GetLibraryMangasAsync()
     {
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -299,7 +299,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task<List<(SManga Manga, SChapter Chapter)>> GetHistoryAsync()
+    public async Task<List<(SManga Manga, SChapter Chapter)>> GetHistoryAsync()
     {
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -341,7 +341,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task DeleteHistoryItemAsync(string chapterUrl)
+    public async Task DeleteHistoryItemAsync(string chapterUrl)
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -363,7 +363,7 @@ public static class DatabaseService
         });
     }
 
-    public static async Task ClearHistoryAsync()
+    public async Task ClearHistoryAsync()
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
@@ -377,7 +377,7 @@ public static class DatabaseService
     }
 
     // --- MÉTODO NUEVO PARA ELIMINAR MANGAS ---
-    public static async Task DeleteMangaAsync(string url)
+    public async Task DeleteMangaAsync(string url)
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
         {

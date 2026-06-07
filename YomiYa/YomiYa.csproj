@@ -39,8 +39,13 @@
         <PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
         <PackageReference Include="Google.Apis.Drive.v3" Version="1.73.0.4112" />
         <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.7" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />
         <PackageReference Include="Polly" Version="8.6.6" />
         <PackageReference Include="ScrapySharp" Version="3.0.0" />
+		<PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.1">
+			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+		</PackageReference>
     </ItemGroup>
 
     <ItemGroup>

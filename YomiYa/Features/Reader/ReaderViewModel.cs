@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Database;
 using YomiYa.Core.Imaging;
 using YomiYa.Core.Services;
@@ -18,26 +19,53 @@ namespace YomiYa.Features.Reader;
 
 public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDisposable
 {
+    // Dependencias inyectadas
+    private readonly IDatabaseService _databaseService;
+    private readonly MangaService _mangaService;
+
+    #region Fields
+
+    private readonly ParsedHttpSource _plugin;
+    private readonly List<SChapter> _chapterList;
+
+    #endregion
+
     #region Constructor
 
+    // El contenedor de servicios inyecta las dependencias necesarias
     public ReaderViewModel()
     {
+        _databaseService = null!;
+        _mangaService = null!;
+
+        // Inicializamos los campos usando la instancia inyectada de MangaService
+        _plugin = _mangaService.SelectedPlugin!;
+        _chapterList = _mangaService.ChapterList!;
+        _chapterIndex = _mangaService.ChapterIndex;
+
+        _ = InitializeChapterAsync();
+    }
+    [ActivatorUtilitiesConstructor]
+    public ReaderViewModel(IDatabaseService databaseService, MangaService mangaService)
+    {
+        _databaseService = databaseService;
+        _mangaService = mangaService;
+
+        // Inicializamos los campos usando la instancia inyectada de MangaService
+        _plugin = _mangaService.SelectedPlugin!;
+        _chapterList = _mangaService.ChapterList!;
+        _chapterIndex = _mangaService.ChapterIndex;
+
         _ = InitializeChapterAsync();
     }
 
     #endregion
 
-    #region Fields
-
-    private readonly ParsedHttpSource _plugin = MangaService.SelectedPlugin!;
-    private readonly List<SChapter> _chapterList = MangaService.ChapterList!;
-
-    #endregion
-
     #region Properties
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(SelectedChapter))]
-    private int _chapterIndex = MangaService.ChapterIndex;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedChapter))]
+    private int _chapterIndex;
 
     public SChapter? SelectedChapter => _chapterList.ElementAtOrDefault(ChapterIndex);
 
@@ -199,8 +227,8 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
             SelectedChapter.LastPageRead = value;
             SelectedChapter.IsRead = value >= Pages.Count - 1;
 
-            // Esperamos a que la operación de guardado termine y manejamos posibles errores.
-            await DatabaseService.SetChapterProgress(SelectedChapter.Url, SelectedChapter.LastPageRead,
+            // Usamos la instancia de _databaseService inyectada en lugar de crear una nueva
+            await _databaseService.SetChapterProgress(SelectedChapter.Url, SelectedChapter.LastPageRead,
                 SelectedChapter.IsRead);
         }
         catch (Exception ex)
