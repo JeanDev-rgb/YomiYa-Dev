@@ -23,7 +23,7 @@ public partial class ReaderView : Window
         DataContextChanged += OnDataContextChanged;
 
         var cascadeScrollViewer = this.FindControl<ScrollViewer>("CascadeScrollViewer");
-        if (cascadeScrollViewer != null) cascadeScrollViewer.ScrollChanged += CascadeScrollViewer_ScrollChanged;
+        cascadeScrollViewer?.ScrollChanged += CascadeScrollViewer_ScrollChanged;
 
         _scrollDebounceTimer = new DispatcherTimer
         {
@@ -51,7 +51,6 @@ public partial class ReaderView : Window
         _scrollDebounceTimer.Start();
     }
 
-    [Obsolete("Obsolete")]
     private void ScrollDebounceTimer_Tick(object? sender, EventArgs e)
     {
         _scrollDebounceTimer.Stop();
@@ -60,7 +59,6 @@ public partial class ReaderView : Window
         UpdateCurrentPageFromScrollPosition(vm);
     }
 
-    [Obsolete("Obsolete")]
     private void UpdateCurrentPageFromScrollPosition(ReaderViewModel vm)
     {
         var scrollViewer = this.FindControl<ScrollViewer>("CascadeScrollViewer");
