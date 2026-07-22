@@ -1,7 +1,7 @@
 namespace YomiYa.Core.Exceptions;
 
 /// <summary>
-/// Se lanza cuando ocurre un error durante el análisis del contenido HTML.
+///     Se lanza cuando ocurre un error durante el análisis del contenido HTML.
 /// </summary>
 public class HtmlParsingException : Exception
 {

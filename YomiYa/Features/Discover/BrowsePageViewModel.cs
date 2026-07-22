@@ -19,9 +19,12 @@ namespace YomiYa.Features.Discover;
 
 public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
 {
+    private readonly MangaService _mangaService;
+
     // Dependencias inyectadas
     private readonly IServiceProvider _serviceProvider;
-    private readonly MangaService _mangaService;
+
+    public IRelayCommand SearchCommand => SearchMangaCommand;
 
     #region Constructor
 
@@ -48,8 +51,6 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
 
     #endregion
 
-    public IRelayCommand SearchCommand => SearchMangaCommand;
-
     #region Properties
 
     [ObservableProperty] private string? _title;
@@ -74,10 +75,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
         // esté configurado para buscar archivos ".exe" y no ".dll".
         var pluginPaths = await PathHelper.SelectPath(LanguageHelper.GetText("SelectPluginFiles"), true);
 
-        if (pluginPaths is not null && pluginPaths.Count != 0)
-        {
-            PluginManager.InstallPlugins(pluginPaths);
-        }
+        if (pluginPaths is not null && pluginPaths.Count != 0) PluginManager.InstallPlugins(pluginPaths);
     }
 
     // CAMBIO CLAVE: Se quitó el "static" para poder acceder a los servicios inyectados
@@ -99,15 +97,11 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     {
         if (plugin is null) return;
 
-        bool success = PluginManager.DeletePlugin(plugin.Name);
+        var success = PluginManager.DeletePlugin(plugin.Name);
         if (success)
-        {
             // Usamos la instancia inyectada
             if (_mangaService.SelectedPlugin?.Name == plugin.Name)
-            {
                 _mangaService.SelectedPlugin = null;
-            }
-        }
     }
 
     [RelayCommand]
@@ -139,11 +133,9 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
 
         // Si tienes texto en el buscador, mantenemos el filtro al recargar
         if (!string.IsNullOrWhiteSpace(SearchText))
-        {
             loadedPlugins = loadedPlugins
                 .Where(p => p.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
                 .ToList();
-        }
 
         UpdatePluginsList(loadedPlugins);
     }
@@ -151,10 +143,7 @@ public partial class BrowsePageViewModel : ViewModelBase, ISearchableByKeyboard
     private void UpdatePluginsList(List<ParsedHttpSource> newPlugins)
     {
         Plugins.Clear();
-        foreach (var plugin in newPlugins)
-        {
-            Plugins.Add(plugin);
-        }
+        foreach (var plugin in newPlugins) Plugins.Add(plugin);
     }
 
     protected override void UpdateLocalizedTexts()

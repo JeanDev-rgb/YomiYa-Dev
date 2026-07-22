@@ -18,9 +18,9 @@
                     HorizontalAlignment="Center"
                     Command="{Binding $parent[ItemsControl].((discover:PluginPageViewModel)DataContext).OpenMangaCommand}"
                     CommandParameter="{Binding}">
-            
+
                 <Grid Height="525" Width="350">
-        
+
                     <Image Source="{Binding Cover}" Stretch="UniformToFill" />
 
                     <Button Classes="FavoriteButton"

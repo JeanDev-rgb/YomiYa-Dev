@@ -28,19 +28,15 @@ public class App : Application
             ThemeManager.ApplyTheme(settingsService.Settings.SelectedTheme);
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
                 desktop.MainWindow = new MainWindow
                 {
                     DataContext = mainViewModel
                 };
-            }
             else if (ApplicationLifetime is ISingleViewApplicationLifetime singleView)
-            {
                 singleView.MainView = new MainWindow
                 {
                     DataContext = mainViewModel
                 };
-            }
 
             base.OnFrameworkInitializationCompleted();
         }

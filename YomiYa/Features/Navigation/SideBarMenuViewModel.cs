@@ -11,7 +11,10 @@ using YomiYa.Core.Localization;
 using YomiYa.Features.Ad;
 using YomiYa.Features.Discover;
 using YomiYa.Features.Library;
+using YomiYa.Features.Points;
 using YomiYa.Features.Settings;
+using YomiYa.Features.Store;
+using YomiYa.Features.Support;
 
 namespace YomiYa.Features.Navigation;
 
@@ -19,14 +22,24 @@ public partial class SideBarMenuViewModel : ViewModelBase
 {
     private readonly IServiceProvider _serviceProvider;
 
+    #region Commands
+
+    [RelayCommand]
+    private void TriggerPane()
+    {
+        IsPaneOpen = !IsPaneOpen;
+    }
+
+    #endregion
+
     #region Constructor
 
     public SideBarMenuViewModel()
     {
-        _serviceProvider = null!;
+        _serviceProvider = Program.ServiceProvider;
 
         // Inicializamos la página por defecto usando el ServiceProvider
-        _currentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
+        CurrentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
 
         SelectedListItem = Items.First();
         UpdateLocalizedTexts();
@@ -38,20 +51,10 @@ public partial class SideBarMenuViewModel : ViewModelBase
         _serviceProvider = serviceProvider;
 
         // Inicializamos la página por defecto usando el ServiceProvider
-        _currentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
+        CurrentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
 
         SelectedListItem = Items.First();
         UpdateLocalizedTexts();
-    }
-
-    #endregion
-
-    #region Commands
-
-    [RelayCommand]
-    private void TriggerPane()
-    {
-        IsPaneOpen = !IsPaneOpen;
     }
 
     #endregion
@@ -67,6 +70,9 @@ public partial class SideBarMenuViewModel : ViewModelBase
         new(typeof(LibraryPageViewModel), "Library", "Library"),
         new(typeof(BrowsePageViewModel), "Browse", "Browse"),
         new(typeof(HistoryPageViewModel), "History", "History"),
+        new(typeof(StorePageViewModel), "ShoppingCart", "Lootbar"),
+        new(typeof(PointsPageViewModel), "Star", "PointsTitle"),
+        new(typeof(SupportPageViewModel), "HeartFilled", "SupportTitle"),
         new(typeof(MorePageViewModel), "More", "More"),
         new(typeof(AdPageViewModel), "Dollar", "Reward1Dollar")
     ];
@@ -97,6 +103,8 @@ public partial class ListItemTemplate : ObservableObject
 {
     private readonly string? _translationKey;
 
+    [ObservableProperty] private string? _label;
+
     public ListItemTemplate(Type type, string iconKey, string? translationKey)
     {
         ModelType = type;
@@ -107,14 +115,13 @@ public partial class ListItemTemplate : ObservableObject
         UpdateLabel();
     }
 
+    public Type ModelType { get; set; }
+    public StreamGeometry ListItemIcon { get; set; }
+
     public void UpdateLabel()
     {
         Label = _translationKey == null
             ? ModelType.Name.Replace("PageViewModel", string.Empty)
             : LanguageHelper.GetText(_translationKey);
     }
-
-    [ObservableProperty] private string? _label;
-    public Type ModelType { get; set; }
-    public StreamGeometry ListItemIcon { get; set; }
 }

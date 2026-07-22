@@ -4,8 +4,9 @@ namespace YomiYa.Extensions.Es;
 
 public class NovelCoolSettings
 {
-    // Puedes definir aquí qué idiomas vienen activados por defecto la primera vez
-    public List<string> SelectedLanguages { get; set; } = [];
+    // Ruta donde se guardará el JSON de configuración de este plugin
+    private static readonly string SettingsFilePath =
+        Path.Combine(AppContext.BaseDirectory, "Settings", "novelcool-settings.json");
 
     public NovelCoolSettings()
     {
@@ -13,31 +14,25 @@ public class NovelCoolSettings
         SelectedLanguages.Add(culture);
     }
 
-    // Ruta donde se guardará el JSON de configuración de este plugin
-    private static readonly string SettingsFilePath = Path.Combine(AppContext.BaseDirectory, "Settings", "novelcool-settings.json");
+    // Puedes definir aquí qué idiomas vienen activados por defecto la primera vez
+    public List<string> SelectedLanguages { get; set; } = [];
 
     public void Save()
     {
         // WriteIndented hace que el JSON sea legible (con saltos de línea) si necesitas debugearlo
         var options = new JsonSerializerOptions { WriteIndented = true };
         var json = JsonSerializer.Serialize(this, options);
-        
+
         // Asegurarnos de que el directorio Plugins exista antes de guardar
         var directory = Path.GetDirectoryName(SettingsFilePath);
-        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory)) Directory.CreateDirectory(directory);
 
         File.WriteAllText(SettingsFilePath, json);
     }
 
     public static NovelCoolSettings Load()
     {
-        if (!File.Exists(SettingsFilePath))
-        {
-            return new NovelCoolSettings();
-        }
+        if (!File.Exists(SettingsFilePath)) return new NovelCoolSettings();
 
         try
         {

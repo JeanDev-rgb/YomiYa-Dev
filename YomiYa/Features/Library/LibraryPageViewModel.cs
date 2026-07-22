@@ -76,10 +76,7 @@ public partial class LibraryPageViewModel : ViewModelBase
         {
             var plugin = await PluginManager.GetPluginAsync(manga.Plugin!);
 
-            if (plugin is null)
-            {
-                return;
-            }
+            if (plugin is null) return;
 
             // Usamos la instancia del servicio inyectado
             _mangaService.SelectedManga = manga;

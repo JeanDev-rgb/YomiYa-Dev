@@ -8,10 +8,7 @@ public class TypeToBoolConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value == null || parameter as Type == null)
-        {
-            return false;
-        }
+        if (value == null || parameter as Type == null) return false;
 
         return ((Type)parameter).IsInstanceOfType(value);
     }

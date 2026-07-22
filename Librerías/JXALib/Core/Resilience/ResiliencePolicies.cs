@@ -13,7 +13,7 @@ public static class ResiliencePolicies
             .HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
             .Or<HttpRequestException>()
             .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (outcome, timespan, retryAttempt, context) =>
+                (outcome, timespan, retryAttempt, context) =>
                 {
                     Console.WriteLine(
                         $"[HTTP Retry] Retrying request... Attempt {retryAttempt}. Waiting {timespan.TotalSeconds}s. Reason: {outcome.Exception?.Message ?? outcome.Result.ReasonPhrase}");
@@ -27,7 +27,7 @@ public static class ResiliencePolicies
             .HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
             .Or<HttpRequestException>()
             .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(retryAttempt),
-                onRetry: (outcome, timespan, retryAttempt, context) =>
+                (outcome, timespan, retryAttempt, context) =>
                 {
                     Console.WriteLine(
                         $"[Image Download Retry] Retrying... Attempt {retryAttempt}. Waiting {timespan.TotalSeconds}s. Reason: {outcome.Exception?.Message ?? outcome.Result.ReasonPhrase}");
@@ -40,7 +40,7 @@ public static class ResiliencePolicies
         return Policy
             .Handle<SqliteException>(e => e.SqliteErrorCode == 5) // SQLITE_BUSY
             .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromMilliseconds(100 * retryAttempt),
-                onRetry: (exception, timespan, retryAttempt, context) =>
+                (exception, timespan, retryAttempt, context) =>
                 {
                     Console.WriteLine(
                         $"[DB Retry] Retrying operation... Attempt {retryAttempt}. Waiting {timespan.TotalMilliseconds}ms. Reason: {exception.Message}");

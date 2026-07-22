@@ -6,12 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using YomiYa.Core.Exceptions;
-using YomiYa.Core.IPC;
 using YomiYa.Core.IO;
-using YomiYa.Core.Services;
+using YomiYa.Core.IPC;
 using YomiYa.Source.Online;
 
 namespace YomiYa.Core.Plugins;
@@ -21,23 +21,29 @@ public class PluginManager
     private static readonly List<ParsedHttpSource> _plugins = new();
     private static readonly Dictionary<string, (ParsedHttpSource plugin, string exePath)> _pluginLookup = new();
     private static Task _initializationTask;
-    public static event Action OnPluginsChanged;
 
     static PluginManager()
     {
         if (_initializationTask == null || _initializationTask.IsCompleted)
-        {
             _initializationTask = LoadPluginsAsync();
-        }
     }
+
+    public static event Action OnPluginsChanged;
 
     private static int GetAvailablePort()
     {
-        TcpListener l = new TcpListener(IPAddress.Loopback, 0);
-        l.Start();
-        int port = ((IPEndPoint)l.LocalEndpoint).Port;
-        l.Stop();
+        var listener = new TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
         return port;
+    }
+
+    private static bool IsExecutable(string path)
+    {
+        var fileInfo = new FileInfo(path);
+        return !fileInfo.Attributes.HasFlag(FileAttributes.Directory) &&
+               (OperatingSystem.IsWindows() || fileInfo.Exists);
     }
 
     private static async Task LoadPluginsAsync()
@@ -51,13 +57,36 @@ public class PluginManager
         _plugins.Clear();
         _pluginLookup.Clear();
 
-        var pluginFiles = Directory.GetFiles(PathHelper.PluginsPath, "*.exe");
+        string[] pluginFiles = OperatingSystem.IsWindows()
+            ? Directory.GetFiles(PathHelper.PluginsPath, "*.exe")
+            : Directory.GetFiles(PathHelper.PluginsPath)
+                       .Where(IsExecutable)
+                       .ToArray();
 
         foreach (var pluginPath in pluginFiles)
         {
             try
             {
-                int port = GetAvailablePort();
+                // En Linux/macOS: asegurarse de que sea ejecutable
+                if (!OperatingSystem.IsWindows())
+                {
+                    try
+                    {
+                        var chmod = new ProcessStartInfo("chmod", $"+x \"{pluginPath}\"")
+                        {
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+                        Process.Start(chmod)?.WaitForExit();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[PluginManager] No se pudo dar permisos de ejecución a {pluginPath}: {ex.Message}");
+                        continue;
+                    }
+                }
+
+                var port = GetAvailablePort();
                 var server = new PluginTcpServer();
                 server.Start(port);
 
@@ -68,12 +97,11 @@ public class PluginManager
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
-                var process = Process.Start(processInfo);
 
+                var process = Process.Start(processInfo);
                 if (process == null) throw new Exception("No se pudo iniciar el proceso del plugin.");
 
-                // Espera inteligente
-                await server.WaitForConnectionAsync(5000);
+                await server.WaitForConnectionAsync();
 
                 var response = await server.SendRequestAsync("GetMetadata");
                 var metadata = response.GetPayload<JsonElement>();
@@ -89,8 +117,7 @@ public class PluginManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine(new PluginLoadException($"Error al cargar el plugin EXE {pluginPath}: {ex.Message}",
-                    ex));
+                Console.WriteLine(new PluginLoadException($"Error al cargar el plugin {pluginPath}: {ex.Message}", ex));
             }
         }
 
@@ -102,20 +129,16 @@ public class PluginManager
         if (_initializationTask != null && !_initializationTask.IsCompleted)
         {
             Console.WriteLine("[PluginManager] La UI pidió un plugin pero aún se están conectando. Esperando...");
-            _initializationTask.Wait();
+            _initializationTask.Wait(); // Bloquea de forma segura porque ya es una operación externa
         }
 
         if (!string.IsNullOrEmpty(name) && _pluginLookup.TryGetValue(name, out var entry))
-        {
             return entry.plugin;
-        }
 
-        // Fallback seguro
         var fallbackPlugin = _plugins.FirstOrDefault();
         if (fallbackPlugin != null)
         {
-            Console.WriteLine(
-                $"[PluginManager] No se encontró '{name}', usando '{fallbackPlugin.Name}' como repuesto.");
+            Console.WriteLine($"[PluginManager] No se encontró '{name}', usando '{fallbackPlugin.Name}' como repuesto.");
             return fallbackPlugin;
         }
 
@@ -128,10 +151,10 @@ public class PluginManager
         if (_initializationTask != null && !_initializationTask.IsCompleted)
         {
             Console.WriteLine("[PluginManager] Esperando a que los plugins terminen de cargar...");
-            await _initializationTask; // Espera asíncrona (no bloquea)
+            await _initializationTask;
         }
 
-        return GetPlugin(name); // Llama al método original que ya tiene los datos listos
+        return GetPlugin(name);
     }
 
     public static List<ParsedHttpSource> GetAllPlugins()
@@ -142,12 +165,8 @@ public class PluginManager
     private static void UnloadPlugins()
     {
         foreach (var plugin in _plugins)
-        {
             if (plugin is IDisposable disposablePlugin)
-            {
                 disposablePlugin.Dispose();
-            }
-        }
 
         _plugins.Clear();
         _pluginLookup.Clear();
@@ -171,7 +190,7 @@ public class PluginManager
 
         try
         {
-            System.Threading.Thread.Sleep(200);
+            Thread.Sleep(200);
             if (File.Exists(pluginEntry.exePath))
             {
                 File.Delete(pluginEntry.exePath);
@@ -195,11 +214,7 @@ public class PluginManager
 
     public static void InstallPlugins(List<string> pluginPaths)
     {
-        // 1. Asegurarnos de que la carpeta existe ANTES de copiar
-        if (!Directory.Exists(PathHelper.PluginsPath))
-        {
-            Directory.CreateDirectory(PathHelper.PluginsPath);
-        }
+        if (!Directory.Exists(PathHelper.PluginsPath)) Directory.CreateDirectory(PathHelper.PluginsPath);
 
         foreach (var pluginPath in pluginPaths)
         {

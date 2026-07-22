@@ -87,11 +87,11 @@
         </Style>
 
         <Style Selector="Button.CardButton">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Width" Value="32"/>
-            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="CornerRadius" Value="4" />
             <Setter Property="Transitions">
                 <Transitions>
                     <BrushTransition Property="Background" Duration="0.15" />
@@ -100,8 +100,8 @@
             </Setter>
         </Style>
         <Style Selector="Button.CardButton:pointerover">
-            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         </Style>
 
         <Style Selector="TextBlock.Kamoji">
@@ -130,37 +130,37 @@
             <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Plugins}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                            <Border Classes="PluginCard">
-                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
-                                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="8">
-                                        <TextBlock Classes="CardTitle" Text="{Binding Name}" />
-                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <TextBlock Classes="CardSubtitle" Text="{Binding Version}" />
-                                            <TextBlock Classes="CardSubtitle" Text="{Binding Lang}" />
-                                        </StackPanel>
+                        <Border Classes="PluginCard">
+                            <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
+                                <StackPanel Grid.Row="0" Grid.Column="0" Spacing="8">
+                                    <TextBlock Classes="CardTitle" Text="{Binding Name}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <TextBlock Classes="CardSubtitle" Text="{Binding Version}" />
+                                        <TextBlock Classes="CardSubtitle" Text="{Binding Lang}" />
                                     </StackPanel>
-            
-                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="4">
-                                        <Button Classes="CardButton"
-                                                IsVisible="{Binding ., Converter={StaticResource TypeToBoolConverter}, ConverterParameter={x:Type interfaces:IConfigurableSource}}"
-                                                Click="SettingsButton_OnClick">
-                                            <PathIcon Data="{StaticResource SettingsRegular}" />
-                                        </Button>
+                                </StackPanel>
 
-                                        <Button Classes="CardButton"
-                                                Command="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).DeletePluginCommand}"
-                                                CommandParameter="{Binding}">
-                                            <PathIcon Data="{StaticResource DeleteRegular}" Foreground="#E81123" />
-                                        </Button>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                                    <Button Classes="CardButton"
+                                            IsVisible="{Binding ., Converter={StaticResource TypeToBoolConverter}, ConverterParameter={x:Type interfaces:IConfigurableSource}}"
+                                            Click="SettingsButton_OnClick">
+                                        <PathIcon Data="{StaticResource SettingsRegular}" />
+                                    </Button>
 
-                                        <Button Classes="CardButton"
-                                                Command="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).OpenPluginCommand}"
-                                                CommandParameter="{Binding}">
-                                            <PathIcon Data="{StaticResource ArrowRightRegular}" />
-                                        </Button>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
+                                    <Button Classes="CardButton"
+                                            Command="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).DeletePluginCommand}"
+                                            CommandParameter="{Binding}">
+                                        <PathIcon Data="{StaticResource DeleteRegular}" Foreground="#E81123" />
+                                    </Button>
+
+                                    <Button Classes="CardButton"
+                                            Command="{Binding $parent[UserControl].((discover:BrowsePageViewModel)DataContext).OpenPluginCommand}"
+                                            CommandParameter="{Binding}">
+                                        <PathIcon Data="{StaticResource ArrowRightRegular}" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 

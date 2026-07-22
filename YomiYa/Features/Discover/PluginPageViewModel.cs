@@ -16,10 +16,14 @@ namespace YomiYa.Features.Discover;
 
 public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 {
+    private readonly IDatabaseService _databaseService;
+
+    private readonly MangaService _mangaService;
+
     // Dependencias inyectadas
     private readonly IServiceProvider _serviceProvider;
-    private readonly MangaService _mangaService;
-    private readonly IDatabaseService _databaseService;
+
+    public IRelayCommand SearchCommand => SearchMangaCommand;
 
     #region Constructors
 
@@ -54,8 +58,6 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     }
 
     #endregion
-
-    public IRelayCommand SearchCommand => SearchMangaCommand;
 
     #region Properties
 

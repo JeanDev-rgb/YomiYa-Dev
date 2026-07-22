@@ -149,7 +149,7 @@ public partial class MorePageViewModel : ViewModelBase
         ResetText = LanguageHelper.GetText("Reset");
         SaveText = LanguageHelper.GetText("Save");
         UsernameOptionalText = LanguageHelper.GetText("UsernameOptional");
-        CloudSynchronizationText = LanguageHelper.GetText("CloudSynchronization");
+        CloudSynchronizationText = LanguageHelper.GetText("CloudSynchronization") + " (BETA)";
         SignInWithGoogleDriveText = LanguageHelper.GetText("SignInWithGoogleDrive");
         SignOutText = LanguageHelper.GetText("SignOut");
         WaitingForAction = LanguageHelper.GetText("WaitingForAction");

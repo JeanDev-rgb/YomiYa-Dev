@@ -8,7 +8,10 @@ using YomiYa.Features.Library;
 using YomiYa.Features.Main;
 using YomiYa.Features.Navigation;
 using YomiYa.Features.Reader;
+using YomiYa.Features.Points;
 using YomiYa.Features.Settings;
+using YomiYa.Features.Store;
+using YomiYa.Features.Support;
 
 namespace YomiYa.Core.Services.DI;
 
@@ -40,5 +43,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<AdPageViewModel>();
         services.AddTransient<PluginPageViewModel>();
         services.AddTransient<ChapterListPageViewModel>();
+        services.AddTransient<StorePageViewModel>();
+        services.AddTransient<PointsPageViewModel>();
+        services.AddTransient<SupportPageViewModel>();
     }
 }

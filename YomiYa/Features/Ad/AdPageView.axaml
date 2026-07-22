@@ -79,8 +79,8 @@
         <Style Selector="Button.LemonButton:pressed">
             <Setter Property="RenderTransform" Value="scale(0.96)" />
         </Style>
-        
-        
+
+
         <Style Selector="Button.NavArrow">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{StaticResource LemonVibrantGreen}" />
@@ -103,7 +103,7 @@
         <Style Selector="Button.NavArrow:pressed">
             <Setter Property="RenderTransform" Value="scale(0.9)" />
         </Style>
-        
+
     </UserControl.Styles>
 
     <ScrollViewer Background="{StaticResource LemonDarkBackground}">
@@ -123,20 +123,21 @@
                            Text="{Binding RewardIn3StepsText}" />
 
                 <Grid ColumnDefinitions="Auto, *, Auto" HorizontalAlignment="Center" Margin="0,10">
-                    
+
                     <Button Classes="NavArrow" Grid.Column="0" Command="{Binding PreviousStepCommand}">
                         <TextBlock Text="❮" Margin="0,0,4,4" />
                     </Button>
 
                     <Carousel Grid.Column="1" SelectedIndex="{Binding CurrentStepIndex}" Margin="20,0">
                         <Carousel.PageTransition>
-                            <CrossFade Duration="0:0:0.3" /> 
+                            <CrossFade Duration="0:0:0.3" />
                         </Carousel.PageTransition>
 
                         <Border Classes="Card" Width="320">
                             <StackPanel Spacing="12">
                                 <TextBlock Classes="StepNumber" Text="1" />
-                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                <TextBlock FontSize="22" FontWeight="Bold"
+                                           Foreground="{StaticResource LemonTextPrimary}"
                                            Text="{Binding DownloadTheAppText}" />
                                 <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
                                            TextWrapping="Wrap"
@@ -147,7 +148,8 @@
                         <Border Classes="Card" Width="320">
                             <StackPanel Spacing="12">
                                 <TextBlock Classes="StepNumber" Text="2" />
-                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                <TextBlock FontSize="22" FontWeight="Bold"
+                                           Foreground="{StaticResource LemonTextPrimary}"
                                            Text="{Binding SignUpText}" />
                                 <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
                                            TextWrapping="Wrap"
@@ -158,12 +160,14 @@
                         <Border Classes="Card" Width="320">
                             <StackPanel Spacing="12">
                                 <TextBlock Classes="StepNumber" Text="3" />
-                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                <TextBlock FontSize="22" FontWeight="Bold"
+                                           Foreground="{StaticResource LemonTextPrimary}"
                                            Text="{Binding EnterLemontagText}" TextWrapping="Wrap" />
                                 <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
                                            TextWrapping="Wrap">
                                     <Run Text="{Binding Step3DescriptionBefore}" />
-                                    <Run Text="{Binding Lemontag}" FontWeight="Bold" Foreground="{StaticResource LemonVibrantGreen}" />
+                                    <Run Text="{Binding Lemontag}" FontWeight="Bold"
+                                         Foreground="{StaticResource LemonVibrantGreen}" />
                                     <Run Text="{Binding Step3DescriptionAfter}" />
                                 </TextBlock>
                             </StackPanel>
@@ -172,7 +176,8 @@
                         <Border Classes="Card" Width="320">
                             <StackPanel Spacing="12">
                                 <TextBlock Classes="StepNumber" Text="4" />
-                                <TextBlock FontSize="22" FontWeight="Bold" Foreground="{StaticResource LemonTextPrimary}"
+                                <TextBlock FontSize="22" FontWeight="Bold"
+                                           Foreground="{StaticResource LemonTextPrimary}"
                                            Text="{Binding CompleteMissionText, FallbackValue='Cumple la misión'}" />
                                 <TextBlock FontSize="15" Foreground="{StaticResource LemonTextSecondary}"
                                            TextWrapping="Wrap"
@@ -185,7 +190,7 @@
                     <Button Classes="NavArrow" Grid.Column="2" Command="{Binding NextStepCommand}">
                         <TextBlock Text="❯" Margin="4,0,0,4" />
                     </Button>
-                    
+
                 </Grid>
             </StackPanel>
 

@@ -1,9 +1,9 @@
-﻿using YomiYa.Source.Models;
-using YomiYa.Domain.Models;
+﻿using YomiYa.Domain.Models;
+using YomiYa.Source.Models;
 
 namespace YomiYa.Source.Online;
 
-public interface IParsedHttpSource: ISource
+public interface IParsedHttpSource : ISource
 {
     HttpClient HttpClient { get; }
     string Version { get; }

@@ -44,31 +44,9 @@ public partial class HistoryPageViewModel : ViewModelBase
     [ObservableProperty] private string? _deleteFromHistoryButtonText;
     [ObservableProperty] private ObservableCollection<HistoryItemViewModel> _historyItems = [];
     [ObservableProperty] private string? _historyTitle;
+    [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _noHistoryAdded;
     [ObservableProperty] private string? _randomKamoji;
-    [ObservableProperty] private bool _isBusy;
-
-    #region Constructor
-
-    // El contenedor de DI inyectará IDatabaseService y MangaService automáticamente
-    public HistoryPageViewModel()
-    {
-        _databaseService = null!;
-        _mangaService = null!;
-
-        _ = LoadHistoryAsync();
-    }
-
-    [ActivatorUtilitiesConstructor]
-    public HistoryPageViewModel(IDatabaseService databaseService, MangaService mangaService)
-    {
-        _databaseService = databaseService;
-        _mangaService = mangaService;
-
-        _ = LoadHistoryAsync();
-    }
-
-    #endregion
 
     /// <summary>
     ///     Carga o actualiza el historial desde la base de datos.
@@ -163,4 +141,26 @@ public partial class HistoryPageViewModel : ViewModelBase
         ClearAllButtonText = LanguageHelper.GetText("ClearAll");
         DeleteFromHistoryButtonText = LanguageHelper.GetText("DeleteFromHistory");
     }
+
+    #region Constructor
+
+    // El contenedor de DI inyectará IDatabaseService y MangaService automáticamente
+    public HistoryPageViewModel()
+    {
+        _databaseService = null!;
+        _mangaService = null!;
+
+        _ = LoadHistoryAsync();
+    }
+
+    [ActivatorUtilitiesConstructor]
+    public HistoryPageViewModel(IDatabaseService databaseService, MangaService mangaService)
+    {
+        _databaseService = databaseService;
+        _mangaService = mangaService;
+
+        _ = LoadHistoryAsync();
+    }
+
+    #endregion
 }

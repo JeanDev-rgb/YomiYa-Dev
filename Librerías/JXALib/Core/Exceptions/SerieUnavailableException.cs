@@ -1,7 +1,7 @@
 ﻿namespace YomiYa.Core.Exceptions;
 
 /// <summary>
-/// Se lanza cuando se intenta acceder a una serie que no está disponible o no se encuentra.
+///     Se lanza cuando se intenta acceder a una serie que no está disponible o no se encuentra.
 /// </summary>
 public class SerieUnavailableException : Exception
 {

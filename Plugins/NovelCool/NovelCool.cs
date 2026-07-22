@@ -13,6 +13,7 @@ namespace YomiYa.Extensions.Es;
 public class NovelCool : ParsedHttpSource, IConfigurableSource
 {
     #region Properties
+
     protected override string BaseUrl => "https://www.novelcool.com";
 
     public sealed override string Lang => "Multi";
@@ -46,9 +47,7 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
         var config = new Dictionary<string, bool>();
 
         foreach (var lang in _supportedLanguages)
-        {
             config.Add(lang.Key, settings.SelectedLanguages.Contains(lang.Value.Code));
-        }
 
         return Task.FromResult(config);
     }
@@ -59,12 +58,8 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
         settings.SelectedLanguages.Clear();
 
         foreach (var (languageName, isChecked) in configuration)
-        {
             if (isChecked && _supportedLanguages.TryGetValue(languageName, out var langData))
-            {
                 settings.SelectedLanguages.Add(langData.Code);
-            }
-        }
 
         if (settings.SelectedLanguages.Count == 0)
         {
@@ -72,7 +67,6 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
 
             var defaultLang = _supportedLanguages.Values.FirstOrDefault(v => v.Code == culture);
             settings.SelectedLanguages.Add(defaultLang.Code ?? "en");
-
         }
 
         settings.Save();
@@ -158,10 +152,7 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
                 foreach (var m in mangas) allMangas.Add(m);
 
                 // Si al menos un idioma tiene siguiente página, habilitamos el scroll infinito
-                if (doc.DocumentNode.CssSelect("div.page-navone div.row-item.next").Any())
-                {
-                    hasNextPage = true;
-                }
+                if (doc.DocumentNode.CssSelect("div.page-navone div.row-item.next").Any()) hasNextPage = true;
             }
             catch
             {
@@ -193,7 +184,7 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
                 "en marcha" => SManga.Ongoing,
                 "completado" => SManga.Completed,
                 _ => SManga.Unknown
-            },
+            }
         };
     }
 
@@ -222,7 +213,7 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
             {
                 var imageUrl = imageNode.GetAttributeValue("src", string.Empty);
                 if (!string.IsNullOrEmpty(imageUrl))
-                    return new List<Page> { new Page(Index: 1, ImageUrl: imageUrl, Uri: new Uri(imageUrl)) };
+                    return new List<Page> { new(1, ImageUrl: imageUrl, Uri: new Uri(imageUrl)) };
             }
 
             return new List<Page>();
@@ -232,7 +223,6 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
         var tasks = new List<Task>();
 
         foreach (var pageUrl in pageUrls)
-        {
             tasks.Add(Task.Run(async () =>
             {
                 try
@@ -249,18 +239,13 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
                 {
                 }
             }));
-        }
 
         await Task.WhenAll(tasks);
 
         var pages = new List<Page>();
-        for (int i = 0; i < pageUrls.Count; i++)
-        {
+        for (var i = 0; i < pageUrls.Count; i++)
             if (pageData.TryGetValue(pageUrls[i], out var imageUrl))
-            {
-                pages.Add(new Page(Index: i + 1, ImageUrl: imageUrl, Uri: new Uri(imageUrl)));
-            }
-        }
+                pages.Add(new Page(i + 1, ImageUrl: imageUrl, Uri: new Uri(imageUrl)));
 
         return pages;
     }
@@ -289,7 +274,10 @@ public class NovelCool : ParsedHttpSource, IConfigurableSource
         return manga;
     }
 
-    private static SManga LatestUpdatesFromElement(HtmlNode element) => PopularMangaFromElement(element);
+    private static SManga LatestUpdatesFromElement(HtmlNode element)
+    {
+        return PopularMangaFromElement(element);
+    }
 
     private static SManga SearchedMangaFromElement(HtmlNode element)
     {

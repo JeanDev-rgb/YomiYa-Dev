@@ -1,0 +1,149 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:support="clr-namespace:YomiYa.Features.Support"
+             mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="700"
+             x:DataType="support:SupportPageViewModel"
+             x:Class="YomiYa.Features.Support.SupportPageView">
+
+    <Design.DataContext>
+        <support:SupportPageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="SupportBg" Color="#1C1028" />
+        <SolidColorBrush x:Key="SupportCardBg" Color="#2A1B3D" />
+        <SolidColorBrush x:Key="SupportAccent" Color="#E91E63" />
+        <SolidColorBrush x:Key="SupportTextPrimary" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="SupportTextSecondary" Color="#B0A0C0" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="Border.SupportCard">
+            <Setter Property="Background" Value="{StaticResource SupportCardBg}" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="24" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.2" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.SupportCard:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.03)" />
+        </Style>
+
+        <Style Selector="Button.DonateButton">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Padding" Value="28,14" />
+            <Setter Property="CornerRadius" Value="24" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.2" />
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.1" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.DonateButton:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.95)" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer Background="{StaticResource SupportBg}">
+        <StackPanel Margin="20,30,20,60" MaxWidth="800" HorizontalAlignment="Center" Spacing="24">
+
+            <!-- Cabecera -->
+            <StackPanel HorizontalAlignment="Center" Spacing="8" Margin="0,0,0,8">
+                <PathIcon Width="48" Data="{StaticResource HeartFilled}"
+                          Foreground="{StaticResource SupportAccent}" HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding SupportTitleText}"
+                           FontSize="40" FontWeight="Black"
+                           Foreground="{StaticResource SupportTextPrimary}"
+                           TextAlignment="Center" />
+                <TextBlock Text="{Binding SupportSubtitleText}"
+                           FontSize="16" TextAlignment="Center"
+                           Foreground="{StaticResource SupportTextSecondary}"
+                           TextWrapping="Wrap" MaxWidth="500" />
+            </StackPanel>
+
+            <!-- Mensaje -->
+            <Border Classes="SupportCard">
+                <TextBlock Text="{Binding SupportMessageText}"
+                           FontSize="15" TextWrapping="Wrap"
+                           Foreground="{StaticResource SupportTextSecondary}"
+                           TextAlignment="Center" LineHeight="24" />
+            </Border>
+
+            <!-- Botones de donación -->
+            <TextBlock Text="{Binding WhySupportText}"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{StaticResource SupportTextPrimary}"
+                       TextAlignment="Center" Margin="0,8,0,0" />
+
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Border Classes="SupportCard" Width="220">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="🛡️" FontSize="36" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Reason1Text}"
+                                   FontSize="14" TextWrapping="Wrap" TextAlignment="Center"
+                                   Foreground="{StaticResource SupportTextSecondary}" />
+                    </StackPanel>
+                </Border>
+                <Border Classes="SupportCard" Width="220">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="🚀" FontSize="36" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Reason2Text}"
+                                   FontSize="14" TextWrapping="Wrap" TextAlignment="Center"
+                                   Foreground="{StaticResource SupportTextSecondary}" />
+                    </StackPanel>
+                </Border>
+                <Border Classes="SupportCard" Width="220">
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="💜" FontSize="36" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Reason3Text}"
+                                   FontSize="14" TextWrapping="Wrap" TextAlignment="Center"
+                                   Foreground="{StaticResource SupportTextSecondary}" />
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+
+            <!-- Plataformas de donación -->
+            <StackPanel Spacing="12" MaxWidth="400" HorizontalAlignment="Center" Margin="0,8,0,0">
+                <Button Classes="DonateButton"
+                        Background="#0070BA" Foreground="White"
+                        Content="{Binding DonatePaypalText}"
+                        Command="{Binding OpenPaypalCommand}" />
+
+                <Button Classes="DonateButton"
+                        Background="#FF5E5B" Foreground="White"
+                        Content="{Binding DonateKofiText}"
+                        Command="{Binding OpenKofiCommand}" />
+
+                <Button Classes="DonateButton"
+                        Background="#FF424D" Foreground="White"
+                        Content="{Binding DonatePatreonText}"
+                        Command="{Binding OpenPatreonCommand}" />
+            </StackPanel>
+
+            <!-- Agradecimiento -->
+            <Border CornerRadius="20" Padding="32,24" Margin="0,16,0,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Color="#E91E63" Offset="0" />
+                        <GradientStop Color="#9C27B0" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <TextBlock Text="{Binding ThankYouText}"
+                           FontSize="22" FontWeight="Bold"
+                           Foreground="White" TextAlignment="Center"
+                           TextWrapping="Wrap" />
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

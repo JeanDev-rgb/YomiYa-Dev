@@ -1,15 +1,14 @@
 ﻿using YomiYa.Core.IPC;
 
-namespace YomiYa.Extensions.Es // Cambiar namespace según plugin
+namespace YomiYa.Extensions.Es;
+
+internal class Program
 {
-    class Program
+    private static async Task Main(string[] args)
     {
-        static async Task Main(string[] args)
-        {
-            var scraper = new NovelCool(); // Cambiar por la clase de tu plugin (ej. new Akaya())
-            int port = args.Length > 0 && int.TryParse(args[0], out int p) ? p : 50000;
-            
-            await TcpPluginRunner.RunAsync(scraper, port);
-        }
+        var scraper = new NovelCool();
+        var port = args.Length > 0 && int.TryParse(args[0], out var p) ? p : 50000;
+
+        await TcpPluginRunner.RunAsync(scraper, port);
     }
 }

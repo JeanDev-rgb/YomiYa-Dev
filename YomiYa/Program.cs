@@ -1,10 +1,10 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 using Avalonia;
+using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Database;
 using YomiYa.Core.Localization;
-using YomiYa.Core.Settings;
 using YomiYa.Core.Services.DI;
+using YomiYa.Core.Settings;
 
 namespace YomiYa;
 

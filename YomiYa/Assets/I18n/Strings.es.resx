@@ -24,6 +24,7 @@
     <data name="Refresh" xml:space="preserve"><value>Actualizar</value></data>
     <data name="History" xml:space="preserve"><value>Historial</value></data>
     <data name="Library" xml:space="preserve"><value>Biblioteca</value></data>
+    <data name="Lootbar" xml:space="preserve"><value>Tienda</value></data>
     <data name="More" xml:space="preserve"><value>Más</value></data>
     <data name="NoMangaAdded" xml:space="preserve"><value>No hay ningún manga agregado.</value></data>
     <data name="NoPluginsInstalled" xml:space="preserve"><value>No hay plugins instalados.</value></data>
@@ -98,4 +99,39 @@
     <data name="SelectLanguages" xml:space="preserve">
         <value>Seleccionar idiomas</value>
     </data>
+    <data name="StoreTitle" xml:space="preserve"><value>Tienda</value></data>
+    <data name="StoreSubtitle" xml:space="preserve"><value>Tienda oficial de Streamify</value></data>
+    <data name="Loading" xml:space="preserve"><value>Cargando...</value></data>
+    <data name="OpenInBrowser" xml:space="preserve"><value>Abrir en navegador</value></data>
+    <data name="PointsTitle" xml:space="preserve"><value>Puntos</value></data>
+    <data name="PointsSubtitle" xml:space="preserve"><value>Gana puntos leyendo y canjéalos por recompensas</value></data>
+    <data name="YourPoints" xml:space="preserve"><value>Tus puntos</value></data>
+    <data name="EarnPoints" xml:space="preserve"><value>Ganar puntos</value></data>
+    <data name="Redeem" xml:space="preserve"><value>Canjear</value></data>
+    <data name="Rewards" xml:space="preserve"><value>Recompensas</value></data>
+    <data name="HowToEarn" xml:space="preserve"><value>¿Cómo ganar puntos?</value></data>
+    <data name="DailyReading" xml:space="preserve"><value>Lectura diaria</value></data>
+    <data name="DailyReadingDesc" xml:space="preserve"><value>Abre la app y lee al menos un capítulo cada día.</value></data>
+    <data name="CompleteChapter" xml:space="preserve"><value>Completar capítulo</value></data>
+    <data name="CompleteChapterDesc" xml:space="preserve"><value>Gana puntos cada vez que termines un capítulo.</value></data>
+    <data name="AddToLibrary" xml:space="preserve"><value>Añadir a biblioteca</value></data>
+    <data name="AddToLibraryDesc" xml:space="preserve"><value>Agrega nuevos mangas a tu biblioteca personal.</value></data>
+    <data name="ComingSoon" xml:space="preserve"><value>Próximamente</value></data>
+    <data name="RewardCustomTheme" xml:space="preserve"><value>Tema personalizado</value></data>
+    <data name="RewardCustomThemeDesc" xml:space="preserve"><value>Desbloquea un tema exclusivo para la app.</value></data>
+    <data name="RewardAdFree" xml:space="preserve"><value>Sin anuncios</value></data>
+    <data name="RewardAdFreeDesc" xml:space="preserve"><value>Disfruta de la app sin anuncios por 7 días.</value></data>
+    <data name="RewardExclusive" xml:space="preserve"><value>Contenido exclusivo</value></data>
+    <data name="RewardExclusiveDesc" xml:space="preserve"><value>Accede a funciones premium por tiempo limitado.</value></data>
+    <data name="SupportTitle" xml:space="preserve"><value>Apoyar</value></data>
+    <data name="SupportSubtitle" xml:space="preserve"><value>Tu apoyo hace posible este proyecto</value></data>
+    <data name="SupportMessage" xml:space="preserve"><value>YomiYa es un proyecto independiente creado con pasión. Si disfrutas la app, considera apoyar al creador para que pueda seguir mejorándola y añadiendo nuevas funciones.</value></data>
+    <data name="DonatePaypal" xml:space="preserve"><value>💙 Donar con PayPal</value></data>
+    <data name="DonateKofi" xml:space="preserve"><value>☕ Invítame un café en Ko-fi</value></data>
+    <data name="DonatePatreon" xml:space="preserve"><value>🎨 Apoyar en Patreon</value></data>
+    <data name="WhySupport" xml:space="preserve"><value>¿Por qué apoyar?</value></data>
+    <data name="SupportReason1" xml:space="preserve"><value>Mantener los servidores activos y la app funcionando.</value></data>
+    <data name="SupportReason2" xml:space="preserve"><value>Desarrollar nuevas funciones y mejoras constantes.</value></data>
+    <data name="SupportReason3" xml:space="preserve"><value>Apoyar al creador independiente detrás del proyecto.</value></data>
+    <data name="ThankYou" xml:space="preserve"><value>¡Gracias por tu apoyo! Cada contribución cuenta 💜</value></data>
 </root>

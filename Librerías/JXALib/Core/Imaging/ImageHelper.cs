@@ -80,8 +80,8 @@ public static class ImageHelper
             // Decodificamos la imagen a un tamaño más pequeño para ahorrar RAM.
             // Para las portadas, usamos un ancho fijo de 200px.
             // Para las páginas del lector, un ancho máximo de 1080px (suficiente para la mayoría de pantallas).
-            int decodeWidth = isCover ? 200 : 1080;
-            return await Task.Run(() => Bitmap.DecodeToWidth(stream, decodeWidth, BitmapInterpolationMode.HighQuality),
+            var decodeWidth = isCover ? 200 : 1080;
+            return await Task.Run(() => Bitmap.DecodeToWidth(stream, decodeWidth),
                 cancellationToken);
         }
         catch (OperationCanceledException)
@@ -106,16 +106,16 @@ public static class ImageHelper
             var drawing = new GeometryDrawing
             {
                 Geometry = geometry,
-                Brush = Brushes.Gray, // Color del ícono
+                Brush = Brushes.Gray // Color del ícono
             };
 
             var drawingImage = new DrawingImage { Drawing = drawing };
 
             // Renderiza el DrawingImage a un Bitmap
-            var bitmap = new RenderTargetBitmap(new Avalonia.PixelSize(200, 280), new Vector(96, 96));
+            var bitmap = new RenderTargetBitmap(new PixelSize(200, 280), new Vector(96, 96));
             using (var ctx = bitmap.CreateDrawingContext())
             {
-                ctx.DrawImage(drawingImage, new Avalonia.Rect(0, 0, 200, 280));
+                ctx.DrawImage(drawingImage, new Rect(0, 0, 200, 280));
             }
 
             return bitmap;
@@ -125,8 +125,8 @@ public static class ImageHelper
     }
 
     /// <summary>
-    /// Asegura que una imagen esté en la caché del disco, descargándola si es necesario.
-    /// No carga el Bitmap en memoria, solo guarda el archivo.
+    ///     Asegura que una imagen esté en la caché del disco, descargándola si es necesario.
+    ///     No carga el Bitmap en memoria, solo guarda el archivo.
     /// </summary>
     public static async Task EnsureImageIsCachedAsync(this string url, CancellationToken cancellationToken = default)
     {
@@ -145,9 +145,7 @@ public static class ImageHelper
                 .ContinueWith(async task =>
                 {
                     if (task.IsCompletedSuccessfully)
-                    {
                         await File.WriteAllBytesAsync(imagePath, task.Result, cancellationToken);
-                    }
                 }, cancellationToken);
         }
         catch (OperationCanceledException)

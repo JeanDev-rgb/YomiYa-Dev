@@ -1,8 +1,8 @@
 ﻿using YomiYa.Core.Exceptions;
 
-namespace YomiYa.Extensions.Es.Handlers;
+namespace YomiYa.Core.Handlers;
 
-internal class SerieRedirectHandler(string baseUrl, HttpMessageHandler innerHandler) : DelegatingHandler(innerHandler)
+public class SerieRedirectHandler(string baseUrl, HttpMessageHandler innerHandler) : DelegatingHandler(innerHandler)
 {
     private readonly string _baseUrl = baseUrl.TrimEnd('/');
 
@@ -10,16 +10,12 @@ internal class SerieRedirectHandler(string baseUrl, HttpMessageHandler innerHand
         CancellationToken cancellationToken)
     {
         if (request.RequestUri != null && !request.RequestUri.ToString().StartsWith($"{_baseUrl}/serie"))
-        {
             return await base.SendAsync(request, cancellationToken);
-        }
 
         var response = await base.SendAsync(request, cancellationToken);
 
         if (response.RequestMessage?.RequestUri?.ToString().TrimEnd('/') == _baseUrl)
-        {
             throw new SerieUnavailableException();
-        }
 
         return response;
     }

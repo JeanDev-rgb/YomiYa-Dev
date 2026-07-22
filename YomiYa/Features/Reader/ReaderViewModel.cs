@@ -45,6 +45,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
         _ = InitializeChapterAsync();
     }
+
     [ActivatorUtilitiesConstructor]
     public ReaderViewModel(IDatabaseService databaseService, MangaService mangaService)
     {
@@ -63,8 +64,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
     #region Properties
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SelectedChapter))]
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(SelectedChapter))]
     private int _chapterIndex;
 
     public SChapter? SelectedChapter => _chapterList.ElementAtOrDefault(ChapterIndex);

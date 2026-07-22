@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="YomiYa/App.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Core/WebView/WebViewComponent.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Ad/AdPageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Lootbar/LootbarView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Lootbar/LootbarViewExtended.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Navigation/SideBarMenuView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Settings/MorePageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Store/StorePageView.axaml" value="YomiYa/YomiYa.csproj" />
+        <entry key="YomiYa/Features/Support/SupportPageView.axaml" value="YomiYa/YomiYa.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

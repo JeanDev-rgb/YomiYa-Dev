@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ScrapySharp" Version="3.0.0" />
+        <PackageReference Include="ScrapySharp" Version="3.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Librerías\JXALib\JXALib.csproj" />
+        <ProjectReference Include="..\..\Librerías\JXALib\JXALib.csproj"/>
     </ItemGroup>
 
 </Project>

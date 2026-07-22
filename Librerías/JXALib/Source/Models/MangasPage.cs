@@ -1,5 +1,7 @@
-﻿namespace YomiYa.Source.Models;
+﻿using YomiYa.Domain.Models;
 
-public record MangasPage(List<Domain.Models.SManga> Mangas, bool HasNextPage)
+namespace YomiYa.Source.Models;
+
+public record MangasPage(List<SManga> Mangas, bool HasNextPage)
 {
 }

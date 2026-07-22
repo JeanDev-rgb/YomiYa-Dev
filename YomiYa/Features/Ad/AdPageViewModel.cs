@@ -107,7 +107,7 @@ public partial class AdPageViewModel : ViewModelBase
 
     #region Carousel Navigation
 
-    [ObservableProperty] private int _currentStepIndex = 0;
+    [ObservableProperty] private int _currentStepIndex;
 
     [RelayCommand]
     private void NextStep()

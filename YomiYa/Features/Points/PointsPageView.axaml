@@ -1,0 +1,195 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:points="clr-namespace:YomiYa.Features.Points"
+             mc:Ignorable="d" d:DesignWidth="1080" d:DesignHeight="700"
+             x:DataType="points:PointsPageViewModel"
+             x:Class="YomiYa.Features.Points.PointsPageView">
+
+    <Design.DataContext>
+        <points:PointsPageViewModel />
+    </Design.DataContext>
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="PointsAccent" Color="#FFD700" />
+        <SolidColorBrush x:Key="PointsDarkBg" Color="#1A1A2E" />
+        <SolidColorBrush x:Key="PointsCardBg" Color="#16213E" />
+        <SolidColorBrush x:Key="PointsTextPrimary" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="PointsTextSecondary" Color="#A0AEC0" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="Border.PointsCard">
+            <Setter Property="Background" Value="{StaticResource PointsCardBg}" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="24" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.2" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.PointsCard:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.02)" />
+        </Style>
+
+        <Style Selector="Button.RedeemButton">
+            <Setter Property="Background" Value="{StaticResource PointsAccent}" />
+            <Setter Property="Foreground" Value="#1A1A2E" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0.2" />
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0.1" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.RedeemButton:pointerover">
+            <Setter Property="Background" Value="#FFE44D" />
+        </Style>
+        <Style Selector="Button.RedeemButton:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.95)" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer Background="{StaticResource PointsDarkBg}">
+        <StackPanel Margin="20,30,20,60" MaxWidth="900" HorizontalAlignment="Center" Spacing="24">
+
+            <!-- Cabecera -->
+            <StackPanel HorizontalAlignment="Center" Spacing="4" Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="12">
+                    <PathIcon Width="28" Data="{StaticResource Star}"
+                              Foreground="{StaticResource PointsAccent}" />
+                    <TextBlock Text="{Binding PointsTitleText}"
+                               FontSize="36" FontWeight="Black"
+                               Foreground="{StaticResource PointsTextPrimary}" />
+                </StackPanel>
+                <TextBlock Text="{Binding PointsSubtitleText}"
+                           FontSize="15" TextAlignment="Center"
+                           Foreground="{StaticResource PointsTextSecondary}" />
+            </StackPanel>
+
+            <!-- Panel de puntos actuales -->
+            <Border CornerRadius="20" Padding="32,24"
+                    BoxShadow="0 8 24 0 #44FFD700">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Color="#FFD700" Offset="0" />
+                        <GradientStop Color="#FF8C00" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <StackPanel HorizontalAlignment="Center" Spacing="8">
+                    <TextBlock Text="{Binding YourPointsText}"
+                               FontSize="16" FontWeight="Medium"
+                               Foreground="#1A1A2E" TextAlignment="Center" />
+                    <TextBlock Text="{Binding CurrentPoints}"
+                               FontSize="56" FontWeight="Black"
+                               Foreground="#1A1A2E" TextAlignment="Center" />
+                    <TextBlock Text="{Binding ComingSoonText}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="#4A3500" TextAlignment="Center"
+                               Opacity="0.8" />
+                </StackPanel>
+            </Border>
+
+            <!-- Cómo ganar puntos -->
+            <TextBlock Text="{Binding HowToEarnText}"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{StaticResource PointsTextPrimary}"
+                       Margin="0,8,0,0" />
+
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <!-- Lectura diaria -->
+                <Border Classes="PointsCard" Width="260">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="📖" FontSize="32" />
+                        <TextBlock Text="{Binding DailyReadingText}"
+                                   FontSize="17" FontWeight="Bold"
+                                   Foreground="{StaticResource PointsTextPrimary}" />
+                        <TextBlock Text="{Binding DailyReadingDescText}"
+                                   FontSize="13" TextWrapping="Wrap"
+                                   Foreground="{StaticResource PointsTextSecondary}" />
+                        <TextBlock Text="+10 pts" FontSize="20" FontWeight="Black"
+                                   Foreground="{StaticResource PointsAccent}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Completar capítulo -->
+                <Border Classes="PointsCard" Width="260">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="✅" FontSize="32" />
+                        <TextBlock Text="{Binding CompleteChapterText}"
+                                   FontSize="17" FontWeight="Bold"
+                                   Foreground="{StaticResource PointsTextPrimary}" />
+                        <TextBlock Text="{Binding CompleteChapterDescText}"
+                                   FontSize="13" TextWrapping="Wrap"
+                                   Foreground="{StaticResource PointsTextSecondary}" />
+                        <TextBlock Text="+5 pts" FontSize="20" FontWeight="Black"
+                                   Foreground="{StaticResource PointsAccent}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Añadir a biblioteca -->
+                <Border Classes="PointsCard" Width="260">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="📚" FontSize="32" />
+                        <TextBlock Text="{Binding AddToLibraryText}"
+                                   FontSize="17" FontWeight="Bold"
+                                   Foreground="{StaticResource PointsTextPrimary}" />
+                        <TextBlock Text="{Binding AddToLibraryDescText}"
+                                   FontSize="13" TextWrapping="Wrap"
+                                   Foreground="{StaticResource PointsTextSecondary}" />
+                        <TextBlock Text="+15 pts" FontSize="20" FontWeight="Black"
+                                   Foreground="{StaticResource PointsAccent}" />
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+
+            <!-- Recompensas -->
+            <TextBlock Text="{Binding RewardsText}"
+                       FontSize="22" FontWeight="Bold"
+                       Foreground="{StaticResource PointsTextPrimary}"
+                       Margin="0,8,0,0" />
+
+            <ItemsControl ItemsSource="{Binding Rewards}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type points:RewardItem}">
+                        <Border Classes="PointsCard">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <TextBlock Grid.Column="0" Text="{Binding Icon}"
+                                           FontSize="36" VerticalAlignment="Center"
+                                           Margin="0,0,16,0" />
+                                <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}"
+                                               FontSize="16" FontWeight="Bold"
+                                               Foreground="{StaticResource PointsTextPrimary}" />
+                                    <TextBlock Text="{Binding Description}"
+                                               FontSize="13" TextWrapping="Wrap"
+                                               Foreground="{StaticResource PointsTextSecondary}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="6"
+                                            HorizontalAlignment="Right" Margin="16,0,0,0">
+                                    <TextBlock Text="{Binding Cost, StringFormat='{}{0} pts'}"
+                                               FontSize="15" FontWeight="Bold"
+                                               Foreground="{StaticResource PointsAccent}"
+                                               HorizontalAlignment="Center" />
+                                    <Button Classes="RedeemButton"
+                                            Content="{Binding $parent[ItemsControl].((points:PointsPageViewModel)DataContext).RedeemText}"
+                                            Command="{Binding $parent[ItemsControl].((points:PointsPageViewModel)DataContext).RedeemRewardCommand}"
+                                            CommandParameter="{Binding}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

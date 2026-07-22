@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
+                id="root"
                 xmlns="">
         <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -145,4 +146,42 @@
     <data name="SelectLanguages" xml:space="preserve">
         <value>Select Languages</value>
     </data>
+    <data name="Lootbar" xml:space="preserve">
+        <value>Shop</value>
+    </data>
+    <data name="StoreTitle" xml:space="preserve"><value>Shop</value></data>
+    <data name="StoreSubtitle" xml:space="preserve"><value>Streamify official store</value></data>
+    <data name="Loading" xml:space="preserve"><value>Loading...</value></data>
+    <data name="OpenInBrowser" xml:space="preserve"><value>Open in browser</value></data>
+    <data name="PointsTitle" xml:space="preserve"><value>Points</value></data>
+    <data name="PointsSubtitle" xml:space="preserve"><value>Earn points by reading and redeem them for rewards</value></data>
+    <data name="YourPoints" xml:space="preserve"><value>Your points</value></data>
+    <data name="EarnPoints" xml:space="preserve"><value>Earn points</value></data>
+    <data name="Redeem" xml:space="preserve"><value>Redeem</value></data>
+    <data name="Rewards" xml:space="preserve"><value>Rewards</value></data>
+    <data name="HowToEarn" xml:space="preserve"><value>How to earn points?</value></data>
+    <data name="DailyReading" xml:space="preserve"><value>Daily reading</value></data>
+    <data name="DailyReadingDesc" xml:space="preserve"><value>Open the app and read at least one chapter every day.</value></data>
+    <data name="CompleteChapter" xml:space="preserve"><value>Complete chapter</value></data>
+    <data name="CompleteChapterDesc" xml:space="preserve"><value>Earn points every time you finish a chapter.</value></data>
+    <data name="AddToLibrary" xml:space="preserve"><value>Add to library</value></data>
+    <data name="AddToLibraryDesc" xml:space="preserve"><value>Add new mangas to your personal library.</value></data>
+    <data name="ComingSoon" xml:space="preserve"><value>Coming soon</value></data>
+    <data name="RewardCustomTheme" xml:space="preserve"><value>Custom theme</value></data>
+    <data name="RewardCustomThemeDesc" xml:space="preserve"><value>Unlock an exclusive theme for the app.</value></data>
+    <data name="RewardAdFree" xml:space="preserve"><value>Ad-free</value></data>
+    <data name="RewardAdFreeDesc" xml:space="preserve"><value>Enjoy the app without ads for 7 days.</value></data>
+    <data name="RewardExclusive" xml:space="preserve"><value>Exclusive content</value></data>
+    <data name="RewardExclusiveDesc" xml:space="preserve"><value>Access premium features for a limited time.</value></data>
+    <data name="SupportTitle" xml:space="preserve"><value>Support</value></data>
+    <data name="SupportSubtitle" xml:space="preserve"><value>Your support makes this project possible</value></data>
+    <data name="SupportMessage" xml:space="preserve"><value>YomiYa is an independent project created with passion. If you enjoy the app, consider supporting the creator so they can keep improving it and adding new features.</value></data>
+    <data name="DonatePaypal" xml:space="preserve"><value>💙 Donate with PayPal</value></data>
+    <data name="DonateKofi" xml:space="preserve"><value>☕ Buy me a coffee on Ko-fi</value></data>
+    <data name="DonatePatreon" xml:space="preserve"><value>🎨 Support on Patreon</value></data>
+    <data name="WhySupport" xml:space="preserve"><value>Why support?</value></data>
+    <data name="SupportReason1" xml:space="preserve"><value>Keep the servers running and the app working.</value></data>
+    <data name="SupportReason2" xml:space="preserve"><value>Develop new features and constant improvements.</value></data>
+    <data name="SupportReason3" xml:space="preserve"><value>Support the independent creator behind the project.</value></data>
+    <data name="ThankYou" xml:space="preserve"><value>Thank you for your support! Every contribution counts 💜</value></data>
 </root>

@@ -1,11 +1,9 @@
-﻿namespace YomiYa.Core.Settings
+﻿namespace YomiYa.Core.Settings;
+
+public interface ISettingsService
 {
-    public interface ISettingsService
-    {
-        AppSettings Settings { get; }
+    AppSettings Settings { get; }
 
-        void Load();
-        void Save();
-    }
-
+    void Load();
+    void Save();
 }

@@ -23,11 +23,6 @@ public class DatabaseService : IDatabaseService
         if (directory is not null) Directory.CreateDirectory(directory);
     }
 
-    private string GetConnectionString()
-    {
-        return $"Data Source={DbPath}";
-    }
-
     public async Task InitializeDatabase()
     {
         await DbRetryPolicy.ExecuteAsync(async () =>
@@ -68,19 +63,6 @@ public class DatabaseService : IDatabaseService
                 FOREIGN KEY(chapter_id) REFERENCES chapters(id) ON DELETE CASCADE
             );";
             await createHistoryTableCmd.ExecuteNonQueryAsync();
-        });
-    }
-
-    // --- MÉTODOS DE INSERCIÓN Y ACTUALIZACIÓN ---
-
-    private async Task<long?> GetMangaId(SqliteConnection connection, string mangaUrl)
-    {
-        return await DbRetryPolicy.ExecuteAsync(async () =>
-        {
-            var command = connection.CreateCommand();
-            command.CommandText = "SELECT id FROM mangas WHERE url = $url;";
-            command.Parameters.AddWithValue("$url", mangaUrl);
-            return (long?)await command.ExecuteScalarAsync();
         });
     }
 
@@ -389,6 +371,24 @@ public class DatabaseService : IDatabaseService
             command.Parameters.AddWithValue("$url", url);
 
             await command.ExecuteNonQueryAsync();
+        });
+    }
+
+    private string GetConnectionString()
+    {
+        return $"Data Source={DbPath}";
+    }
+
+    // --- MÉTODOS DE INSERCIÓN Y ACTUALIZACIÓN ---
+
+    private async Task<long?> GetMangaId(SqliteConnection connection, string mangaUrl)
+    {
+        return await DbRetryPolicy.ExecuteAsync(async () =>
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT id FROM mangas WHERE url = $url;";
+            command.Parameters.AddWithValue("$url", mangaUrl);
+            return (long?)await command.ExecuteScalarAsync();
         });
     }
 }

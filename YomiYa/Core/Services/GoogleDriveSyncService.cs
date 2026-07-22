@@ -36,7 +36,7 @@ public class GoogleDriveSyncService
         {
             var assembly = Assembly.GetExecutingAssembly();
             await using var stream = assembly.GetManifestResourceStream("YomiYa.credentials.json");
-            
+
             var secrets = await GoogleClientSecrets.FromStreamAsync(stream);
             if (secrets?.Secrets == null) return;
 

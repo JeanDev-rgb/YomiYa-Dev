@@ -27,7 +27,7 @@ public static class StringUtils
     }
 
     /// <summary>
-    /// Extrae el primer número flotante de una cadena de texto.
+    ///     Extrae el primer número flotante de una cadena de texto.
     /// </summary>
     /// <param name="source">La cadena de entrada.</param>
     /// <returns>El número flotante extraído, o null si no se encontró ninguno.</returns>

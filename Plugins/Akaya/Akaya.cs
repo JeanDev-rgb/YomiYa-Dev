@@ -4,9 +4,9 @@ using System.Web;
 using HtmlAgilityPack;
 using Polly;
 using ScrapySharp.Extensions;
+using YomiYa.Core.Handlers;
 using YomiYa.Core.Resilience.Handlers;
 using YomiYa.Domain.Models;
-using YomiYa.Extensions.Es.Handlers;
 using YomiYa.Source.Models;
 using YomiYa.Source.Online;
 using YomiYa.Utils;
@@ -15,14 +15,7 @@ namespace YomiYa.Extensions.Es;
 
 public class Akaya : ParsedHttpSource
 {
-    protected sealed override string BaseUrl => "https://akaya.io";
-    public sealed override string Lang => "es";
-    public sealed override long Id { get; set; } 
-    public sealed override string Name { get; set; } = "Akaya Manga";
-    public override string Version => "1.1.0";
     private string _csrfToken = "";
-
-    public override HttpClient HttpClient { get; }
 
     public Akaya()
     {
@@ -44,6 +37,14 @@ public class Akaya : ParsedHttpSource
 
         HttpClient = new HttpClient(retryHandler);
     }
+
+    protected sealed override string BaseUrl => "https://akaya.io";
+    public sealed override string Lang => "es";
+    public sealed override long Id { get; set; }
+    public sealed override string Name { get; set; } = "Akaya Manga";
+    public override string Version => "1.1.0";
+
+    public override HttpClient HttpClient { get; }
 
     private async Task GetCsrfTokenAsync()
     {
@@ -135,10 +136,7 @@ public class Akaya : ParsedHttpSource
 
     public override async Task<MangasPage> SearchManga(string query, int page = 1, string genre = "")
     {
-        if (string.IsNullOrEmpty(_csrfToken))
-        {
-            await GetCsrfTokenAsync();
-        }
+        if (string.IsNullOrEmpty(_csrfToken)) await GetCsrfTokenAsync();
 
         var searchUrl = $"{BaseUrl}/search";
         var formContent = CreateSearchFormBody(query);
@@ -171,21 +169,16 @@ public class Akaya : ParsedHttpSource
         {
             var style = innerImg.GetAttributeValue("style", null);
             if (!string.IsNullOrEmpty(style))
-            {
                 manga.ThumbnailUrl = style
                     .SubstringAfter("url(")
                     .SubstringBefore(")")
                     .Trim('\'', '"');
-            }
         }
 
         if (string.IsNullOrEmpty(manga.ThumbnailUrl))
         {
             var imgFluid = element.CssSelect("div.img-fluid").FirstOrDefault();
-            if (imgFluid != null)
-            {
-                manga.ThumbnailUrl = imgFluid.GetAttributeValue("abs:src", string.Empty).Trim();
-            }
+            if (imgFluid != null) manga.ThumbnailUrl = imgFluid.GetAttributeValue("abs:src", string.Empty).Trim();
         }
 
         return manga;
@@ -201,10 +194,7 @@ public class Akaya : ParsedHttpSource
         var chapterNameText = HttpUtility.HtmlDecode(h3Node?.InnerText?.Trim()) ?? "";
 
         var fullName = $"{chapterNumberText}: {chapterNameText}".Trim();
-        if (fullName.EndsWith(":"))
-        {
-            fullName = fullName.TrimEnd(':').Trim();
-        }
+        if (fullName.EndsWith(":")) fullName = fullName.TrimEnd(':').Trim();
 
         var chapterNumber = chapterNumberText.ExtractFloat() ?? -1f;
         var url = h3Node?.GetAttributeValue("href", "") ?? string.Empty;
@@ -214,9 +204,7 @@ public class Akaya : ParsedHttpSource
         if (!string.IsNullOrEmpty(dateString) &&
             DateTime.TryParseExact(dateString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None,
                 out var parsedDate))
-        {
             dateTimestamp = new DateTimeOffset(parsedDate).ToUnixTimeSeconds();
-        }
 
         return new SChapter
         {
@@ -244,21 +232,16 @@ public class Akaya : ParsedHttpSource
         {
             var style = innerImg.GetAttributeValue("style", null);
             if (!string.IsNullOrEmpty(style))
-            {
                 manga.ThumbnailUrl = style
                     .SubstringAfter("url(")
                     .SubstringBefore(")")
                     .Trim('\'', '"');
-            }
         }
 
         if (string.IsNullOrEmpty(manga.ThumbnailUrl))
         {
             var imgFluid = element.CssSelect("div.img-fluid").FirstOrDefault();
-            if (imgFluid != null)
-            {
-                manga.ThumbnailUrl = imgFluid.GetAttributeValue("abs:src", string.Empty).Trim();
-            }
+            if (imgFluid != null) manga.ThumbnailUrl = imgFluid.GetAttributeValue("abs:src", string.Empty).Trim();
         }
 
         return manga;

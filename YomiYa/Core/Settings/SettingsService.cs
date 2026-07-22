@@ -29,13 +29,13 @@ public class SettingsService : ISettingsService
     }
 
     // El servicio ahora "posee" el objeto de configuración
-    public  AppSettings Settings { get; private set; } = new();
+    public AppSettings Settings { get; private set; } = new();
 
     /// <summary>
     ///     Carga la configuración desde el archivo. Si no existe, crea uno con valores por defecto.
     ///     Este método es síncrono para facilitar su uso al inicio de la aplicación.
     /// </summary>
-    public  void Load()
+    public void Load()
     {
         if (!File.Exists(SettingsFilePath))
         {
@@ -59,7 +59,7 @@ public class SettingsService : ISettingsService
     /// <summary>
     ///     Guarda la configuración actual en el archivo de forma síncrona.
     /// </summary>
-    public  void Save()
+    public void Save()
     {
         try
         {

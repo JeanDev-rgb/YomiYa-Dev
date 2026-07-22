@@ -1,12 +1,11 @@
 using System.Reactive.Linq;
 using HtmlAgilityPack;
 using YomiYa.Core.Exceptions;
-using YomiYa.Utils;
+using YomiYa.Core.Resilience;
+using YomiYa.Core.Resilience.Handlers;
 using YomiYa.Domain.Models;
 using YomiYa.Source.Models;
-using YomiYa.Core.Resilience;
-using Polly;
-using YomiYa.Core.Resilience.Handlers;
+using YomiYa.Utils;
 using HttpRequestException = YomiYa.Core.Exceptions.HttpRequestException;
 
 namespace YomiYa.Source.Online;
@@ -45,6 +44,33 @@ public abstract class ParsedHttpSource : IParsedHttpSource
     public abstract Task<MangasPage> GetPopularManga(int page = 1);
     public abstract Task<MangasPage> SearchManga(string query, int page = 1, string genre = "");
 
+    public abstract long Id { get; set; }
+    public abstract string Name { get; set; }
+
+    public virtual async Task<SManga> GetMangaDetails(SManga manga)
+    {
+        if (string.IsNullOrEmpty(manga.Url))
+            throw new ArgumentException("El manga no tiene URL");
+
+        return await GetMangaDetails(manga.Url);
+    }
+
+    public virtual async Task<List<SChapter>> GetChapterList(SManga manga)
+    {
+        if (string.IsNullOrEmpty(manga.Url))
+            throw new ArgumentException("El manga no tiene URL");
+
+        return await GetChapters(manga.Url);
+    }
+
+    public virtual IObservable<List<Page>> FetchPageList(SChapter chapter)
+    {
+        if (string.IsNullOrEmpty(chapter.Url))
+            throw new ArgumentException("El capítulo no tiene URL");
+
+        return Observable.FromAsync(() => GetPages(chapter.Url));
+    }
+
     private async Task<string> GetHtmlContentAsync(string url)
     {
         try
@@ -74,7 +100,8 @@ public abstract class ParsedHttpSource : IParsedHttpSource
         }
         catch (Exception ex)
         {
-            throw new ImageDownloadException($"Error desconocido al obtener la imagen desde {imageUrl}: {ex.Message}", ex);
+            throw new ImageDownloadException($"Error desconocido al obtener la imagen desde {imageUrl}: {ex.Message}",
+                ex);
         }
     }
 
@@ -91,31 +118,5 @@ public abstract class ParsedHttpSource : IParsedHttpSource
         {
             throw new HtmlParsingException($"Error al procesar el documento HTML de {url}: {ex.Message}", ex);
         }
-    }
-
-    public abstract long Id { get; set; }
-    public abstract string Name { get; set; }
-    public virtual async Task<SManga> GetMangaDetails(SManga manga)
-    {
-        if (string.IsNullOrEmpty(manga.Url))
-            throw new ArgumentException("El manga no tiene URL");
-
-        return await GetMangaDetails(manga.Url);
-    }
-
-    public virtual async Task<List<SChapter>> GetChapterList(SManga manga)
-    {
-        if (string.IsNullOrEmpty(manga.Url))
-            throw new ArgumentException("El manga no tiene URL");
-
-        return await GetChapters(manga.Url);
-    }
-
-    public virtual IObservable<List<Page>> FetchPageList(SChapter chapter)
-    {
-        if (string.IsNullOrEmpty(chapter.Url))
-            throw new ArgumentException("El capítulo no tiene URL");
-
-        return Observable.FromAsync(() => GetPages(chapter.Url));
     }
 }
