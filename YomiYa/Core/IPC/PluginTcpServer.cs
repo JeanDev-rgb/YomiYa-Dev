@@ -108,7 +108,7 @@ public class PluginTcpServer
             taskCompletionSource.SetResult(message);
     }
 
-    public async Task<TcpMessage> SendRequestAsync(string action, object payload = null)
+    public async Task<TcpMessage> SendRequestAsync(string action, object? payload = null)
     {
         if (_connectedClient == null || !_connectedClient.Connected)
             throw new Exception("No hay ninguna extensión conectada.");
