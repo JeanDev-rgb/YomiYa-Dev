@@ -32,7 +32,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Button Grid.Column="1" Command="{Binding RefreshCommand}"
+                <Button Grid.Column="1" Command="{Binding OpenStoreCommand}"
                         Content="{Binding RefreshText}"
                         Margin="0,0,8,0"
                         Padding="12,6"
@@ -49,23 +49,37 @@
             </Grid>
         </Border>
 
-        <!-- WebView -->
-        <NativeWebView Grid.Row="1"
-                        x:Name="WebView"
-                        Source="{Binding StoreSource}" />
-
-        <!-- Indicador de carga -->
         <Border Grid.Row="1"
-                Background="#80000000"
-                IsVisible="{Binding IsLoading}"
-                IsHitTestVisible="False"
+                Background="{DynamicResource ControlFillColorDefaultBrush}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-                <ProgressBar IsIndeterminate="True" Width="200" />
-                <TextBlock Text="{Binding LoadingText}"
-                           Foreground="White" FontSize="14"
-                           HorizontalAlignment="Center" />
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="14"
+                        MaxWidth="420">
+                <PathIcon Width="34"
+                          Height="34"
+                          Data="{StaticResource ShoppingCart}"
+                          Foreground="{DynamicResource AccentFillColorDefaultBrush}" />
+                <TextBlock Text="{Binding StoreSubtitleText}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           FontSize="14"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                    <Button Command="{Binding OpenStoreCommand}"
+                            Content="{Binding OpenStoreText}"
+                            Padding="12,6"
+                            CornerRadius="6"
+                            Background="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="White" />
+                    <Button Command="{Binding OpenInBrowserCommand}"
+                            Content="{Binding OpenInBrowserText}"
+                            Padding="12,6"
+                            CornerRadius="6"
+                            Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>

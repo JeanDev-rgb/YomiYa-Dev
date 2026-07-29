@@ -103,6 +103,7 @@
     <data name="StoreSubtitle" xml:space="preserve"><value>Tienda oficial de Streamify</value></data>
     <data name="Loading" xml:space="preserve"><value>Cargando...</value></data>
     <data name="OpenInBrowser" xml:space="preserve"><value>Abrir en navegador</value></data>
+    <data name="OpenStore" xml:space="preserve"><value>Abrir tienda</value></data>
     <data name="PointsTitle" xml:space="preserve"><value>Puntos</value></data>
     <data name="PointsSubtitle" xml:space="preserve"><value>Gana puntos leyendo y canjéalos por recompensas</value></data>
     <data name="YourPoints" xml:space="preserve"><value>Tus puntos</value></data>

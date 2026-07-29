@@ -12,14 +12,14 @@ namespace YomiYa.Core.IPC;
 public class PluginTcpServer
 {
     private readonly ConcurrentDictionary<string, TaskCompletionSource<TcpMessage>> _pendingRequests = new();
-    private CancellationTokenSource _cancellationTokenSource;
+    private CancellationTokenSource? _cancellationTokenSource;
 
-    private TcpClient _connectedClient;
-    private TaskCompletionSource<bool> _connectionTcs;
+    private TcpClient? _connectedClient;
+    private TaskCompletionSource<bool>? _connectionTcs;
     private bool _isRunning;
-    private TcpListener _listener;
-    private StreamReader _reader;
-    private StreamWriter _writer;
+    private TcpListener? _listener;
+    private StreamReader? _reader;
+    private StreamWriter? _writer;
 
     public void Start(int port = 50000)
     {
@@ -47,11 +47,11 @@ public class PluginTcpServer
         {
             while (_isRunning && !token.IsCancellationRequested)
             {
-                var client = await _listener.AcceptTcpClientAsync(token);
+                var client = await _listener!.AcceptTcpClientAsync(token);
                 Console.WriteLine("[YomiYa TCP] ¡Una extensión se ha conectado!");
 
                 _connectedClient = client;
-                _connectionTcs.TrySetResult(true); // ¡Avisamos que alguien se conectó!
+                _connectionTcs!.TrySetResult(true); // ¡Avisamos que alguien se conectó!
 
                 var stream = client.GetStream();
                 _reader = new StreamReader(stream);
@@ -73,7 +73,7 @@ public class PluginTcpServer
     public async Task WaitForConnectionAsync(int timeoutMs = 5000)
     {
         var timeoutTask = Task.Delay(timeoutMs);
-        var completedTask = await Task.WhenAny(_connectionTcs.Task, timeoutTask);
+        var completedTask = await Task.WhenAny(_connectionTcs!.Task, timeoutTask);
 
         if (completedTask == timeoutTask)
             throw new TimeoutException("La extensión tardó demasiado en conectarse o crasheó al abrirse.");
@@ -85,7 +85,7 @@ public class PluginTcpServer
         {
             while (_isRunning && client.Connected && !token.IsCancellationRequested)
             {
-                var jsonLine = await _reader.ReadLineAsync();
+                var jsonLine = await _reader!.ReadLineAsync();
                 if (string.IsNullOrEmpty(jsonLine)) break;
 
                 var message = JsonSerializer.Deserialize<TcpMessage>(jsonLine);
@@ -123,7 +123,7 @@ public class PluginTcpServer
 
         var json = JsonSerializer.Serialize(requestMessage, new JsonSerializerOptions { WriteIndented = false });
 
-        await _writer.WriteLineAsync(json);
+        await _writer!.WriteLineAsync(json);
 
         return await tcs.Task;
     }
