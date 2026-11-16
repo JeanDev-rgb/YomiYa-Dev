@@ -37,7 +37,16 @@ public class MangaService(IDatabaseService databaseService)
         CancellationToken cancellationToken)
     {
         if (SelectedPlugin is null) return false;
-        var plugin = SelectedPlugin;
+        return await FetchPageAsync(SelectedPlugin, pageFetcher, page, progress, cancellationToken);
+    }
+
+    public async Task<bool> FetchPageAsync(
+        ParsedHttpSource plugin,
+        Func<int, Task<MangasPage>> pageFetcher,
+        int page,
+        IProgress<SManga> progress,
+        CancellationToken cancellationToken)
+    {
 
         cancellationToken.ThrowIfCancellationRequested();
         var resultPage = await pageFetcher(page);

@@ -16,7 +16,7 @@
 
     <Window.Styles>
         <Style Selector="Border.ReaderBar">
-            <Setter Property="Background" Value="#D0181818" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
             <Setter Property="Opacity" Value="0" />
             <Setter Property="Transitions">
                 <Transitions>
@@ -34,8 +34,8 @@
 
         <Style Selector="Button.ReaderNav">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#EAEAEA" />
-            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Padding" Value="16,12" />
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontWeight" Value="Normal" />
@@ -57,7 +57,7 @@
         </Style>
 
         <Style Selector="TextBlock.ChapterTitle">
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
@@ -65,7 +65,7 @@
             <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
         <Style Selector="TextBlock.PageInfo">
-            <Setter Property="Foreground" Value="#9E9E9E" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
@@ -83,7 +83,8 @@
         </Style>
     </Window.Styles>
 
-    <Grid RowDefinitions="Auto, *, Auto" Classes="ReaderContainer" x:Name="ReaderContainerGrid"
+        <Grid RowDefinitions="Auto, *, Auto" Classes="ReaderContainer" x:Name="ReaderContainerGrid"
+              PointerExited="ReaderContainerGrid_PointerExited"
           Classes.wide-mode="{Binding ReadingWidth, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Wide}">
 
         <Grid Grid.Row="0" Grid.RowSpan="3">
@@ -119,23 +120,25 @@
             <ProgressBar IsIndeterminate="True" VerticalAlignment="Center" IsVisible="{Binding IsLoading}" />
         </Grid>
 
-        <Border Grid.Row="0" Classes="ReaderBar TopBar" BorderThickness="0,0,0,1" BorderBrush="#333">
+        <Border Grid.Row="0" Classes="ReaderBar TopBar" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                PointerEntered="ControlPointerEntered" PointerExited="ControlPointerExited">
             <Border Padding="10,5">
                 <Grid ColumnDefinitions="Auto, *, Auto">
-                    <Button Grid.Column="0" Classes="ReaderNav" Content="&lt; Cap. Anterior"
+                            <Button Grid.Column="0" Classes="ReaderNav" Content="&lt; Cap. Anterior" ToolTip.Tip="Capítulo anterior"
                             Command="{Binding PreviousChapterCommand}" />
                     <TextBlock Grid.Column="1" Classes="ChapterTitle" Text="{Binding SelectedChapter.Name}" />
                     <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="5">
-                        <Button Classes="ReaderNav" Content="Cap. Siguiente &gt;"
+                                <Button Classes="ReaderNav" Content="Cap. Siguiente &gt;" ToolTip.Tip="Capítulo siguiente"
                                 Command="{Binding NextChapterCommand}" />
-                        <Button Classes="ReaderNav" Content="Modo" Command="{Binding ToggleReadingModeCommand}" />
-                        <Button Classes="ReaderNav" Content="Ancho" Command="{Binding ToggleReadingWidthCommand}" />
+                                <Button Classes="ReaderNav" Content="Modo" ToolTip.Tip="Cambiar modo de lectura" Command="{Binding ToggleReadingModeCommand}" />
+                        <Button Classes="ReaderNav" Content="Ancho" ToolTip.Tip="Cambiar ancho de página" Command="{Binding ToggleReadingWidthCommand}" />
                     </StackPanel>
                 </Grid>
             </Border>
         </Border>
 
-        <Border Grid.Row="2" Classes="ReaderBar BottomBar" BorderThickness="0,1,0,0" BorderBrush="#333"
+        <Border Grid.Row="2" Classes="ReaderBar BottomBar" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                PointerEntered="ControlPointerEntered" PointerExited="ControlPointerExited"
                 IsVisible="{Binding ReadingMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Paginated}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20" Margin="0,10">
                 <Button Classes="ReaderNav" Content="&lt; Anterior" Command="{Binding PreviousPageCommand}" />

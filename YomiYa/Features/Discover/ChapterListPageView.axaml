@@ -151,6 +151,12 @@
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
             </WrapPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10" Margin="16,0">
+                <Button Content="Continuar leyendo" Command="{Binding ContinueReadingCommand}" />
+                <Button Content="Leer desde el inicio" Command="{Binding ReadFromBeginningCommand}" />
+                <TextBlock Text="{Binding ReadProgress, StringFormat='{}{0:P0} leído'}"
+                           VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
         </StackPanel>
 
         <Border Grid.Row="1" Margin="0 20 0 0" BorderThickness="1"

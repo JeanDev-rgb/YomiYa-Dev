@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using YomiYa.Helper.Input.Classes;
 using YomiYa.Helper.Input.Interfaces;
 
@@ -25,6 +26,13 @@ public partial class PluginPageView : UserControl
         _searchHelper?.Dispose();
         if (DataContext is ISearchableByKeyboard searchableViewModel)
             _searchHelper = new SearchBoxKeyboardHelper(SearchTextBox, searchableViewModel);
+    }
+
+    private void SearchScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        if (sender is not ScrollViewer viewer || DataContext is not PluginPageViewModel vm) return;
+        if (viewer.Offset.Y + viewer.Viewport.Height >= viewer.Extent.Height - 320)
+            vm.LoadNextSearchPageCommand.Execute(null);
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

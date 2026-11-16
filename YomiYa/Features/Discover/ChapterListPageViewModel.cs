@@ -46,6 +46,7 @@ public partial class ChapterListPageViewModel : ViewModelBase
     [ObservableProperty] private string _showText = LanguageHelper.GetText("Show");
     [ObservableProperty] private string _sortByText = LanguageHelper.GetText("SortBy");
     [ObservableProperty] private string _unreadText = LanguageHelper.GetText("Unread");
+    [ObservableProperty] private double _readProgress;
 
     #endregion
 
@@ -130,6 +131,7 @@ public partial class ChapterListPageViewModel : ViewModelBase
             var allChaptersFromDb = await _databaseService.GetChaptersAsync(Manga.Url);
 
             _allChapters = allChaptersFromDb.ToList();
+            ReadProgress = _allChapters.Count == 0 ? 0 : (double)_allChapters.Count(c => c.IsRead) / _allChapters.Count;
             ApplyFiltersAndSort();
         }
         catch (Exception e)
@@ -199,7 +201,6 @@ public partial class ChapterListPageViewModel : ViewModelBase
 
     // Le quitamos el static para poder acceder a _mangaService
     [RelayCommand]
-    [Obsolete("Obsolete")]
     private void OpenChapter(SChapter? chapter)
     {
         if (chapter is null) return;
@@ -213,6 +214,26 @@ public partial class ChapterListPageViewModel : ViewModelBase
             _mangaService.ChapterIndex = 0;
         
         NavigationHelper.OpenReader();
+    }
+
+    [RelayCommand]
+    private void ContinueReading()
+    {
+        var resumable = _allChapters.Where(c => c.LastPageRead > 0 && !c.IsRead)
+            .OrderByDescending(c => c.ChapterNumber).FirstOrDefault();
+        var target = resumable ?? _allChapters.OrderBy(c => c.ChapterNumber).FirstOrDefault(c => !c.IsRead);
+        if (target is not null) OpenChapter(target);
+    }
+
+    [RelayCommand]
+    private void ReadFromBeginning()
+    {
+        var first = _allChapters.OrderBy(c => c.ChapterNumber).FirstOrDefault();
+        if (first is not null)
+        {
+            first.LastPageRead = 0;
+            OpenChapter(first);
+        }
     }
 
     #endregion

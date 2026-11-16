@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,6 +82,7 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     [ObservableProperty] private bool _isSearching;
     [ObservableProperty] private bool _isSearchEmpty;
     [ObservableProperty] private string? _searchErrorMessage;
+    [ObservableProperty] private bool _isSearchTabVisible;
 
     #endregion
 
@@ -125,11 +128,13 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     {
         _searchCts?.Cancel();
         _searchCts?.Dispose();
-        _searchCts = new CancellationTokenSource();
-        var token = _searchCts.Token;
+        var searchCts = _searchCts = new CancellationTokenSource();
+        var token = searchCts.Token;
 
         SearchErrorMessage = null;
         IsSearchEmpty = false;
+        IsSearchTabVisible = !string.IsNullOrWhiteSpace(SearchText);
+        _hasMoreSearchPages = false;
 
         if (string.IsNullOrWhiteSpace(SearchText) || Plugin is null)
         {
@@ -139,6 +144,8 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
             return;
         }
 
+        var query = SearchText.Trim();
+        var plugin = Plugin;
         SearchedMangas.Clear();
         SelectedTabIndex = 2;
         _currentSearchPage = 1;
@@ -146,20 +153,23 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 
         try
         {
-            var progress = new Progress<SManga>(manga =>
+            var progress = new SearchResultProgress(manga =>
             {
-                if (!token.IsCancellationRequested)
-                    SearchedMangas.Add(manga);
+                if (!token.IsCancellationRequested) SearchedMangas.Add(manga);
             });
 
             _hasMoreSearchPages = await _mangaService.FetchPageAsync(
-                page => Plugin.SearchManga(SearchText, page),
+                plugin,
+                page => plugin.SearchManga(query, page),
                 _currentSearchPage,
                 progress,
                 token);
 
             if (!token.IsCancellationRequested)
-                IsSearchEmpty = SearchedMangas.Count == 0;
+            {
+                IsSearchEmpty = progress.Count == 0;
+                _currentSearchPage = 1;
+            }
         }
         catch (OperationCanceledException)
         {
@@ -168,11 +178,14 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
         catch (Exception ex)
         {
             if (!token.IsCancellationRequested)
+            {
                 SearchErrorMessage = $"Error en búsqueda: {ex.Message}";
+                IsSearchTabVisible = true;
+            }
         }
         finally
         {
-            if (!token.IsCancellationRequested)
+            if (ReferenceEquals(_searchCts, searchCts) && !token.IsCancellationRequested)
                 IsSearching = false;
         }
     }
@@ -183,31 +196,56 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
         if (IsSearching || !_hasMoreSearchPages || Plugin is null || string.IsNullOrWhiteSpace(SearchText))
             return;
 
-        var token = _searchCts?.Token ?? CancellationToken.None;
+        var cts = _searchCts;
+        if (cts is null) return;
+        var token = cts.Token;
+        var plugin = Plugin;
+        var query = SearchText.Trim();
+        var requestedPage = _currentSearchPage + 1;
+        SearchErrorMessage = null;
         IsSearching = true;
 
         try
         {
-            _currentSearchPage++;
-            var progress = new Progress<SManga>(manga =>
+            var progress = new SearchResultProgress(manga =>
             {
-                if (!token.IsCancellationRequested)
+                if (!token.IsCancellationRequested && !SearchedMangas.Any(existing => existing.Url == manga.Url))
                     SearchedMangas.Add(manga);
             });
 
             _hasMoreSearchPages = await _mangaService.FetchPageAsync(
-                page => Plugin.SearchManga(SearchText, page),
-                _currentSearchPage,
+                plugin,
+                page => plugin.SearchManga(query, page),
+                requestedPage,
                 progress,
                 token);
+            if (!token.IsCancellationRequested)
+            {
+                _currentSearchPage = requestedPage;
+                IsSearchEmpty = SearchedMangas.Count == 0;
+            }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            SearchErrorMessage = ex.Message;
+            if (!token.IsCancellationRequested) SearchErrorMessage = ex.Message;
         }
         finally
         {
-            IsSearching = false;
+            if (ReferenceEquals(_searchCts, cts)) IsSearching = false;
+        }
+    }
+
+    [RelayCommand]
+    private Task RetrySearchPageAsync() => SearchedMangas.Count == 0 ? SearchMangaAsync() : LoadNextSearchPageAsync();
+
+    private sealed class SearchResultProgress(Action<SManga> onResult) : IProgress<SManga>
+    {
+        private int _count;
+        public int Count => Volatile.Read(ref _count);
+        public void Report(SManga value)
+        {
+            Interlocked.Increment(ref _count);
+            Dispatcher.UIThread.Post(() => onResult(value));
         }
     }
 
@@ -226,18 +264,7 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     private void GetPopularMangas()
     {
         PopularMangas.Clear();
-        var progress = new Progress<SManga>(async void (manga) =>
-        {
-            try
-            {
-                await Task.Delay(60);
-                PopularMangas.Add(manga);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        });
+        var progress = new Progress<SManga>(manga => PopularMangas.Add(manga));
 
         // Usamos la instancia inyectada
         _mangaService.GetPopularMangas(progress);
@@ -246,18 +273,7 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     private void GetLatestUpdates()
     {
         LatestUpdatesMangas.Clear();
-        var progress = new Progress<SManga>(async void (manga) =>
-        {
-            try
-            {
-                await Task.Delay(60);
-                LatestUpdatesMangas.Add(manga);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-        });
+        var progress = new Progress<SManga>(manga => LatestUpdatesMangas.Add(manga));
 
         // Usamos la instancia inyectada
         _mangaService.GetLatestUpdates(progress);

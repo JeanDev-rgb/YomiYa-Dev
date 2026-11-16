@@ -213,13 +213,21 @@
                 </TabItem>
 
                 <TabItem Header="{Binding FoundMangasText}"
-                         IsVisible="{Binding SearchedMangas.Count, Converter={StaticResource AnyToVisibleConverter}}">
-                    <ScrollViewer Margin="0 16 0 0">
-                        <ItemsControl HorizontalAlignment="Stretch"
-                                      ItemsSource="{Binding SearchedMangas}"
-                                      ItemTemplate="{StaticResource MangaCardTemplate}"
-                                      ItemsPanel="{StaticResource MangaItemsPanelTemplate}" />
-                    </ScrollViewer>
+                         IsVisible="{Binding IsSearchTabVisible}">
+                    <Grid RowDefinitions="*,Auto">
+                        <ScrollViewer Grid.Row="0" Margin="0 16 0 0" ScrollChanged="SearchScrollChanged">
+                            <ItemsControl HorizontalAlignment="Stretch"
+                                          ItemsSource="{Binding SearchedMangas}"
+                                          ItemTemplate="{StaticResource MangaCardTemplate}"
+                                          ItemsPanel="{StaticResource MangaItemsPanelTemplate}" />
+                        </ScrollViewer>
+                        <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Horizontal" Spacing="12" Margin="12">
+                            <ProgressBar IsIndeterminate="True" Width="120" IsVisible="{Binding IsSearching}" />
+                            <TextBlock Text="No se encontraron resultados." IsVisible="{Binding IsSearchEmpty}" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding SearchErrorMessage}" IsVisible="{Binding SearchErrorMessage, Converter={StaticResource NullToBoolConverter}}" VerticalAlignment="Center" />
+                            <Button Content="Reintentar" Command="{Binding RetrySearchPageCommand}" IsVisible="{Binding SearchErrorMessage, Converter={StaticResource NullToBoolConverter}}" />
+                        </StackPanel>
+                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>

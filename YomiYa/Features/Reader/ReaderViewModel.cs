@@ -26,6 +26,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     private readonly IDatabaseService _databaseService;
     private readonly MangaService _mangaService;
     private CancellationTokenSource? _chapterLoadCts;
+    private CancellationTokenSource? _progressSaveCts;
 
     #region Fields
 
@@ -68,7 +69,10 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
     #region Properties
 
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(SelectedChapter))]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SelectedChapter))]
+    [NotifyCanExecuteChangedFor(nameof(PreviousChapterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextChapterCommand))]
     private int _chapterIndex;
 
     public SChapter? SelectedChapter => _chapterList.ElementAtOrDefault(ChapterIndex);
@@ -116,7 +120,6 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     private void PreviousChapter()
     {
         ChapterIndex--;
-        _ = InitializeChapterAsync();
     }
 
     private bool CanGoToPreviousChapter()
@@ -128,13 +131,14 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     private void NextChapter()
     {
         ChapterIndex++;
-        _ = InitializeChapterAsync();
     }
 
     private bool CanGoToNextChapter()
     {
         return ChapterIndex < _chapterList.Count - 1;
     }
+
+    partial void OnChapterIndexChanged(int value) => _ = InitializeChapterAsync();
 
     [RelayCommand]
     private void ToggleReadingMode()
@@ -157,10 +161,12 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
     private async Task InitializeChapterAsync()
 {
-    _chapterLoadCts?.Cancel();
-    _chapterLoadCts?.Dispose();
-    _chapterLoadCts = new CancellationTokenSource();
-    var token = _chapterLoadCts.Token;
+    var previousLoad = _chapterLoadCts;
+    previousLoad?.Cancel();
+    var loadCts = new CancellationTokenSource();
+    _chapterLoadCts = loadCts;
+    var token = loadCts.Token;
+    var chapter = SelectedChapter;
 
     IsLoading = true;
     foreach (var page in Pages) page.Dispose();
@@ -168,10 +174,11 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
     try
     {
-        if (SelectedChapter is null) return;
+        if (chapter is null) return;
 
-        var initialPageList = await _plugin.GetPages(SelectedChapter.Url);
+        var initialPageList = await _plugin.GetPages(chapter.Url);
         token.ThrowIfCancellationRequested();
+        if (!ReferenceEquals(_chapterLoadCts, loadCts)) return;
 
         if (!initialPageList.Any()) return;
 
@@ -180,12 +187,13 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
         // Capturamos la colección de este capítulo: una navegación puede sustituir Pages
         // mientras las descargas siguen ejecutándose.
         var chapterPages = Pages;
-        CurrentPageIndex = Math.Clamp(SelectedChapter.LastPageRead, 0, chapterPages.Count - 1);
+        CurrentPageIndex = Math.Clamp(chapter.LastPageRead, 0, chapterPages.Count - 1);
         IsLoading = false; // El lector ya es interactivo
 
         // 2. Ordenamos la cola de descarga empezando desde CurrentPageIndex hacia adelante
-        var orderedIndices = Enumerable.Range(CurrentPageIndex, chapterPages.Count - CurrentPageIndex)
-            .Concat(Enumerable.Range(0, CurrentPageIndex))
+        var startIndex = CurrentPageIndex;
+        var orderedIndices = Enumerable.Range(startIndex, chapterPages.Count - startIndex)
+            .Concat(Enumerable.Range(0, startIndex))
             .ToList();
 
         using var semaphore = new SemaphoreSlim(5); // Máximo 5 imágenes simultáneas
@@ -199,12 +207,19 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
                 if (page.Data is not null || string.IsNullOrEmpty(page.ImageUrl)) return;
 
                 var bitmap = await page.ImageUrl.LoadImageAsync(token);
-                if (!token.IsCancellationRequested && ReferenceEquals(Pages, chapterPages) && index < chapterPages.Count)
+                if (token.IsCancellationRequested || !ReferenceEquals(Pages, chapterPages) || index >= chapterPages.Count)
+                {
+                    bitmap?.Dispose();
+                    return;
+                }
+                if (bitmap is not null)
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         if (!token.IsCancellationRequested && ReferenceEquals(Pages, chapterPages) && index < chapterPages.Count)
                             chapterPages[index] = page with { Data = bitmap };
+                        else
+                            bitmap.Dispose();
                     });
                 }
             }
@@ -228,7 +243,12 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     }
     finally
     {
-        IsLoading = false;
+        if (ReferenceEquals(_chapterLoadCts, loadCts))
+        {
+            IsLoading = false;
+            _chapterLoadCts = null;
+        }
+        loadCts.Dispose();
     }
 }
 
@@ -263,27 +283,38 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
         }
     }
 
-    async partial void OnCurrentPageIndexChanged(int value)
+    partial void OnCurrentPageIndexChanged(int value)
+    {
+        if (IsLoading || Pages.Count == 0 || SelectedChapter is null) return;
+        var chapter = SelectedChapter;
+        var isRead = value >= Pages.Count - 1;
+        chapter.LastPageRead = value;
+        chapter.IsRead = isRead;
+        _progressSaveCts?.Cancel();
+        _progressSaveCts?.Dispose();
+        var saveCts = _progressSaveCts = new CancellationTokenSource();
+        _ = SaveProgressAfterDelayAsync(chapter.Url, value, isRead, saveCts.Token);
+    }
+
+    private async Task SaveProgressAfterDelayAsync(string chapterUrl, int pageIndex, bool isRead, CancellationToken token)
     {
         try
         {
-            if (IsLoading || Pages.Count == 0 || SelectedChapter is null) return;
-
-            SelectedChapter.LastPageRead = value;
-            SelectedChapter.IsRead = value >= Pages.Count - 1;
-
-            // Usamos la instancia de _databaseService inyectada en lugar de crear una nueva
-            await _databaseService.SetChapterProgress(SelectedChapter.Url, SelectedChapter.LastPageRead,
-                SelectedChapter.IsRead);
+            await Task.Delay(TimeSpan.FromMilliseconds(500), token);
+            await _databaseService.SetChapterProgress(chapterUrl, pageIndex, isRead);
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al guardar el progreso del capítulo: {ex.Message}");
-        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex) { Console.WriteLine($"Error al guardar progreso de lectura: {ex.Message}"); }
     }
 
     public void Dispose()
     {
+        var chapterLoad = _chapterLoadCts;
+        _chapterLoadCts = null;
+        chapterLoad?.Cancel();
+        var progressSave = _progressSaveCts;
+        _progressSaveCts = null;
+        progressSave?.Cancel();
         foreach (var page in Pages) page.Dispose();
 
         Pages.Clear();

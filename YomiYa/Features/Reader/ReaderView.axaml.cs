@@ -113,24 +113,43 @@ public partial class ReaderView : Window
         _idleTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _idleTimer.Tick += (s, e) =>
         {
-            ReaderContainerGrid.Classes.Remove("controls-visible");
+            if (!ReaderContainerGrid.Classes.Contains("controls-pinned"))
+                ReaderContainerGrid.Classes.Remove("controls-visible");
             _idleTimer.Stop();
         };
-        ReaderContainerGrid.PointerMoved += (s, e) =>
-        {
-            ReaderContainerGrid.Classes.Add("controls-visible");
-            _idleTimer.Stop();
-            _idleTimer.Start();
-        };
-        ReaderContainerGrid.PointerExited += (s, e) =>
-        {
-            ReaderContainerGrid.Classes.Remove("controls-visible");
-            _idleTimer.Stop();
-        };
+        ReaderContainerGrid.PointerMoved += (s, e) => ShowControls();
+    }
+
+    private void ShowControls()
+    {
+        ReaderContainerGrid.Classes.Add("controls-visible");
+        _idleTimer?.Stop();
+        _idleTimer?.Start();
+    }
+
+    private void ControlPointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        ReaderContainerGrid.Classes.Add("controls-pinned");
+        ShowControls();
+    }
+
+    private void ControlPointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        ReaderContainerGrid.Classes.Remove("controls-pinned");
+        ShowControls();
+    }
+
+    private void ReaderContainerGrid_PointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        if (ReaderContainerGrid.Classes.Contains("controls-pinned")) return;
+        _idleTimer?.Stop();
+        ReaderContainerGrid.Classes.Remove("controls-visible");
     }
 
     protected override void OnClosed(EventArgs e)
     {
+        _idleTimer?.Stop();
+        _scrollDebounceTimer.Stop();
         _keyboardHelper?.Dispose();
         if (DataContext is IDisposable disposable) disposable.Dispose();
         base.OnClosed(e);
