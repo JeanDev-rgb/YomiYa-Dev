@@ -83,11 +83,12 @@ public class PluginTcpServer : IDisposable
                     var stream = client.GetStream();
                     _reader = new StreamReader(stream);
                     _writer = new StreamWriter(stream) { AutoFlush = true };
+                    var connectionReader = _reader;
                     _connectionTcs.TrySetResult(true);
                 }
 
                 Console.WriteLine("[YomiYa TCP] ¡Una extensión se ha conectado!");
-                _ = Task.Run(() => ReceiveMessagesAsync(client, token), token);
+                _ = Task.Run(() => ReceiveMessagesAsync(client, connectionReader, token), token);
             }
         }
         catch (OperationCanceledException) { }
@@ -112,14 +113,14 @@ public class PluginTcpServer : IDisposable
         }
     }
 
-    private async Task ReceiveMessagesAsync(TcpClient client, CancellationToken token)
+    private async Task ReceiveMessagesAsync(TcpClient client, StreamReader reader, CancellationToken token)
     {
         try
         {
             while (_isRunning && client.Connected && !token.IsCancellationRequested)
             {
                 // ReadLineAsync con token permite abortar la lectura si el servidor se detiene
-                var jsonLine = await _reader!.ReadLineAsync(token);
+                var jsonLine = await reader.ReadLineAsync(token);
                 if (jsonLine == null) break; // EOF: el cliente cerró el stream limpiamente
 
                 var message = JsonSerializer.Deserialize<TcpMessage>(jsonLine);
