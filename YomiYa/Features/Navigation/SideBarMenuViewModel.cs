@@ -8,8 +8,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Localization;
+using YomiYa.Core.Navigation;
 using YomiYa.Features.Ad;
 using YomiYa.Features.Discover;
+using YomiYa.Features.Main;
 using YomiYa.Features.Library;
 using YomiYa.Features.Points;
 using YomiYa.Features.Settings;
@@ -21,6 +23,7 @@ namespace YomiYa.Features.Navigation;
 public partial class SideBarMenuViewModel : ViewModelBase
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly SidebarNavigationService _navigationService;
 
     #region Commands
 
@@ -37,9 +40,10 @@ public partial class SideBarMenuViewModel : ViewModelBase
     public SideBarMenuViewModel()
     {
         _serviceProvider = Program.ServiceProvider;
+        _navigationService = null!;
 
         // Inicializamos la página por defecto usando el ServiceProvider
-        CurrentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
+        CurrentPage = _serviceProvider.GetRequiredService<DashboardPageViewModel>();
 
         SplitItems();
         SelectedListItem = MangaItems.First();
@@ -47,12 +51,14 @@ public partial class SideBarMenuViewModel : ViewModelBase
     }
 
     [ActivatorUtilitiesConstructor]
-    public SideBarMenuViewModel(IServiceProvider serviceProvider)
+    public SideBarMenuViewModel(IServiceProvider serviceProvider, SidebarNavigationService navigationService)
     {
         _serviceProvider = serviceProvider;
+        _navigationService = navigationService;
+        _navigationService.NavigationRequested += OnNavigationRequested;
 
         // Inicializamos la página por defecto usando el ServiceProvider
-        CurrentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
+        CurrentPage = _serviceProvider.GetRequiredService<DashboardPageViewModel>();
 
         SplitItems();
         SelectedListItem = MangaItems.First();
@@ -72,6 +78,7 @@ public partial class SideBarMenuViewModel : ViewModelBase
 
     public ObservableCollection<ListItemTemplate> Items { get; set; } =
     [
+        new(typeof(DashboardPageViewModel), "Library", "Dashboard"),
         new(typeof(LibraryPageViewModel), "Library", "Library"),
         new(typeof(BrowsePageViewModel), "Browse", "Browse"),
         new(typeof(HistoryPageViewModel), "History", "History"),
@@ -88,7 +95,8 @@ public partial class SideBarMenuViewModel : ViewModelBase
         OtherItems.Clear();
 
         foreach (var item in Items)
-            if (item.ModelType == typeof(LibraryPageViewModel) ||
+            if (item.ModelType == typeof(DashboardPageViewModel) ||
+                item.ModelType == typeof(LibraryPageViewModel) ||
                 item.ModelType == typeof(BrowsePageViewModel) ||
                 item.ModelType == typeof(HistoryPageViewModel))
                 MangaItems.Add(item);
@@ -108,6 +116,12 @@ public partial class SideBarMenuViewModel : ViewModelBase
         // Esto permite que los sub-viewmodels reciban sus dependencias (DI).
         var viewModel = (ViewModelBase)_serviceProvider.GetRequiredService(value.ModelType);
         CurrentPage = viewModel;
+    }
+
+    private void OnNavigationRequested(Type viewModelType)
+    {
+        var item = MangaItems.Concat(OtherItems).FirstOrDefault(candidate => candidate.ModelType == viewModelType);
+        if (item is not null) SelectedListItem = item;
     }
 
     protected sealed override void UpdateLocalizedTexts()

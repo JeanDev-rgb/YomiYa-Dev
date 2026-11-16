@@ -105,22 +105,36 @@
     </UserControl.Styles>
 
     <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="32">
-        <Grid RowDefinitions="Auto, *">
+        <Grid RowDefinitions="Auto,Auto,*">
             <TextBlock Grid.Row="0" Classes="PageTitle" Text="{Binding Title}" />
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,16" ColumnSpacing="8">
+                <TextBox Grid.Column="0" Text="{Binding SearchText, Mode=TwoWay}" PlaceholderText="Buscar en la biblioteca"
+                         MinHeight="40" VerticalContentAlignment="Center" />
+                <ToggleButton Grid.Column="1" Content="Z–A" IsChecked="{Binding SortDescending}" ToolTip.Tip="Cambiar orden alfabético" />
+                <CheckBox Grid.Column="2" Content="No leídos" IsChecked="{Binding UnreadOnly}" VerticalAlignment="Center" />
+                <ToggleButton Grid.Column="3" Content="Lista" IsChecked="{Binding IsListView}" ToolTip.Tip="Alternar cuadrícula y lista" />
+            </Grid>
 
-            <ScrollViewer Grid.Row="1">
-                <ItemsControl HorizontalAlignment="Left" VerticalAlignment="Top" ItemsSource="{Binding Mangas}">
+            <ScrollViewer Grid.Row="2">
+                <Grid>
+                <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Mangas}"
+                              IsVisible="{Binding IsGridView}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Height="450" Width="300">
+                            <Grid Height="450">
                                 <Button Classes="MangaCard"
                                         HorizontalAlignment="Stretch"
                                         Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).OpenMangaCommand}"
                                         CommandParameter="{Binding}">
                                     <Grid>
                                         <Image Source="{Binding Cover}" Stretch="UniformToFill" />
-                                        <Border Classes="TitleOverlay" />
-                                        <TextBlock Classes="MangaTitle" Text="{Binding Title}" />
+                                        <Border Classes="TitleOverlay" Height="130" />
+                                        <StackPanel VerticalAlignment="Bottom" Margin="12" Spacing="5">
+                                            <TextBlock Classes="MangaTitle" Margin="0" Text="{Binding Title}" />
+                                            <TextBlock Text="{Binding LastReadChapterName}" Foreground="White" FontSize="12"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <ProgressBar Minimum="0" Maximum="1" Value="{Binding ReadProgress}" Height="4" />
+                                        </StackPanel>
                                     </Grid>
                                 </Button>
 
@@ -137,21 +151,45 @@
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid VerticalAlignment="Top"
-                                         Columns="{Binding Columns}"
+                                         Columns="{Binding DisplayColumns}"
                                          ColumnSpacing="20"
                                          RowSpacing="20" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
+                <ItemsControl HorizontalAlignment="Stretch" VerticalAlignment="Top" ItemsSource="{Binding Mangas}"
+                              IsVisible="{Binding IsListView}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" CornerRadius="8"
+                                    Margin="0,0,0,8" Padding="8">
+                                <Grid ColumnDefinitions="96,*,Auto" Height="132" ColumnSpacing="14">
+                                    <Image Grid.Column="0" Source="{Binding Cover}" Stretch="UniformToFill" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="7">
+                                        <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding LastReadChapterName}" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                        <ProgressBar Minimum="0" Maximum="1" Value="{Binding ReadProgress}" Height="5" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="6">
+                                        <Button Content="Continuar" Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).ContinueReadingCommand}" CommandParameter="{Binding}" />
+                                        <Button Content="Obra" Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).OpenMangaCommand}" CommandParameter="{Binding}" />
+                                        <Button Content="Quitar" Command="{Binding $parent[UserControl].((library:LibraryPageViewModel)DataContext).DeleteMangaCommand}" CommandParameter="{Binding}" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                </Grid>
             </ScrollViewer>
 
-            <StackPanel Grid.Row="1"
+            <StackPanel Grid.Row="2"
                         VerticalAlignment="Center"
                         IsVisible="{Binding Mangas.Count, Converter={StaticResource ZeroToVisibleConverter}}"
                         HorizontalAlignment="Center"
                         Spacing="10">
-                <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
-                <TextBlock Classes="NoItemsMessage" Text="{Binding NoMangaAdded}" />
+                <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" IsVisible="{Binding IsLibraryEmpty}" />
+                <TextBlock Classes="NoItemsMessage" Text="{Binding EmptyMessage}" />
             </StackPanel>
         </Grid>
     </Border>

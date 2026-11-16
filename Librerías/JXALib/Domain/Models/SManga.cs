@@ -16,6 +16,8 @@ public partial class SManga : ObservableObject
     public const int OnHiatus = 6;
 
     [ObservableProperty] private bool _isFavorite;
+    [ObservableProperty] private string? _lastReadChapterName;
+    [ObservableProperty] private double _readProgress;
     public string Url { get; set; }
     public string Title { get; set; }
     public string? Artist { get; set; }

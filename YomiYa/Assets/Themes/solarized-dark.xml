@@ -3,12 +3,12 @@
     <Color Key="CardBackgroundFillColorDefaultBrush">#073642</Color>
     <Color Key="ControlFillColorDefaultBrush">#002b36</Color>
 
-    <Color Key="TextFillColorPrimaryBrush">#839496</Color>
-    <Color Key="TextFillColorSecondaryBrush">#839496</Color>
+    <Color Key="TextFillColorPrimaryBrush">#eee8d5</Color>
+    <Color Key="TextFillColorSecondaryBrush">#93a1a1</Color>
 
     <Color Key="AccentFillColorDefaultBrush">#268bd2</Color>
     <Color Key="TextOnAccentFillColorPrimaryBrush">#fdf6e3</Color>
-    <Color Key="ControlStrokeColorDefaultBrush">#839496</Color>
+    <Color Key="ControlStrokeColorDefaultBrush">#586e75</Color>
     <Color Key="ControlFillColorSecondaryBrush">#073642</Color>
 
     <Color Key="ErrorColor">#dc322f</Color>

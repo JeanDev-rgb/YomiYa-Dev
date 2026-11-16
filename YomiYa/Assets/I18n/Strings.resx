@@ -185,4 +185,5 @@
     <data name="SupportReason2" xml:space="preserve"><value>Develop new features and constant improvements.</value></data>
     <data name="SupportReason3" xml:space="preserve"><value>Support the independent creator behind the project.</value></data>
     <data name="ThankYou" xml:space="preserve"><value>Thank you for your support! Every contribution counts 💜</value></data>
+    <data name="Dashboard" xml:space="preserve"><value>Home</value></data>
 </root>

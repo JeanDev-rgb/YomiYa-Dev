@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,7 +18,7 @@ public partial class AdPageViewModel : ViewModelBase
     {
         // Carga los textos iniciales y la imagen QR al crear el ViewModel
         UpdateLocalizedTexts();
-        LoadQr();
+        _ = LoadQrAsync();
     }
 
     protected sealed override void UpdateLocalizedTexts()
@@ -55,7 +56,7 @@ public partial class AdPageViewModel : ViewModelBase
         FinalCallToActionAfter = finalCallParts.Length > 1 ? finalCallParts[1] : "";
     }
 
-    private async void LoadQr()
+    private async Task LoadQrAsync()
     {
         try
         {

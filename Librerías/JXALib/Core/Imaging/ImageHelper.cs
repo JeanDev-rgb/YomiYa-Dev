@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -11,7 +12,11 @@ namespace YomiYa.Core.Imaging;
 
 public static class ImageHelper
 {
+    private const long MaxMemoryCacheBytes = 48 * 1024 * 1024;
     private static readonly HttpClient HttpClient;
+    private static readonly object MemoryCacheLock = new();
+    private static readonly Dictionary<string, byte[]> MemoryCache = new(StringComparer.Ordinal);
+    private static long _memoryCacheBytes;
 
     private static readonly string CacheDirectory =
         Path.Combine(AppContext.BaseDirectory, "Cache", "ImageCache");
@@ -67,22 +72,19 @@ public static class ImageHelper
 
         try
         {
-            if (!File.Exists(imagePath))
-            {
-                var imageBytes = await HttpClient.GetByteArrayAsync(url, cancellationToken);
-                await File.WriteAllBytesAsync(imagePath, imageBytes, cancellationToken);
-            }
+            var imageBytes = await GetImageBytesAsync(url, imagePath, cancellationToken);
 
             if (cancellationToken.IsCancellationRequested) return null;
-
-            await using var stream = new FileStream(imagePath, FileMode.Open, FileAccess.Read);
 
             // Decodificamos la imagen a un tamaño más pequeño para ahorrar RAM.
             // Para las portadas, usamos un ancho fijo de 200px.
             // Para las páginas del lector, un ancho máximo de 1080px (suficiente para la mayoría de pantallas).
             var decodeWidth = isCover ? 200 : 1080;
-            return await Task.Run(() => Bitmap.DecodeToWidth(stream, decodeWidth),
-                cancellationToken);
+            return await Task.Run(() =>
+            {
+                using var stream = new MemoryStream(imageBytes, writable: false);
+                return Bitmap.DecodeToWidth(stream, decodeWidth);
+            }, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -94,6 +96,50 @@ public static class ImageHelper
             Console.WriteLine($"Error al cargar o descargar la imagen desde '{url}': {ex.Message}");
             return LoadErrorPlaceholder();
         }
+    }
+
+    private static async Task<byte[]> GetImageBytesAsync(Uri url, string imagePath, CancellationToken cancellationToken)
+    {
+        var key = url.ToString();
+        lock (MemoryCacheLock)
+            if (MemoryCache.TryGetValue(key, out var cached)) return cached;
+
+        byte[] bytes;
+        if (File.Exists(imagePath))
+        {
+            bytes = await File.ReadAllBytesAsync(imagePath, cancellationToken);
+        }
+        else
+        {
+            bytes = await HttpClient.GetByteArrayAsync(url, cancellationToken);
+            var temporaryPath = imagePath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                await File.WriteAllBytesAsync(temporaryPath, bytes, cancellationToken);
+                try { File.Move(temporaryPath, imagePath); }
+                catch (IOException) when (File.Exists(imagePath) && new FileInfo(imagePath).Length > 0) { }
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
+            }
+        }
+
+        if (bytes.Length <= MaxMemoryCacheBytes)
+        {
+            lock (MemoryCacheLock)
+            {
+                if (MemoryCache.TryGetValue(key, out var existing)) return existing;
+                if (_memoryCacheBytes + bytes.Length > MaxMemoryCacheBytes)
+                {
+                    MemoryCache.Clear();
+                    _memoryCacheBytes = 0;
+                }
+                MemoryCache[key] = bytes;
+                _memoryCacheBytes += bytes.Length;
+            }
+        }
+        return bytes;
     }
 
 

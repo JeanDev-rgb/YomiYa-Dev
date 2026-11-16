@@ -202,4 +202,5 @@
     <data name="ThankYou" xml:space="preserve"><value>Thank you for your support! Every contribution counts 💜</value></data>
     <data name="SignOut" xml:space="preserve"><value>Sign Out</value></data>
     <data name="NoBackupFound" xml:space="preserve"><value>No backup found.</value></data>
+    <data name="Dashboard" xml:space="preserve"><value>Home</value></data>
 </root>

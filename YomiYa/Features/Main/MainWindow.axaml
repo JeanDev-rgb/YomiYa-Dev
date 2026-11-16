@@ -6,8 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="YomiYa.Features.Main.MainWindow"
         x:DataType="main:MainWindowViewModel"
-        MinWidth="900"
-        MinHeight="600"
+        MinWidth="640"
+        MinHeight="440"
         Icon="/Assets/YomiYa.ico"
         Background="{DynamicResource ControlFillColorDefaultBrush}">
 

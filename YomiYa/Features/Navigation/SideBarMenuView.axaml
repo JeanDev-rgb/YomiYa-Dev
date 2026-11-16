@@ -30,8 +30,8 @@
         </Style>
 
         <Style Selector="ListBoxItem">
-            <Setter Property="Padding" Value="12 10" />
-            <Setter Property="Margin" Value="6 0" />
+            <Setter Property="Padding" Value="8 10" />
+            <Setter Property="Margin" Value="0" />
             <Setter Property="CornerRadius" Value="4" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="Transitions">
@@ -66,7 +66,7 @@
                DisplayMode="CompactInline">
 
         <SplitView.Pane>
-            <Grid Margin="0 2" HorizontalAlignment="Left" MinWidth="125"
+            <Grid Margin="0 2" HorizontalAlignment="Stretch"
                   RowDefinitions="Auto,*,Auto,Auto">
                 
                 <!-- Fila 0: Botón Hamburguesa -->
@@ -82,10 +82,9 @@
                          VerticalAlignment="Top"
                          ItemsSource="{Binding MangaItems}"
                          SelectedItem="{Binding SelectedListItem}"
-                         SelectedIndex="0"
                          Background="Transparent"
                          Padding="0"
-                         Margin="0 0 -40 0">
+                         Margin="0">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type navigation:ListItemTemplate}">
                             <StackPanel Spacing="16" Orientation="Horizontal" VerticalAlignment="Center">
@@ -106,7 +105,7 @@
                          SelectedItem="{Binding SelectedListItem}"
                          Background="Transparent"
                          Padding="0"
-                         Margin="0 0 -40 0">
+                         Margin="0">
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type navigation:ListItemTemplate}">
                             <StackPanel Spacing="16" Orientation="Horizontal" VerticalAlignment="Center">
