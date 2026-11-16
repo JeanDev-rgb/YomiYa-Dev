@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Database;
 using YomiYa.Core.Dialogs;
+using YomiYa.Core.Imaging;
 using YomiYa.Core.Navigation;
 using YomiYa.Core.Settings;
 using YomiYa.Features.Ad;
@@ -26,6 +27,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<DatabaseOperationCoordinator>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<SidebarNavigationService>();
+        services.AddSingleton<IReaderPageImageLoader, ReaderPageImageLoader>();
 
         // Servicios de lógica
         services.AddSingleton<GoogleDriveSyncService>();

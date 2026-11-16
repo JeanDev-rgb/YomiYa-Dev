@@ -30,8 +30,14 @@ public static class ImageHelper
         Directory.CreateDirectory(CacheDirectory);
     }
 
-    public static async Task<Bitmap?> LoadImageAsync(this string url, CancellationToken cancellationToken = default,
-        bool isCover = false)
+    public static Task<Bitmap?> LoadImageAsync(this string url, CancellationToken cancellationToken = default,
+        bool isCover = false) => LoadImageCoreAsync(url, cancellationToken, isCover, strict: false);
+
+    public static Task<Bitmap?> LoadImageStrictAsync(this string url, CancellationToken cancellationToken = default) =>
+        LoadImageCoreAsync(url, cancellationToken, isCover: false, strict: true);
+
+    private static async Task<Bitmap?> LoadImageCoreAsync(string url, CancellationToken cancellationToken,
+        bool isCover, bool strict)
     {
         if (string.IsNullOrEmpty(url)) return null;
 
@@ -41,10 +47,10 @@ public static class ImageHelper
         {
             case "http":
             case "https":
-                return await LoadFromWebWithCacheAsync(uri, cancellationToken, isCover);
+                return await LoadFromWebWithCacheAsync(uri, cancellationToken, isCover, strict);
 
             case "avares":
-                return LoadFromResource(uri);
+                return strict ? new Bitmap(AssetLoader.Open(uri)) : LoadFromResource(uri);
 
             default:
                 Console.WriteLine($"Esquema de URI no soportado: {uri.Scheme}");
@@ -66,7 +72,7 @@ public static class ImageHelper
     }
 
     private static async Task<Bitmap?> LoadFromWebWithCacheAsync(Uri url, CancellationToken cancellationToken,
-        bool isCover)
+        bool isCover, bool strict)
     {
         var imagePath = GetCacheFilePath(url.ToString());
 
@@ -89,11 +95,13 @@ public static class ImageHelper
         catch (OperationCanceledException)
         {
             Console.WriteLine($"Carga de imagen cancelada para '{url}'");
+            if (strict) throw;
             return LoadErrorPlaceholder();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error al cargar o descargar la imagen desde '{url}': {ex.Message}");
+            if (strict) throw;
             return LoadErrorPlaceholder();
         }
     }

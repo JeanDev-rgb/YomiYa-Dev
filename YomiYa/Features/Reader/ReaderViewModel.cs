@@ -4,7 +4,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -25,8 +27,11 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     // Dependencias inyectadas
     private readonly IDatabaseService _databaseService;
     private readonly MangaService _mangaService;
+    private readonly IReaderPageImageLoader _imageLoader;
     private CancellationTokenSource? _chapterLoadCts;
     private CancellationTokenSource? _progressSaveCts;
+    private readonly CancellationTokenSource _lifetimeCts = new();
+    private readonly SemaphoreSlim _imageDownloadSemaphore = new(5);
 
     #region Fields
 
@@ -45,6 +50,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
         _databaseService = null!;
         _mangaService = null!;
+        _imageLoader = null!;
         _plugin = null!;
         _chapterList = [new SChapter { Name = "Capítulo 1 - Vista Previa", ChapterNumber = 1 }];
         _chapterIndex = 0;
@@ -52,10 +58,12 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     }
 
     [ActivatorUtilitiesConstructor]
-    public ReaderViewModel(IDatabaseService databaseService, MangaService mangaService)
+    public ReaderViewModel(IDatabaseService databaseService, MangaService mangaService,
+        IReaderPageImageLoader imageLoader)
     {
         _databaseService = databaseService;
         _mangaService = mangaService;
+        _imageLoader = imageLoader;
 
         // Inicializamos los campos usando la instancia inyectada de MangaService
         _plugin = _mangaService.SelectedPlugin!;
@@ -77,7 +85,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
     public SChapter? SelectedChapter => _chapterList.ElementAtOrDefault(ChapterIndex);
 
-    [ObservableProperty] private ObservableCollection<Page> _pages = [];
+    [ObservableProperty] private ObservableCollection<ReaderPageViewModel> _pages = [];
     [ObservableProperty] private bool _isLoading = true;
     [ObservableProperty] private ReadingMode _readingMode = ReadingMode.Paginated;
     [ObservableProperty] private ReadingWidthMode _readingWidth = ReadingWidthMode.Fitted;
@@ -114,6 +122,17 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     private bool CanGoToNextPage()
     {
         return CurrentPageIndex < Pages.Count - 1;
+    }
+
+    [RelayCommand]
+    private async Task RetryPageAsync(ReaderPageViewModel? page)
+    {
+        var chapterPages = Pages;
+        if (page is null || !chapterPages.Contains(page) || !page.HasError || string.IsNullOrWhiteSpace(page.ImageUrl))
+            return;
+
+        page.BeginLoading();
+        await LoadPageAsync(page, chapterPages, _lifetimeCts.Token);
     }
 
     [RelayCommand(CanExecute = nameof(CanGoToPreviousChapter))]
@@ -183,9 +202,8 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
         if (!initialPageList.Any()) return;
 
         // 1. Mostramos las páginas inmediatamente en la UI (aún sin bitmap)
-        Pages = new ObservableCollection<Page>(initialPageList);
-        // Capturamos la colección de este capítulo: una navegación puede sustituir Pages
-        // mientras las descargas siguen ejecutándose.
+        Pages = new ObservableCollection<ReaderPageViewModel>(initialPageList.Select(page => new ReaderPageViewModel(page)));
+        // Keep each page item stable: replacing an item in the Carousel source can reset its selection.
         var chapterPages = Pages;
         CurrentPageIndex = Math.Clamp(chapter.LastPageRead, 0, chapterPages.Count - 1);
         IsLoading = false; // El lector ya es interactivo
@@ -196,43 +214,8 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
             .Concat(Enumerable.Range(0, startIndex))
             .ToList();
 
-        using var semaphore = new SemaphoreSlim(5); // Máximo 5 imágenes simultáneas
-        var downloadTasks = orderedIndices.Select(async index =>
-        {
-            await semaphore.WaitAsync(token);
-            try
-            {
-                token.ThrowIfCancellationRequested();
-                var page = chapterPages[index];
-                if (page.Data is not null || string.IsNullOrEmpty(page.ImageUrl)) return;
-
-                var bitmap = await page.ImageUrl.LoadImageAsync(token);
-                if (token.IsCancellationRequested || !ReferenceEquals(Pages, chapterPages) || index >= chapterPages.Count)
-                {
-                    bitmap?.Dispose();
-                    return;
-                }
-                if (bitmap is not null)
-                {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        if (!token.IsCancellationRequested && ReferenceEquals(Pages, chapterPages) && index < chapterPages.Count)
-                            chapterPages[index] = page with { Data = bitmap };
-                        else
-                            bitmap.Dispose();
-                    });
-                }
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error cargando página {index}: {ex.Message}");
-            }
-            finally
-            {
-                semaphore.Release();
-            }
-        });
+        var downloadTasks = orderedIndices.Select(index =>
+            LoadPageAsync(chapterPages[index], chapterPages, token));
 
         await Task.WhenAll(downloadTasks);
     }
@@ -252,35 +235,57 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     }
 }
 
-    /// <summary>
-    ///     Carga todas las imágenes de una lista de páginas y devuelve una nueva lista con los datos.
-    /// </summary>
-    private async Task<List<Page>> LoadAllPageBitmapsAsync(List<Page> pagesToLoad)
+    private async Task LoadPageAsync(ReaderPageViewModel page,
+        ObservableCollection<ReaderPageViewModel> chapterPages, CancellationToken token)
     {
-        var loadingTasks = pagesToLoad.Select(LoadPageBitmapAsync).ToList();
-        var loadedPages = await Task.WhenAll(loadingTasks);
-        return loadedPages.ToList();
-    }
+        if (page.Data is not null || string.IsNullOrWhiteSpace(page.ImageUrl)) return;
 
-    /// <summary>
-    ///     Carga el bitmap para una sola página y devuelve un nuevo objeto Page con la imagen.
-    /// </summary>
-    private async Task<Page> LoadPageBitmapAsync(Page page)
-    {
-        if (page.Data is not null ||
-            string.IsNullOrEmpty(page.ImageUrl)) return page; // Si no hay nada que cargar, la devolvemos como está
-
+        var semaphoreEntered = false;
+        Bitmap? bitmap = null;
         try
         {
-            var imageBitmap = await page.ImageUrl.LoadImageAsync();
-            // Devolvemos una nueva instancia de Page con la imagen cargada
-            return page with { Data = imageBitmap };
+            await _imageDownloadSemaphore.WaitAsync(token);
+            semaphoreEntered = true;
+            token.ThrowIfCancellationRequested();
+            bitmap = await _imageLoader.LoadAsync(page.ImageUrl, token);
+            await UpdatePageOnUiThreadAsync(() =>
+            {
+                if (token.IsCancellationRequested || !ReferenceEquals(Pages, chapterPages) || !chapterPages.Contains(page))
+                {
+                    bitmap?.Dispose();
+                    bitmap = null;
+                    return;
+                }
+
+                page.CompleteLoading(bitmap);
+                bitmap = null;
+            });
         }
-        catch (Exception e)
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
         {
-            Console.WriteLine($"Fallo al cargar la imagen de la página {page.Index}: {e.Message}");
-            return page; // En caso de error, devolvemos la página original
+            Console.WriteLine($"Error cargando página {page.Index}: {ex.Message}");
+            await UpdatePageOnUiThreadAsync(() =>
+            {
+                if (!token.IsCancellationRequested && ReferenceEquals(Pages, chapterPages) && chapterPages.Contains(page))
+                    page.CompleteLoading(null);
+            });
         }
+        finally
+        {
+            bitmap?.Dispose();
+            if (semaphoreEntered) _imageDownloadSemaphore.Release();
+        }
+    }
+
+    private static Task UpdatePageOnUiThreadAsync(Action update)
+    {
+        if (Application.Current is null || Dispatcher.UIThread.CheckAccess())
+        {
+            update();
+            return Task.CompletedTask;
+        }
+        return Dispatcher.UIThread.InvokeAsync(update).GetTask();
     }
 
     partial void OnCurrentPageIndexChanged(int value)
@@ -315,6 +320,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
         var progressSave = _progressSaveCts;
         _progressSaveCts = null;
         progressSave?.Cancel();
+        _lifetimeCts.Cancel();
         foreach (var page in Pages) page.Dispose();
 
         Pages.Clear();

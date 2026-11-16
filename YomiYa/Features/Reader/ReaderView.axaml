@@ -92,10 +92,17 @@
                       SelectedIndex="{Binding CurrentPageIndex, Mode=TwoWay}"
                       IsVisible="{Binding ReadingMode, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Paginated}">
                 <Carousel.ItemTemplate>
-                    <DataTemplate>
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                            <Image Source="{Binding Data}" />
-                        </ScrollViewer>
+                    <DataTemplate x:DataType="reader:ReaderPageViewModel">
+                        <Grid MinHeight="240">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                <Image Source="{Binding Data}" />
+                            </ScrollViewer>
+                            <ProgressBar Width="160" IsIndeterminate="True" HorizontalAlignment="Center"
+                                         VerticalAlignment="Center" IsVisible="{Binding IsLoading}" />
+                            <Button Content="Reintentar" Command="{Binding $parent[Window].((reader:ReaderViewModel)DataContext).RetryPageCommand}"
+                                    CommandParameter="{Binding}" IsVisible="{Binding HasError}"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
                     </DataTemplate>
                 </Carousel.ItemTemplate>
             </Carousel>
@@ -110,8 +117,15 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Image Source="{Binding Data}" />
+                        <DataTemplate x:DataType="reader:ReaderPageViewModel">
+                            <Grid MinHeight="320">
+                                <Image Source="{Binding Data}" />
+                                <ProgressBar Width="160" IsIndeterminate="True" HorizontalAlignment="Center"
+                                             VerticalAlignment="Center" IsVisible="{Binding IsLoading}" />
+                                <Button Content="Reintentar" Command="{Binding $parent[Window].((reader:ReaderViewModel)DataContext).RetryPageCommand}"
+                                        CommandParameter="{Binding}" IsVisible="{Binding HasError}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

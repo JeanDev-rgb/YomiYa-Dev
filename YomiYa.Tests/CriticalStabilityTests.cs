@@ -3,7 +3,9 @@ using System.Net.Sockets;
 using System.Text.Json;
 using Google.Apis.Drive.v3.Data;
 using Microsoft.Data.Sqlite;
+using Avalonia.Media.Imaging;
 using YomiYa.Core.Database;
+using YomiYa.Core.Imaging;
 using YomiYa.Core.IPC;
 using YomiYa.Core.Services;
 using YomiYa.Features.Reader;
@@ -125,7 +127,7 @@ public class CriticalStabilityTests
             ChapterList = [new SChapter { Name = "Old", Url = "old" }, new SChapter { Name = "New", Url = "new" }],
             ChapterIndex = 0
         };
-        using var viewModel = new ReaderViewModel(new EmptyDatabaseService(), mangaService);
+        using var viewModel = new ReaderViewModel(new EmptyDatabaseService(), mangaService, new NoopImageLoader());
         await plugin.OldChapterRequested.Task.WaitAsync(TimeSpan.FromSeconds(2));
 
         Assert.True(viewModel.NextChapterCommand.CanExecute(null));
@@ -138,6 +140,34 @@ public class CriticalStabilityTests
 
         Assert.Equal("new", viewModel.SelectedChapter?.Url);
         Assert.All(viewModel.Pages, page => Assert.Equal("new-page", page.Url));
+    }
+
+    [Fact]
+    public async Task Loading_page_keeps_selected_carousel_item_and_retry_stays_on_same_page()
+    {
+        var plugin = new ImmediatePagePlugin();
+        var imageLoader = new ControlledImageLoader();
+        var mangaService = new MangaService(new EmptyDatabaseService())
+        {
+            SelectedPlugin = plugin,
+            ChapterList = [new SChapter { Name = "Chapter", Url = "chapter", LastPageRead = 1 }],
+            ChapterIndex = 0
+        };
+        using var viewModel = new ReaderViewModel(new EmptyDatabaseService(), mangaService, imageLoader);
+
+        await WaitUntilAsync(() => viewModel.Pages.Count == 2 && viewModel.CurrentPageIndex == 1);
+        var selectedPage = viewModel.Pages[1];
+        Assert.True(selectedPage.IsLoading);
+        imageLoader.ReleaseFirstLoad.TrySetResult(null);
+        await WaitUntilAsync(() => selectedPage.HasError);
+
+        Assert.Equal(1, viewModel.CurrentPageIndex);
+        Assert.Same(selectedPage, viewModel.Pages[1]);
+        await viewModel.RetryPageCommand.ExecuteAsync(selectedPage);
+        Assert.Equal(2, imageLoader.GetCallCount("image-1"));
+        Assert.Equal(1, viewModel.CurrentPageIndex);
+        Assert.Same(selectedPage, viewModel.Pages[1]);
+        Assert.True(selectedPage.HasError);
     }
 
     [Fact]
@@ -247,6 +277,47 @@ public class CriticalStabilityTests
             NewChapterRequested.TrySetResult();
             return Task.FromResult(new List<Page> { new(0, "new-page") });
         }
+    }
+
+    private sealed class ImmediatePagePlugin : ParsedHttpSource
+    {
+        protected override string BaseUrl => "https://example.test";
+        public override string Lang => "en";
+        public override string Version => "1";
+        public override long Id { get; set; }
+        public override string Name { get; set; } = "test";
+        public override Task<List<SChapter>> GetChapters(string mangaUrl) => Task.FromResult(new List<SChapter>());
+        public override Task<MangasPage> GetLatestUpdates(int page = 1) => throw new NotImplementedException();
+        public override Task<SManga> GetMangaDetails(string url) => throw new NotImplementedException();
+        public override Task<MangasPage> GetPopularManga(int page = 1) => throw new NotImplementedException();
+        public override Task<MangasPage> SearchManga(string query, int page = 1, string genre = "") => throw new NotImplementedException();
+        public override Task<List<Page>> GetPages(string chapterUrl) => Task.FromResult(new List<Page>
+        {
+            new(0, "page-0", "image-0"), new(1, "page-1", "image-1")
+        });
+    }
+
+    private sealed class ControlledImageLoader : IReaderPageImageLoader
+    {
+        private int _callCount;
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, int> _callsByUrl = new();
+        public int CallCount => Volatile.Read(ref _callCount);
+        public TaskCompletionSource<Avalonia.Media.Imaging.Bitmap?> ReleaseFirstLoad { get; } = new();
+
+        public Task<Avalonia.Media.Imaging.Bitmap?> LoadAsync(string imageUrl, CancellationToken cancellationToken)
+        {
+            _callsByUrl.AddOrUpdate(imageUrl, 1, (_, count) => count + 1);
+            if (Interlocked.Increment(ref _callCount) == 1)
+                return ReleaseFirstLoad.Task.WaitAsync(cancellationToken);
+            return Task.FromResult<Avalonia.Media.Imaging.Bitmap?>(null);
+        }
+
+        public int GetCallCount(string imageUrl) => _callsByUrl.GetValueOrDefault(imageUrl);
+    }
+
+    private sealed class NoopImageLoader : IReaderPageImageLoader
+    {
+        public Task<Bitmap?> LoadAsync(string imageUrl, CancellationToken cancellationToken) => Task.FromResult<Bitmap?>(null);
     }
 
     private sealed class PagedSearchPlugin : ParsedHttpSource
