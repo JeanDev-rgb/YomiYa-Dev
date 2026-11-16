@@ -245,7 +245,8 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
         public void Report(SManga value)
         {
             Interlocked.Increment(ref _count);
-            Dispatcher.UIThread.Post(() => onResult(value));
+            if (Dispatcher.UIThread.CheckAccess()) onResult(value);
+            else Dispatcher.UIThread.Post(() => onResult(value));
         }
     }
 

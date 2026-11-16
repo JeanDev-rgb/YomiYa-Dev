@@ -7,6 +7,7 @@ using YomiYa.Core.Database;
 using YomiYa.Core.IPC;
 using YomiYa.Core.Services;
 using YomiYa.Features.Reader;
+using YomiYa.Features.Discover;
 using YomiYa.Domain.Models;
 using YomiYa.Source.Models;
 using YomiYa.Source.Online;
@@ -139,6 +140,30 @@ public class CriticalStabilityTests
         Assert.All(viewModel.Pages, page => Assert.Equal("new-page", page.Url));
     }
 
+    [Fact]
+    public async Task Search_retries_the_same_page_and_keeps_the_original_query()
+    {
+        var plugin = new PagedSearchPlugin();
+        var database = new EmptyDatabaseService();
+        var mangaService = new MangaService(database) { SelectedPlugin = plugin };
+        var viewModel = new PluginPageViewModel(new EmptyServiceProvider(), mangaService, database)
+        {
+            SearchText = "  sample title  "
+        };
+
+        await viewModel.SearchMangaCommand.ExecuteAsync(null);
+        Assert.False(viewModel.IsSearchEmpty);
+        Assert.Single(viewModel.SearchedMangas);
+        await viewModel.LoadNextSearchPageCommand.ExecuteAsync(null);
+        Assert.NotNull(viewModel.SearchErrorMessage);
+        await viewModel.RetrySearchPageCommand.ExecuteAsync(null);
+
+        Assert.Equal(new[] { 1, 2, 2 }, plugin.RequestedPages);
+        Assert.All(plugin.Queries, query => Assert.Equal("sample title", query));
+        Assert.Equal(2, viewModel.SearchedMangas.Count);
+        Assert.Null(viewModel.SearchErrorMessage);
+    }
+
     private static TcpMessage Response(string requestId, string payload)
     {
         var response = new TcpMessage { Action = "Response", RequestId = requestId };
@@ -222,6 +247,37 @@ public class CriticalStabilityTests
             NewChapterRequested.TrySetResult();
             return Task.FromResult(new List<Page> { new(0, "new-page") });
         }
+    }
+
+    private sealed class PagedSearchPlugin : ParsedHttpSource
+    {
+        private int _pageTwoAttempts;
+        public List<int> RequestedPages { get; } = [];
+        public List<string> Queries { get; } = [];
+        protected override string BaseUrl => "https://example.test";
+        public override string Lang => "en";
+        public override string Version => "1";
+        public override long Id { get; set; }
+        public override string Name { get; set; } = "search-test";
+        public override Task<List<SChapter>> GetChapters(string mangaUrl) => Task.FromResult(new List<SChapter>());
+        public override Task<MangasPage> GetLatestUpdates(int page = 1) => Task.FromResult(new MangasPage([], false));
+        public override Task<SManga> GetMangaDetails(string url) => throw new NotImplementedException();
+        public override Task<MangasPage> GetPopularManga(int page = 1) => Task.FromResult(new MangasPage([], false));
+        public override Task<MangasPage> SearchManga(string query, int page = 1, string genre = "")
+        {
+            RequestedPages.Add(page);
+            Queries.Add(query);
+            if (page == 2 && Interlocked.Increment(ref _pageTwoAttempts) == 1)
+                throw new IOException("temporary page failure");
+            return Task.FromResult(new MangasPage(
+                [new SManga { Url = $"manga-{page}", Title = $"Manga {page}", Plugin = Name }], page == 1));
+        }
+        public override Task<List<Page>> GetPages(string chapterUrl) => Task.FromResult(new List<Page>());
+    }
+
+    private sealed class EmptyServiceProvider : IServiceProvider
+    {
+        public object? GetService(Type serviceType) => null;
     }
 
     private sealed class EmptyDatabaseService : IDatabaseService
