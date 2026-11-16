@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Core.Database;
 using YomiYa.Core.Dialogs;
+using YomiYa.Core.Navigation;
 using YomiYa.Core.Settings;
 using YomiYa.Features.Ad;
 using YomiYa.Features.Discover;
@@ -22,10 +23,13 @@ public static class ServiceCollectionExtensions
         // Servicios de infraestructura (Singleton)
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<IDatabaseService, DatabaseService>();
+        services.AddSingleton<DatabaseOperationCoordinator>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<SidebarNavigationService>();
 
         // Servicios de lógica
         services.AddSingleton<GoogleDriveSyncService>();
+        services.AddSingleton<IGoogleDriveSyncService>(provider => provider.GetRequiredService<GoogleDriveSyncService>());
         services.AddSingleton<SyncManager>();
         services.AddSingleton<MangaService>();
     }
@@ -36,6 +40,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<SideBarMenuViewModel>();
         services.AddTransient<LibraryPageViewModel>();
+        services.AddTransient<DashboardPageViewModel>();
         services.AddTransient<MorePageViewModel>();
         services.AddTransient<ReaderViewModel>();
         services.AddTransient<BrowsePageViewModel>();

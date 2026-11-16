@@ -16,17 +16,18 @@ using File = Google.Apis.Drive.v3.Data.File;
 
 namespace YomiYa.Core.Services;
 
-public class GoogleDriveSyncService
+public class GoogleDriveSyncService : IGoogleDriveSyncService
 {
     private const string ApplicationName = "YomiYa";
     private const string BinaryMime = "application/octet-stream";
     private static readonly string[] Scopes = { DriveService.Scope.DriveAppdata };
 
     private DriveService? _driveService;
+    private readonly Task _silentLoginTask;
 
     public GoogleDriveSyncService()
     {
-        _ = TrySilentLoginAsync();
+        _silentLoginTask = TrySilentLoginAsync();
     }
 
     public bool IsAuthenticated => _driveService is not null;
@@ -37,6 +38,7 @@ public class GoogleDriveSyncService
         {
             var assembly = Assembly.GetExecutingAssembly();
             await using var stream = assembly.GetManifestResourceStream("YomiYa.credentials.json");
+            if (stream is null) return;
 
             var secrets = await GoogleClientSecrets.FromStreamAsync(stream);
             if (secrets?.Secrets is null) return;
@@ -77,6 +79,7 @@ public class GoogleDriveSyncService
     {
         try
         {
+            await _silentLoginTask.WaitAsync(cancellationToken);
             var assembly = Assembly.GetExecutingAssembly();
             await using var stream = assembly.GetManifestResourceStream("YomiYa.credentials.json");
 
@@ -118,6 +121,7 @@ public class GoogleDriveSyncService
     {
         try
         {
+            await _silentLoginTask;
             if (_driveService is null)
                 return false;
 
@@ -133,24 +137,7 @@ public class GoogleDriveSyncService
         }
     }
 
-    public async Task<File?> GetLatestBackupAsync(string fileName)
-    {
-        if (_driveService is null)
-            throw new InvalidOperationException("Not authenticated");
-
-        var request = _driveService.Files.List();
-        request.Spaces = "appDataFolder";
-        request.Q = $"name = '{fileName}' and trashed = false";
-        request.Fields = "files(id,name,modifiedTime)";
-
-        var result = await request.ExecuteAsync();
-
-        return result.Files?
-            .OrderByDescending(x => x.ModifiedTimeDateTimeOffset ?? DateTimeOffset.MinValue)
-            .FirstOrDefault();
-    }
-
-    public async Task DownloadFileAsync(string fileId, string destinationPath)
+    public async Task DownloadFileAsync(string fileId, string destinationPath, CancellationToken cancellationToken = default)
     {
         if (_driveService is null)
             throw new InvalidOperationException("Not authenticated");
@@ -158,13 +145,22 @@ public class GoogleDriveSyncService
         try
         {
             var request = _driveService.Files.Get(fileId);
+            request.Fields = "id,size,name";
+            var metadata = await request.ExecuteAsync(cancellationToken);
+            if (metadata.Size is null or <= 0)
+                throw new InvalidDataException("El archivo remoto no tiene un tamaño válido.");
 
-            await using var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write);
+            await using var fileStream = new FileStream(destinationPath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
 
-            await request.DownloadAsync(fileStream);
+            await request.DownloadAsync(fileStream, cancellationToken);
+            await fileStream.FlushAsync(cancellationToken);
+            if (fileStream.Length <= 0 || fileStream.Length != metadata.Size.Value)
+                throw new InvalidDataException("El tamaño descargado no coincide con el tamaño declarado por Drive.");
         }
         catch (Exception e)
         {
+            try { if (System.IO.File.Exists(destinationPath)) System.IO.File.Delete(destinationPath); }
+            catch (Exception cleanupError) { Console.WriteLine($"[GoogleDriveSync] No se pudo limpiar descarga parcial: {cleanupError.Message}"); }
             Console.WriteLine($"[GoogleDriveSync] Download Error: {e}");
             throw;
         }
@@ -178,6 +174,7 @@ public class GoogleDriveSyncService
     {
         if (_driveService is null)
             throw new InvalidOperationException("Not authenticated");
+        if (maxVersionsToKeep < 1) throw new ArgumentOutOfRangeException(nameof(maxVersionsToKeep));
 
         var fileInfo = new FileInfo(localFilePath);
         if (!fileInfo.Exists || fileInfo.Length is 0)
@@ -186,7 +183,7 @@ public class GoogleDriveSyncService
         // 1. Generar nombre versionado (ej. yomiya_backup_20261116_113000.zip)
         var nameWithoutExt = Path.GetFileNameWithoutExtension(baseFileName);
         var ext = Path.GetExtension(baseFileName);
-        var versionName = $"{nameWithoutExt}_{DateTime.Now:yyyyMMdd_HHmmss}{ext}";
+        var versionName = $"{nameWithoutExt}_{DateTime.UtcNow:yyyyMMdd_HHmmss_fff}_{Guid.NewGuid():N}{ext}";
 
         var fileMetadata = new File
         {
@@ -227,47 +224,69 @@ public class GoogleDriveSyncService
         if (_driveService == null)
             throw new InvalidOperationException("Not authenticated");
 
-        var namePrefix = Path.GetFileNameWithoutExtension(baseFileName);
-        var request = _driveService.Files.List();
-        request.Spaces = "appDataFolder";
-        // Busca tanto respaldos versionados nuevos como el formato antiguo exacto
-        request.Q = $"(name contains '{namePrefix}' or name = '{baseFileName}') and trashed = false";
-        request.Fields = "files(id, name, size, modifiedTime)";
-
-        var result = await request.ExecuteAsync(cancellationToken);
-        return result.Files?
-            .Where(f => (f.Size ?? 0) > 0)
+        var result = await ListBackupsAsync(baseFileName, cancellationToken);
+        return result
+            .Where(f => (f.Size ?? 0) > 0 && IsBackupCandidate(f, baseFileName))
             .OrderByDescending(x => x.ModifiedTimeDateTimeOffset ?? DateTimeOffset.MinValue)
             .FirstOrDefault();
     }
     
     private async Task PruneOldBackupsAsync(string baseFileName, int maxVersionsToKeep, CancellationToken cancellationToken)
     {
-        var namePrefix = Path.GetFileNameWithoutExtension(baseFileName);
-        var listReq = _driveService.Files.List();
-        listReq.Spaces = "appDataFolder";
-        listReq.Q = $"(name contains '{namePrefix}' or name = '{baseFileName}') and trashed = false";
-        listReq.Fields = "files(id, modifiedTime)";
-
-        var listRes = await listReq.ExecuteAsync(cancellationToken);
-        var backupsToDelete = listRes.Files?
+        var driveService = _driveService ?? throw new InvalidOperationException("Not authenticated");
+        var backupsToDelete = (await ListBackupsAsync(baseFileName, cancellationToken))
+            .Where(f => IsManagedBackup(f, baseFileName))
             .OrderByDescending(x => x.ModifiedTimeDateTimeOffset ?? DateTimeOffset.MinValue)
             .Skip(maxVersionsToKeep)
             .ToList();
-
-        if (backupsToDelete == null) return;
 
         foreach (var oldFile in backupsToDelete)
         {
             try
             {
-                await _driveService.Files.Delete(oldFile.Id).ExecuteAsync(cancellationToken);
+                await driveService.Files.Delete(oldFile.Id).ExecuteAsync(cancellationToken);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[GoogleDriveSync] No se pudo purgar respaldo antiguo {oldFile.Id}: {ex.Message}");
             }
         }
+    }
+
+    private async Task<List<File>> ListBackupsAsync(string baseFileName, CancellationToken cancellationToken)
+    {
+        if (_driveService is null) throw new InvalidOperationException("Not authenticated");
+        var namePrefix = Path.GetFileNameWithoutExtension(baseFileName).Replace("'", "\\'");
+        var exactName = baseFileName.Replace("'", "\\'");
+        var request = _driveService.Files.List();
+        request.Spaces = "appDataFolder";
+        request.Q = $"(name contains '{namePrefix}' or name = '{exactName}') and trashed = false";
+        request.PageSize = 1000;
+        request.Fields = "nextPageToken,files(id,name,size,modifiedTime,appProperties)";
+        var files = new List<File>();
+        do
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var page = await request.ExecuteAsync(cancellationToken);
+            if (page.Files is not null) files.AddRange(page.Files);
+            request.PageToken = page.NextPageToken;
+        } while (!string.IsNullOrEmpty(request.PageToken));
+        return files;
+    }
+
+    private static bool IsManagedBackup(File file, string baseFileName) =>
+        file.AppProperties?.TryGetValue("backup_group", out var group) == true
+            ? string.Equals(group, baseFileName, StringComparison.Ordinal)
+            : string.Equals(file.Name, baseFileName, StringComparison.Ordinal);
+
+    private static bool IsBackupCandidate(File file, string baseFileName)
+    {
+        if (!IsManagedBackup(file, baseFileName)) return false;
+        if (string.Equals(file.Name, baseFileName, StringComparison.Ordinal)) return true;
+        var stem = Path.GetFileNameWithoutExtension(baseFileName);
+        var ext = Path.GetExtension(baseFileName);
+        return file.Name?.StartsWith(stem + "_", StringComparison.Ordinal) == true &&
+               file.Name.EndsWith(ext, StringComparison.Ordinal);
     }
 
     public Task LogoutAsync()

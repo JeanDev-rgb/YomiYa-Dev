@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Polly.Retry;
@@ -11,7 +12,7 @@ using YomiYa.Domain.Models;
 
 namespace YomiYa.Core.Database;
 
-public class DatabaseService : IDatabaseService
+public class DatabaseService(DatabaseOperationCoordinator operations) : IDatabaseService
 {
     private static readonly string DbPath = PathHelper.GetDatabasePath();
 
@@ -25,6 +26,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task InitializeDatabase()
     {
+        using var operation = await operations.EnterOperationAsync();
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
@@ -68,6 +70,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task<long> InsertManga(SManga manga)
     {
+        using var operation = await operations.EnterOperationAsync();
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
@@ -101,6 +104,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task InsertChapters(long mangaId, IEnumerable<SChapter> chapters)
     {
+        using var operation = await operations.EnterOperationAsync();
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
@@ -131,6 +135,7 @@ public class DatabaseService : IDatabaseService
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await InsertManga(manga);
+            using var operation = await operations.EnterOperationAsync();
             await using var connection = new SqliteConnection(GetConnectionString());
             await connection.OpenAsync();
             var command = connection.CreateCommand();
@@ -146,6 +151,7 @@ public class DatabaseService : IDatabaseService
     /// </summary>
     public async Task SetChapterProgress(string chapterUrl, int lastPageRead, bool isRead)
     {
+        using var operation = await operations.EnterOperationAsync();
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
@@ -185,6 +191,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task<SManga?> GetMangaByUrlAsync(string mangaUrl)
     {
+        using var operation = await operations.EnterOperationAsync();
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
@@ -223,6 +230,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task<List<SChapter>> GetChaptersAsync(string mangaUrl)
     {
+        using var operation = await operations.EnterOperationAsync();
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
             var chapters = new List<SChapter>();
@@ -256,16 +264,26 @@ public class DatabaseService : IDatabaseService
 
     public async Task<List<SManga>> GetLibraryMangasAsync()
     {
+        using var operation = await operations.EnterOperationAsync();
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
             var mangas = new List<SManga>();
             await using var connection = new SqliteConnection(GetConnectionString());
             await connection.OpenAsync();
             var command = connection.CreateCommand();
-            command.CommandText = "SELECT * FROM mangas WHERE is_favorite = 1 ORDER BY title;";
+            command.CommandText = @"
+                SELECT m.url, m.title, m.thumbnail_url, m.plugin,
+                    (SELECT c.name FROM history h JOIN chapters c ON c.id = h.chapter_id
+                     WHERE c.manga_id = m.id ORDER BY h.last_read DESC LIMIT 1) AS last_chapter,
+                    (SELECT COUNT(*) FROM chapters c WHERE c.manga_id = m.id AND c.read = 1) AS read_count,
+                    (SELECT COUNT(*) FROM chapters c WHERE c.manga_id = m.id) AS chapter_count
+                FROM mangas m WHERE m.is_favorite = 1 ORDER BY m.title;";
 
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
+            {
+                var readCount = reader.GetInt32(reader.GetOrdinal("read_count"));
+                var chapterCount = reader.GetInt32(reader.GetOrdinal("chapter_count"));
                 mangas.Add(new SManga
                 {
                     Url = reader.GetString(reader.GetOrdinal("url")),
@@ -274,8 +292,13 @@ public class DatabaseService : IDatabaseService
                         ? null
                         : reader.GetString(reader.GetOrdinal("thumbnail_url")),
                     Plugin = reader.GetString(reader.GetOrdinal("plugin")),
-                    IsFavorite = true
+                    IsFavorite = true,
+                    LastReadChapterName = reader.IsDBNull(reader.GetOrdinal("last_chapter"))
+                        ? null
+                        : reader.GetString(reader.GetOrdinal("last_chapter")),
+                    ReadProgress = chapterCount == 0 ? 0 : (double)readCount / chapterCount
                 });
+            }
 
             return mangas;
         });
@@ -283,6 +306,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task<List<(SManga Manga, SChapter Chapter)>> GetHistoryAsync()
     {
+        using var operation = await operations.EnterOperationAsync();
         return await DbRetryPolicy.ExecuteAsync(async () =>
         {
             var history = new List<(SManga, SChapter)>();
@@ -325,6 +349,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task DeleteHistoryItemAsync(string chapterUrl)
     {
+        using var operation = await operations.EnterOperationAsync();
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
@@ -347,6 +372,7 @@ public class DatabaseService : IDatabaseService
 
     public async Task ClearHistoryAsync()
     {
+        using var operation = await operations.EnterOperationAsync();
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
@@ -361,6 +387,7 @@ public class DatabaseService : IDatabaseService
     // --- MÉTODO NUEVO PARA ELIMINAR MANGAS ---
     public async Task DeleteMangaAsync(string url)
     {
+        using var operation = await operations.EnterOperationAsync();
         await DbRetryPolicy.ExecuteAsync(async () =>
         {
             await using var connection = new SqliteConnection(GetConnectionString());
