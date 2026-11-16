@@ -177,11 +177,14 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
 
         // 1. Mostramos las páginas inmediatamente en la UI (aún sin bitmap)
         Pages = new ObservableCollection<Page>(initialPageList);
-        CurrentPageIndex = Math.Clamp(SelectedChapter.LastPageRead, 0, Pages.Count - 1);
+        // Capturamos la colección de este capítulo: una navegación puede sustituir Pages
+        // mientras las descargas siguen ejecutándose.
+        var chapterPages = Pages;
+        CurrentPageIndex = Math.Clamp(SelectedChapter.LastPageRead, 0, chapterPages.Count - 1);
         IsLoading = false; // El lector ya es interactivo
 
         // 2. Ordenamos la cola de descarga empezando desde CurrentPageIndex hacia adelante
-        var orderedIndices = Enumerable.Range(CurrentPageIndex, Pages.Count - CurrentPageIndex)
+        var orderedIndices = Enumerable.Range(CurrentPageIndex, chapterPages.Count - CurrentPageIndex)
             .Concat(Enumerable.Range(0, CurrentPageIndex))
             .ToList();
 
@@ -192,16 +195,16 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
             try
             {
                 token.ThrowIfCancellationRequested();
-                var page = Pages[index];
+                var page = chapterPages[index];
                 if (page.Data is not null || string.IsNullOrEmpty(page.ImageUrl)) return;
 
                 var bitmap = await page.ImageUrl.LoadImageAsync(token);
-                if (!token.IsCancellationRequested && index < Pages.Count)
+                if (!token.IsCancellationRequested && ReferenceEquals(Pages, chapterPages) && index < chapterPages.Count)
                 {
                     await Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        if (!token.IsCancellationRequested && index < Pages.Count)
-                            Pages[index] = page with { Data = bitmap };
+                        if (!token.IsCancellationRequested && ReferenceEquals(Pages, chapterPages) && index < chapterPages.Count)
+                            chapterPages[index] = page with { Data = bitmap };
                     });
                 }
             }

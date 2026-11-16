@@ -39,7 +39,7 @@ public class SyncManager(GoogleDriveSyncService googleDrive)
 
         try
         {
-            var remoteFile = await googleDrive.GetLatestBackupAsync(BackupFileName);
+            var remoteFile = await googleDrive.GetLatestBackupAsync(BackupFileName, CancellationToken.None);
             if (remoteFile != null)
             {
                 // 1. Definir ruta temporal
