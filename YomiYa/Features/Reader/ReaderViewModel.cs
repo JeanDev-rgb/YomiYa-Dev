@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,6 +16,7 @@ using YomiYa.Domain.Enums;
 using YomiYa.Domain.Models;
 using YomiYa.Helper.Input.Interfaces;
 using YomiYa.Source.Online;
+using Page = YomiYa.Domain.Models.Page;
 
 namespace YomiYa.Features.Reader;
 
@@ -22,6 +25,7 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     // Dependencias inyectadas
     private readonly IDatabaseService _databaseService;
     private readonly MangaService _mangaService;
+    private CancellationTokenSource? _chapterLoadCts;
 
     #region Fields
 
@@ -35,15 +39,15 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     // El contenedor de servicios inyecta las dependencias necesarias
     public ReaderViewModel()
     {
+        if (!Design.IsDesignMode)
+            throw new InvalidOperationException("Este constructor es exclusivo para el diseñador XAML.");
+
         _databaseService = null!;
         _mangaService = null!;
-
-        // Inicializamos los campos usando la instancia inyectada de MangaService
-        _plugin = _mangaService.SelectedPlugin!;
-        _chapterList = _mangaService.ChapterList!;
-        _chapterIndex = _mangaService.ChapterIndex;
-
-        _ = InitializeChapterAsync();
+        _plugin = null!;
+        _chapterList = [new SChapter { Name = "Capítulo 1 - Vista Previa", ChapterNumber = 1 }];
+        _chapterIndex = 0;
+        IsLoading = false;
     }
 
     [ActivatorUtilitiesConstructor]
@@ -152,40 +156,78 @@ public partial class ReaderViewModel : ViewModelBase, IKeyboardNavigable, IDispo
     #region Core Logic
 
     private async Task InitializeChapterAsync()
+{
+    _chapterLoadCts?.Cancel();
+    _chapterLoadCts?.Dispose();
+    _chapterLoadCts = new CancellationTokenSource();
+    var token = _chapterLoadCts.Token;
+
+    IsLoading = true;
+    foreach (var page in Pages) page.Dispose();
+    Pages.Clear();
+
+    try
     {
-        IsLoading = true;
-        // Limpiamos la colección de páginas anterior
-        foreach (var page in Pages) page.Dispose();
-        Pages.Clear();
+        if (SelectedChapter is null) return;
 
-        try
+        var initialPageList = await _plugin.GetPages(SelectedChapter.Url);
+        token.ThrowIfCancellationRequested();
+
+        if (!initialPageList.Any()) return;
+
+        // 1. Mostramos las páginas inmediatamente en la UI (aún sin bitmap)
+        Pages = new ObservableCollection<Page>(initialPageList);
+        CurrentPageIndex = Math.Clamp(SelectedChapter.LastPageRead, 0, Pages.Count - 1);
+        IsLoading = false; // El lector ya es interactivo
+
+        // 2. Ordenamos la cola de descarga empezando desde CurrentPageIndex hacia adelante
+        var orderedIndices = Enumerable.Range(CurrentPageIndex, Pages.Count - CurrentPageIndex)
+            .Concat(Enumerable.Range(0, CurrentPageIndex))
+            .ToList();
+
+        using var semaphore = new SemaphoreSlim(5); // Máximo 5 imágenes simultáneas
+        var downloadTasks = orderedIndices.Select(async index =>
         {
-            // 1. Obtenemos la lista de páginas (solo con URLs) desde el plugin
-            var initialPageList = await _plugin.GetPages(SelectedChapter!.Url);
-            if (!initialPageList.Any()) return;
+            await semaphore.WaitAsync(token);
+            try
+            {
+                token.ThrowIfCancellationRequested();
+                var page = Pages[index];
+                if (page.Data is not null || string.IsNullOrEmpty(page.ImageUrl)) return;
 
-            // 2. Cargamos todas las imágenes en segundo plano y obtenemos una nueva lista con las imágenes ya cargadas
-            var loadedPages = await LoadAllPageBitmapsAsync(initialPageList);
+                var bitmap = await page.ImageUrl.LoadImageAsync(token);
+                if (!token.IsCancellationRequested && index < Pages.Count)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        if (!token.IsCancellationRequested && index < Pages.Count)
+                            Pages[index] = page with { Data = bitmap };
+                    });
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error cargando página {index}: {ex.Message}");
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        });
 
-            // 3. Asignamos la lista ya completa a la colección de la UI de una sola vez
-            Pages = new ObservableCollection<Page>(loadedPages);
-
-            // 4. Configuramos la página inicial según el historial
-            CurrentPageIndex = SelectedChapter!.LastPageRead;
-
-            OnPropertyChanged(nameof(PageInfo));
-            NextPageCommand.NotifyCanExecuteChanged();
-            PreviousPageCommand.NotifyCanExecuteChanged();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Error al inicializar el capítulo: {e.Message}");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        await Task.WhenAll(downloadTasks);
     }
+    catch (OperationCanceledException) { }
+    catch (Exception e)
+    {
+        Console.WriteLine($"Error al inicializar el capítulo: {e.Message}");
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}
 
     /// <summary>
     ///     Carga todas las imágenes de una lista de páginas y devuelve una nueva lista con los datos.

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,8 +18,11 @@ namespace YomiYa.Features.Discover;
 public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
 {
     private readonly IDatabaseService _databaseService;
-
     private readonly MangaService _mangaService;
+    
+    private CancellationTokenSource? _searchCts;
+    private int _currentSearchPage;
+    private bool _hasMoreSearchPages;
 
     // Dependencias inyectadas
     private readonly IServiceProvider _serviceProvider;
@@ -73,6 +77,9 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     [ObservableProperty] private string _searchMangaText = LanguageHelper.GetText("SearchManga");
     [ObservableProperty] private string? _searchText;
     [ObservableProperty] private string _foundMangasText = LanguageHelper.GetText("FoundMangas");
+    [ObservableProperty] private bool _isSearching;
+    [ObservableProperty] private bool _isSearchEmpty;
+    [ObservableProperty] private string? _searchErrorMessage;
 
     #endregion
 
@@ -114,42 +121,94 @@ public partial class PluginPageViewModel : ViewModelBase, ISearchableByKeyboard
     }
 
     [RelayCommand]
-    private Task SearchManga()
+    private async Task SearchMangaAsync()
     {
+        _searchCts?.Cancel();
+        _searchCts?.Dispose();
+        _searchCts = new CancellationTokenSource();
+        var token = _searchCts.Token;
+
+        SearchErrorMessage = null;
+        IsSearchEmpty = false;
+
+        if (string.IsNullOrWhiteSpace(SearchText) || Plugin is null)
+        {
+            SelectedTabIndex = 0;
+            SearchedMangas.Clear();
+            IsSearching = false;
+            return;
+        }
+
+        SearchedMangas.Clear();
+        SelectedTabIndex = 2;
+        _currentSearchPage = 1;
+        IsSearching = true;
+
         try
         {
-            if (string.IsNullOrWhiteSpace(SearchText))
+            var progress = new Progress<SManga>(manga =>
             {
-                SelectedTabIndex = 0;
-                SearchedMangas.Clear();
-                return Task.CompletedTask;
-            }
-
-            SearchedMangas.Clear();
-            SelectedTabIndex = 2; // Cambiamos a la pestaña de búsqueda de inmediato
-
-            var progress = new Progress<SManga>(async void (manga) =>
-            {
-                try
-                {
-                    await Task.Delay(60);
+                if (!token.IsCancellationRequested)
                     SearchedMangas.Add(manga);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
             });
 
-            // Usamos la instancia inyectada
-            _mangaService.SearchManga(SearchText, progress);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
+            _hasMoreSearchPages = await _mangaService.FetchPageAsync(
+                page => Plugin.SearchManga(SearchText, page),
+                _currentSearchPage,
+                progress,
+                token);
 
-        return Task.CompletedTask;
+            if (!token.IsCancellationRequested)
+                IsSearchEmpty = SearchedMangas.Count == 0;
+        }
+        catch (OperationCanceledException)
+        {
+            // Búsqueda reemplazada por una nueva, no mostrar error
+        }
+        catch (Exception ex)
+        {
+            if (!token.IsCancellationRequested)
+                SearchErrorMessage = $"Error en búsqueda: {ex.Message}";
+        }
+        finally
+        {
+            if (!token.IsCancellationRequested)
+                IsSearching = false;
+        }
+    }
+    
+    [RelayCommand]
+    private async Task LoadNextSearchPageAsync()
+    {
+        if (IsSearching || !_hasMoreSearchPages || Plugin is null || string.IsNullOrWhiteSpace(SearchText))
+            return;
+
+        var token = _searchCts?.Token ?? CancellationToken.None;
+        IsSearching = true;
+
+        try
+        {
+            _currentSearchPage++;
+            var progress = new Progress<SManga>(manga =>
+            {
+                if (!token.IsCancellationRequested)
+                    SearchedMangas.Add(manga);
+            });
+
+            _hasMoreSearchPages = await _mangaService.FetchPageAsync(
+                page => Plugin.SearchManga(SearchText, page),
+                _currentSearchPage,
+                progress,
+                token);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            SearchErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsSearching = false;
+        }
     }
 
     #endregion

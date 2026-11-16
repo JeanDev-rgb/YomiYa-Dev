@@ -204,10 +204,14 @@ public partial class ChapterListPageViewModel : ViewModelBase
     {
         if (chapter is null) return;
 
-        // Guardamos los datos en el servicio Singleton compartido
-        _mangaService.ChapterList = Chapters.OrderBy(c => c.ChapterNumber).ToList();
-        _mangaService.ChapterIndex = _mangaService.ChapterList.IndexOf(chapter);
+        // Usamos _allChapters (lista completa) en lugar de Chapters (lista filtrada en UI)
+        var fullSortedList = _allChapters.OrderBy(c => c.ChapterNumber).ToList();
+        _mangaService.ChapterList = fullSortedList;
+        _mangaService.ChapterIndex = fullSortedList.FindIndex(c => c.Url == chapter.Url);
 
+        if (_mangaService.ChapterIndex < 0) 
+            _mangaService.ChapterIndex = 0;
+        
         NavigationHelper.OpenReader();
     }
 

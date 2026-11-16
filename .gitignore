@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -371,3 +372,6 @@ FodyWeavers.xsd
 /API/YomiYa.API/Program.cs
 /API/YomiYa.API/WeatherForecast.cs
 /API/YomiYa.API/YomiYa.API.http
+
+
+.idea/

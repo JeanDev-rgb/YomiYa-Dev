@@ -41,7 +41,8 @@ public partial class SideBarMenuViewModel : ViewModelBase
         // Inicializamos la página por defecto usando el ServiceProvider
         CurrentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
 
-        SelectedListItem = Items.First();
+        SplitItems();
+        SelectedListItem = MangaItems.First();
         UpdateLocalizedTexts();
     }
 
@@ -53,7 +54,8 @@ public partial class SideBarMenuViewModel : ViewModelBase
         // Inicializamos la página por defecto usando el ServiceProvider
         CurrentPage = _serviceProvider.GetRequiredService<LibraryPageViewModel>();
 
-        SelectedListItem = Items.First();
+        SplitItems();
+        SelectedListItem = MangaItems.First();
         UpdateLocalizedTexts();
     }
 
@@ -64,6 +66,9 @@ public partial class SideBarMenuViewModel : ViewModelBase
     [ObservableProperty] private ViewModelBase _currentPage;
     [ObservableProperty] private bool _isPaneOpen = true;
     [ObservableProperty] private ListItemTemplate? _selectedListItem;
+
+    public ObservableCollection<ListItemTemplate> MangaItems { get; } = [];
+    public ObservableCollection<ListItemTemplate> OtherItems { get; } = [];
 
     public ObservableCollection<ListItemTemplate> Items { get; set; } =
     [
@@ -76,6 +81,20 @@ public partial class SideBarMenuViewModel : ViewModelBase
         new(typeof(MorePageViewModel), "More", "More"),
         new(typeof(AdPageViewModel), "Dollar", "Reward1Dollar")
     ];
+
+    private void SplitItems()
+    {
+        MangaItems.Clear();
+        OtherItems.Clear();
+
+        foreach (var item in Items)
+            if (item.ModelType == typeof(LibraryPageViewModel) ||
+                item.ModelType == typeof(BrowsePageViewModel) ||
+                item.ModelType == typeof(HistoryPageViewModel))
+                MangaItems.Add(item);
+            else
+                OtherItems.Add(item);
+    }
 
     #endregion
 
@@ -93,7 +112,8 @@ public partial class SideBarMenuViewModel : ViewModelBase
 
     protected sealed override void UpdateLocalizedTexts()
     {
-        foreach (var item in Items) item.UpdateLabel();
+        foreach (var item in MangaItems) item.UpdateLabel();
+        foreach (var item in OtherItems) item.UpdateLabel();
     }
 
     #endregion

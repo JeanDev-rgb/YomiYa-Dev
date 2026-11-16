@@ -67,7 +67,7 @@ public partial class StorePageView : UserControl
             Source = StorePageViewModel.LootbarUri,
             CanUserResize = true
         };
-
+        
         _storeDialog.Closing += (_, _) =>
         {
             _storeDialog?.Dispose();

@@ -11,7 +11,9 @@ using YomiYa.Source.Online;
 
 namespace YomiYa.Core.Services;
 
-public class MangaService
+public record SearchProgressEvent(SManga? Manga = null, bool IsCompleted = false, Exception? Error = null);
+
+public class MangaService(IDatabaseService databaseService)
 {
     #region Static Properties
 
@@ -22,11 +24,40 @@ public class MangaService
     private CancellationTokenSource _searchCancellationTokenSource = new();
 
     // Limitamos a 4 descargas de imágenes simultáneas para controlar el uso de RAM y red.
-    private readonly SemaphoreSlim ImageDownloadSemaphore = new(4);
+    private readonly SemaphoreSlim _imageDownloadSemaphore = new(4);
 
     #endregion
 
     #region Public Methods
+    
+    public async Task<bool> FetchPageAsync(
+        Func<int, Task<MangasPage>> pageFetcher,
+        int page,
+        IProgress<SManga> progress,
+        CancellationToken cancellationToken)
+    {
+        if (SelectedPlugin is null) return false;
+        var plugin = SelectedPlugin;
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var resultPage = await pageFetcher(page);
+
+        if (!resultPage.Mangas.Any())
+            return false;
+
+        var tasks = resultPage.Mangas.Select(async manga =>
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var processed = await ProcessMangaAsync(manga, plugin, cancellationToken);
+            if (processed != null && !cancellationToken.IsCancellationRequested)
+            {
+                progress.Report(processed);
+            }
+        });
+
+        await Task.WhenAll(tasks);
+        return resultPage.HasNextPage;
+    }
 
     public void GetPopularMangas(IProgress<SManga> progress)
     {
@@ -52,6 +83,44 @@ public class MangaService
     #endregion
 
     #region Private Helper Methods
+    
+    private async Task<SManga?> ProcessMangaAsync(SManga manga, ParsedHttpSource plugin, CancellationToken ct)
+    {
+        manga.Plugin = plugin.Name;
+        try
+        {
+            await Task.WhenAll(
+                LoadCoverAsync(manga, ct),
+                LoadFavoriteStatusAsync(manga)
+            );
+            return manga;
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+    }
+
+    private async Task LoadCoverAsync(SManga manga, CancellationToken ct)
+    {
+        if (string.IsNullOrEmpty(manga.ThumbnailUrl)) return;
+
+        await _imageDownloadSemaphore.WaitAsync(ct);
+        try
+        {
+            manga.Cover = await manga.ThumbnailUrl.LoadImageAsync(ct, true);
+        }
+        finally
+        {
+            _imageDownloadSemaphore.Release();
+        }
+    }
+
+    private async Task LoadFavoriteStatusAsync(SManga manga)
+    {
+        var favoriteManga = await databaseService.GetMangaByUrlAsync(manga.Url);
+        manga.IsFavorite = favoriteManga?.IsFavorite ?? false;
+    }
 
     private async Task FetchAndReportMangasAsync(IProgress<SManga> progress,
         Func<int, Task<MangasPage>> pageFetcher, CancellationToken cancellationToken = default)
@@ -93,50 +162,6 @@ public class MangaService
         {
             Console.WriteLine($"[MangaService Error]: {ex.Message}");
         }
-    }
-
-    private async Task<SManga?> ProcessMangaAsync(SManga manga, ParsedHttpSource plugin,
-        CancellationToken cancellationToken)
-    {
-        manga.Plugin = plugin.Name;
-
-        try
-        {
-            await Task.WhenAll(
-                LoadCoverAsync(manga, cancellationToken),
-                LoadFavoriteStatusAsync(manga)
-            );
-        }
-        catch (OperationCanceledException)
-        {
-            return null;
-        }
-
-        return manga;
-    }
-
-    private async Task LoadCoverAsync(SManga manga, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrEmpty(manga.ThumbnailUrl)) return;
-
-        // Esperamos a que haya un "espacio" disponible para descargar.
-        await ImageDownloadSemaphore.WaitAsync(cancellationToken);
-        try
-        {
-            manga.Cover = await manga.ThumbnailUrl.LoadImageAsync(cancellationToken, true);
-        }
-        finally
-        {
-            // Liberamos el espacio para que otra descarga pueda comenzar.
-            ImageDownloadSemaphore.Release();
-        }
-    }
-
-    private async Task LoadFavoriteStatusAsync(SManga manga)
-    {
-        var _databaseService = new DatabaseService();
-        var favoriteManga = await _databaseService.GetMangaByUrlAsync(manga.Url);
-        manga.IsFavorite = favoriteManga?.IsFavorite ?? false;
     }
 
     #endregion
