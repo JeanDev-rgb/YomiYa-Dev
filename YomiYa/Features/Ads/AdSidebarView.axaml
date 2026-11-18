@@ -27,8 +27,14 @@
         <Grid Grid.Row="1"
               Opacity="{Binding AdSidebarContentOpacity}"
               IsHitTestVisible="{Binding IsAdSidebarExpanded}">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Spacing="8" Margin="8,0,8,12">
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          AllowAutoHide="False">
+                <StackPanel Spacing="12" Margin="8,0,8,12">
+                    <!-- Banner horizontal adaptativo (320x50 en el ancho del sidebar). -->
+                    <ads:BannerAdView />
+
+                    <!-- El anuncio nativo conserva su altura completa dentro del scroll. -->
                     <ads:NativeAdView />
                 </StackPanel>
             </ScrollViewer>
