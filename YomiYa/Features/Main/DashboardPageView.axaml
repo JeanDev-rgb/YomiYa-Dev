@@ -5,65 +5,79 @@
              x:Class="YomiYa.Features.Main.DashboardPageView"
              x:DataType="main:DashboardPageViewModel">
     <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="28">
-        <ScrollViewer>
-            <StackPanel Spacing="22" MaxWidth="1200" HorizontalAlignment="Stretch">
-                <StackPanel Spacing="4">
-                    <TextBlock Text="YomiYa" FontSize="30" FontWeight="SemiBold" />
-                    <TextBlock Text="Tu espacio de lectura" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                </StackPanel>
-
-                <Grid ColumnDefinitions="*,Auto" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                      MinHeight="118" Margin="0,0,0,2">
-                    <StackPanel Margin="20" VerticalAlignment="Center" Spacing="5">
-                        <TextBlock Text="Continuar leyendo" FontSize="19" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding LatestReadingTitle}" IsVisible="{Binding LatestReadingTitle, Converter={StaticResource NullToBoolConverter}}"
-                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                        <TextBlock Text="Aún no hay lecturas recientes" IsVisible="{Binding RecentReadings.Count, Converter={StaticResource ZeroToVisibleConverter}}"
+        <Grid RowDefinitions="* Auto">
+            <ScrollViewer Grid.Row="0">
+                <StackPanel Spacing="22" MaxWidth="1200" HorizontalAlignment="Stretch">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="YomiYa" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock Text="Tu espacio de lectura"
                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Continuar" Command="{Binding ContinueReadingCommand}"
-                            Margin="16" Padding="18,10" VerticalAlignment="Center" />
-                </Grid>
 
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Button Content="Abrir biblioteca" Command="{Binding OpenLibraryCommand}" />
-                    <Button Content="Descubrir mangas" Command="{Binding OpenDiscoveryCommand}" />
-                    <Border Background="{DynamicResource ControlFillColorSecondaryBrush}" CornerRadius="8" Padding="12,8">
-                        <TextBlock Text="{Binding SyncStatus}" VerticalAlignment="Center" />
-                    </Border>
-                </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                          MinHeight="118" Margin="0,0,0,2">
+                        <StackPanel Margin="20" VerticalAlignment="Center" Spacing="5">
+                            <TextBlock Text="Continuar leyendo" FontSize="19" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding LatestReadingTitle}"
+                                       IsVisible="{Binding LatestReadingTitle, Converter={StaticResource NullToBoolConverter}}"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <TextBlock Text="Aún no hay lecturas recientes"
+                                       IsVisible="{Binding RecentReadings.Count, Converter={StaticResource ZeroToVisibleConverter}}"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Continuar" Command="{Binding ContinueReadingCommand}"
+                                Margin="16" Padding="18,10" VerticalAlignment="Center" />
+                    </Grid>
 
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Text="Lecturas recientes" FontSize="22" FontWeight="SemiBold" />
-                    <ProgressBar Grid.Column="1" Width="120" IsIndeterminate="True" IsVisible="{Binding IsLoading}" />
-                </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Content="Abrir biblioteca" Command="{Binding OpenLibraryCommand}" />
+                        <Button Content="Descubrir mangas" Command="{Binding OpenDiscoveryCommand}" />
+                        <Border Background="{DynamicResource ControlFillColorSecondaryBrush}" CornerRadius="8"
+                                Padding="12,8">
+                            <TextBlock Text="{Binding SyncStatus}" VerticalAlignment="Center" />
+                        </Border>
+                    </StackPanel>
 
-                <ItemsControl ItemsSource="{Binding RecentReadings}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate><WrapPanel ItemSpacing="12" LineSpacing="12" /></ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Command="{Binding $parent[ItemsControl].((main:DashboardPageViewModel)DataContext).OpenRecentReadingCommand}"
-                                    CommandParameter="{Binding}" Padding="0" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Lecturas recientes" FontSize="22" FontWeight="SemiBold" />
+                        <ProgressBar Grid.Column="1" Width="120" IsIndeterminate="True" IsVisible="{Binding IsLoading}" />
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding RecentReadings}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel ItemSpacing="12" LineSpacing="12" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Command="{Binding $parent[ItemsControl].((main:DashboardPageViewModel)DataContext).OpenRecentReadingCommand}"
+                                    CommandParameter="{Binding}" Padding="0"
+                                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                     CornerRadius="8" Width="176" HorizontalContentAlignment="Stretch">
-                                <StackPanel Spacing="8">
-                                    <Image Source="{Binding Manga.Cover}" Height="220" Stretch="UniformToFill" />
-                                    <StackPanel Margin="10,0,10,10" Spacing="4">
-                                        <TextBlock Text="{Binding Manga.Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="{Binding Chapter.Name}" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                   TextTrimming="CharacterEllipsis" />
+                                    <StackPanel Spacing="8">
+                                        <Image Source="{Binding Manga.Cover}" Height="220" Stretch="UniformToFill" />
+                                        <StackPanel Margin="10,0,10,10" Spacing="4">
+                                            <TextBlock Text="{Binding Manga.Title}" FontWeight="SemiBold"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding Chapter.Name}"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <TextBlock Text="Tu historial aparecerá aquí cuando leas una obra." HorizontalAlignment="Center"
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                           IsVisible="{Binding RecentReadings.Count, Converter={StaticResource ZeroToVisibleConverter}}" />
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="Tu historial aparecerá aquí cuando leas una obra." HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               IsVisible="{Binding RecentReadings.Count, Converter={StaticResource ZeroToVisibleConverter}}" />
+                </StackPanel>
+            </ScrollViewer>
+            <Grid Grid.Row="1">
                 <ads:BannerAdView />
-            </StackPanel>
-        </ScrollViewer>
+            </Grid>
+        </Grid>
     </Border>
 </UserControl>

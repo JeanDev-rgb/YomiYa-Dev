@@ -115,7 +115,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto Auto *" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+    <Grid RowDefinitions="Auto Auto * Auto" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
         <Grid Grid.Row="0" ColumnDefinitions="* Auto">
             <TextBlock Grid.Column="0" Classes="PageTitle" Text="{Binding Title}" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
@@ -185,7 +185,10 @@
                     Margin="20">
             <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
             <TextBlock Classes="NoItemsMessage" Text="{Binding NoPluginsInstalled}" />
-            <ads:NativeAdView />
         </StackPanel>
+        
+        <Grid Grid.Row="3">
+            <ads:NativeAdView/>
+        </Grid>
     </Grid>
 </UserControl>
