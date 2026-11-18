@@ -28,7 +28,7 @@ public partial class NativeAdView : UserControl
         base.OnDetachedFromVisualTree(e);
     }
 
-    private static void OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e) =>
+    private void OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e) =>
         AdWebViewConfiguration.ConfigureEnvironment(sender, e);
 
     private void OnLanguageChanged(object? sender, System.EventArgs e) => UpdateDisclosureLabel();

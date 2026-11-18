@@ -31,7 +31,7 @@ public partial class BannerAdView : UserControl
 
     private void OnSizeChanged(object? sender, SizeChangedEventArgs e) => UpdateBanner();
 
-    private static void OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e) =>
+    private void OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e) =>
         AdWebViewConfiguration.ConfigureEnvironment(sender, e);
 
     private void OnLanguageChanged(object? sender, System.EventArgs e) => UpdateDisclosureLabel();
