@@ -3,7 +3,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:discover="clr-namespace:YomiYa.Features.Discover"
-             xmlns:ads="clr-namespace:YomiYa.Features.Ads"
              xmlns:interfaces="clr-namespace:YomiYa.Core.Interfaces;assembly=JXALib"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="discover:BrowsePageViewModel"
@@ -115,7 +114,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid RowDefinitions="Auto Auto * Auto" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
+    <Grid RowDefinitions="Auto Auto *" Background="{DynamicResource ApplicationPageBackgroundThemeBrush}">
         <Grid Grid.Row="0" ColumnDefinitions="* Auto">
             <TextBlock Grid.Column="0" Classes="PageTitle" Text="{Binding Title}" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
@@ -173,7 +172,6 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-            <ads:NativeAdView IsVisible="{Binding Plugins.Count, Converter={StaticResource AnyToVisibleConverter}}" />
             </StackPanel>
         </ScrollViewer>
 
@@ -186,9 +184,5 @@
             <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
             <TextBlock Classes="NoItemsMessage" Text="{Binding NoPluginsInstalled}" />
         </StackPanel>
-        
-        <Grid Grid.Row="3">
-            <ads:NativeAdView/>
-        </Grid>
     </Grid>
 </UserControl>

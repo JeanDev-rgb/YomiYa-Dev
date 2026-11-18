@@ -12,6 +12,7 @@ public partial class NativeAdView : UserControl
         InitializeComponent();
         NativeWebViewControl.Source = AdWebViewConfiguration.Native;
         UpdateDisclosureLabel();
+        StatusText.Text = LanguageHelper.GetText("AdLoadingText");
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -33,4 +34,26 @@ public partial class NativeAdView : UserControl
     private void OnLanguageChanged(object? sender, System.EventArgs e) => UpdateDisclosureLabel();
 
     private void UpdateDisclosureLabel() => DisclosureLabel.Text = LanguageHelper.GetText("AdDisclosure");
+
+    private void OnNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
+    {
+        NativeWebViewControl.IsVisible = true;
+        LoadingIndicator.IsVisible = true;
+        StatusText.Text = LanguageHelper.GetText("AdLoadingText");
+        StatusPanel.IsVisible = true;
+    }
+
+    private void OnNavigationCompleted(object? sender, WebViewNavigationCompletedEventArgs e)
+    {
+        LoadingIndicator.IsVisible = false;
+        if (e.IsSuccess)
+        {
+            StatusPanel.IsVisible = false;
+            return;
+        }
+
+        NativeWebViewControl.IsVisible = false;
+        StatusText.Text = LanguageHelper.GetText("AdsUnavailableText");
+        StatusPanel.IsVisible = true;
+    }
 }

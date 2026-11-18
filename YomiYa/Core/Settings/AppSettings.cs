@@ -9,4 +9,6 @@ public class AppSettings
     public Language SelectedLanguage { get; set; }
 
     public string SelectedTheme { get; set; } = "dark.xml";
+
+    public bool IsAdSidebarExpanded { get; set; } = true;
 }

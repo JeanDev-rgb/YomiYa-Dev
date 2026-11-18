@@ -105,6 +105,11 @@
     <data name="OpenInBrowser" xml:space="preserve"><value>Abrir en navegador</value></data>
     <data name="OpenStore" xml:space="preserve"><value>Abrir tienda</value></data>
     <data name="AdDisclosure" xml:space="preserve"><value>Anuncio</value></data>
+    <data name="AdSidebarHeader" xml:space="preserve"><value>PUBLICIDAD</value></data>
+    <data name="CollapseAdSidebar" xml:space="preserve"><value>Contraer panel publicitario</value></data>
+    <data name="ExpandAdSidebar" xml:space="preserve"><value>Expandir panel publicitario</value></data>
+    <data name="AdLoadingText" xml:space="preserve"><value>Cargando anuncio…</value></data>
+    <data name="AdsUnavailableText" xml:space="preserve"><value>La publicidad no está disponible por ahora.</value></data>
     <data name="PointsTitle" xml:space="preserve"><value>Puntos</value></data>
     <data name="PointsSubtitle" xml:space="preserve"><value>La función de puntos todavía no está disponible.</value></data>
     <data name="YourPoints" xml:space="preserve"><value>Tus puntos</value></data>

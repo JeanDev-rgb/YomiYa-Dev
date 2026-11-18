@@ -1,11 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:main="clr-namespace:YomiYa.Features.Main"
-             xmlns:ads="clr-namespace:YomiYa.Features.Ads"
              x:Class="YomiYa.Features.Main.DashboardPageView"
              x:DataType="main:DashboardPageViewModel">
     <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="28">
-        <Grid RowDefinitions="* Auto">
+        <Grid RowDefinitions="*">
             <ScrollViewer Grid.Row="0">
                 <StackPanel Spacing="22" MaxWidth="1200" HorizontalAlignment="Stretch">
                     <StackPanel Spacing="4">
@@ -75,9 +74,6 @@
                                IsVisible="{Binding RecentReadings.Count, Converter={StaticResource ZeroToVisibleConverter}}" />
                 </StackPanel>
             </ScrollViewer>
-            <Grid Grid.Row="1">
-                <ads:BannerAdView />
-            </Grid>
         </Grid>
     </Border>
 </UserControl>

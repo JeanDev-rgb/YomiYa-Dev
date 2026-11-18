@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:main="clr-namespace:YomiYa.Features.Main"
+             xmlns:ads="clr-namespace:YomiYa.Features.Ads"
+             x:Class="YomiYa.Features.Ads.AdSidebarView"
+             x:DataType="main:MainWindowViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" MinHeight="48" Margin="8,4">
+            <TextBlock Grid.Column="0"
+                       Text="{Binding AdSidebarHeaderText}"
+                       FontSize="11" FontWeight="SemiBold" LetterSpacing="1.2"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       IsVisible="{Binding IsAdSidebarExpanded}" />
+            <Button Grid.Column="1"
+                    Command="{Binding ToggleAdSidebarCommand}"
+                    Content="{Binding AdSidebarToggleGlyph}"
+                    ToolTip.Tip="{Binding AdSidebarToggleText}"
+                    AutomationProperties.Name="{Binding AdSidebarToggleText}"
+                    Width="36" Height="36" Padding="0"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Background="Transparent"
+                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Opacity="{Binding AdSidebarContentOpacity}"
+              IsHitTestVisible="{Binding IsAdSidebarExpanded}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="8" Margin="8,0,8,12">
+                    <ads:NativeAdView />
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:main="clr-namespace:YomiYa.Features.Main"
+        xmlns:ads="clr-namespace:YomiYa.Features.Ads"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="YomiYa.Features.Main.MainWindow"
         x:DataType="main:MainWindowViewModel"
@@ -26,8 +27,21 @@
                        FontFamily="Times New"
                        Margin="7 0" />
         </Border>
-        <Grid Grid.Row="1">
-            <TransitioningContentControl Content="{Binding CurrentPage}" />
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <TransitioningContentControl Grid.Column="0" Content="{Binding CurrentPage}" />
+            <Border Grid.Column="1"
+                    Width="{Binding AdSidebarWidth}"
+                    ClipToBounds="True"
+                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    BorderThickness="1,0,0,0">
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Width" Duration="0:0:0.18" />
+                    </Transitions>
+                </Border.Transitions>
+                <ads:AdSidebarView />
+            </Border>
         </Grid>
     </Grid>
 
