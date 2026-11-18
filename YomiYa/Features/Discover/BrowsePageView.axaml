@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:discover="clr-namespace:YomiYa.Features.Discover"
+             xmlns:ads="clr-namespace:YomiYa.Features.Ads"
              xmlns:interfaces="clr-namespace:YomiYa.Core.Interfaces;assembly=JXALib"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="discover:BrowsePageViewModel"
@@ -127,6 +128,7 @@
                  Text="{Binding SearchText, Mode=TwoWay}" />
 
         <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="12">
             <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Plugins}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -171,6 +173,8 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
+            <ads:NativeAdView IsVisible="{Binding Plugins.Count, Converter={StaticResource AnyToVisibleConverter}}" />
+            </StackPanel>
         </ScrollViewer>
 
         <StackPanel Grid.Row="2"
@@ -181,6 +185,7 @@
                     Margin="20">
             <TextBlock Classes="Kamoji" Text="{Binding RandomKamoji}" />
             <TextBlock Classes="NoItemsMessage" Text="{Binding NoPluginsInstalled}" />
+            <ads:NativeAdView />
         </StackPanel>
     </Grid>
 </UserControl>

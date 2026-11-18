@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:main="clr-namespace:YomiYa.Features.Main"
+             xmlns:ads="clr-namespace:YomiYa.Features.Ads"
              x:Class="YomiYa.Features.Main.DashboardPageView"
              x:DataType="main:DashboardPageViewModel">
     <Border Background="{DynamicResource ApplicationPageBackgroundThemeBrush}" Padding="28">
@@ -61,6 +62,7 @@
                 <TextBlock Text="Tu historial aparecerá aquí cuando leas una obra." HorizontalAlignment="Center"
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                            IsVisible="{Binding RecentReadings.Count, Converter={StaticResource ZeroToVisibleConverter}}" />
+                <ads:BannerAdView />
             </StackPanel>
         </ScrollViewer>
     </Border>

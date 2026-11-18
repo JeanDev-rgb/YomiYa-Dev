@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="YomiYa.Features.Ads.BannerAdView"
+             HorizontalAlignment="Stretch">
+    <StackPanel HorizontalAlignment="Center" Spacing="3" Margin="0,8">
+        <TextBlock x:Name="DisclosureLabel" FontSize="10"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                   HorizontalAlignment="Center" />
+        <NativeWebView x:Name="BannerWebView"
+                       HorizontalAlignment="Center"
+                       Width="320" Height="50"
+                       EnvironmentRequested="OnEnvironmentRequested" />
+    </StackPanel>
+</UserControl>
