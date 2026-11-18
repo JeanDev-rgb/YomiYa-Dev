@@ -2,8 +2,8 @@ namespace YomiYa.Features.Main;
 
 public static class AdSidebarLayoutPolicy
 {
-    public const double MinimumWindowWidth = 1120;
-    public const double ExpandedWidth = 250;
+    public const double MinimumWindowWidth = 1240;
+    public const double ExpandedWidth = 360;
     public const double CollapsedWidth = 48;
 
     public static bool IsCompact(double windowWidth) =>
