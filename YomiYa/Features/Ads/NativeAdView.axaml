@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="YomiYa.Features.Ads.NativeAdView"
+             HorizontalAlignment="Stretch">
+    <Grid RowDefinitions="Auto,Auto" Margin="0,8">
+        <TextBlock x:Name="DisclosureLabel" FontSize="10"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Grid x:Name="NativeAdHost" Grid.Row="1">
+            <Viewbox HorizontalAlignment="Stretch"
+                     VerticalAlignment="Top"
+                     Stretch="Uniform"
+                     StretchDirection="DownOnly">
+                <NativeWebView x:Name="NativeWebViewControl"
+                               Width="320"
+                               Height="960"
+                               EnvironmentRequested="OnEnvironmentRequested"
+                               NavigationStarted="OnNavigationStarted"
+                               NavigationCompleted="OnNavigationCompleted" />
+            </Viewbox>
+            <Border x:Name="StatusPanel"
+                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="12">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                    <ProgressBar x:Name="LoadingIndicator" IsIndeterminate="True" Width="110" />
+                    <TextBlock x:Name="StatusText" TextWrapping="Wrap" TextAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

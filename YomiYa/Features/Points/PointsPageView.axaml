@@ -91,65 +91,13 @@
                     <TextBlock Text="{Binding CurrentPoints}"
                                FontSize="56" FontWeight="Black"
                                Foreground="#1A1A2E" TextAlignment="Center" />
-                    <TextBlock Text="{Binding ComingSoonText}"
-                               FontSize="13" FontWeight="SemiBold"
-                               Foreground="#4A3500" TextAlignment="Center"
-                               Opacity="0.8" />
                 </StackPanel>
             </Border>
 
-            <!-- Cómo ganar puntos -->
-            <TextBlock Text="{Binding HowToEarnText}"
-                       FontSize="22" FontWeight="Bold"
-                       Foreground="{StaticResource PointsTextPrimary}"
-                       Margin="0,8,0,0" />
-
-            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                <!-- Lectura diaria -->
-                <Border Classes="PointsCard" Width="260">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="📖" FontSize="32" />
-                        <TextBlock Text="{Binding DailyReadingText}"
-                                   FontSize="17" FontWeight="Bold"
-                                   Foreground="{StaticResource PointsTextPrimary}" />
-                        <TextBlock Text="{Binding DailyReadingDescText}"
-                                   FontSize="13" TextWrapping="Wrap"
-                                   Foreground="{StaticResource PointsTextSecondary}" />
-                        <TextBlock Text="+10 pts" FontSize="20" FontWeight="Black"
-                                   Foreground="{StaticResource PointsAccent}" />
-                    </StackPanel>
-                </Border>
-
-                <!-- Completar capítulo -->
-                <Border Classes="PointsCard" Width="260">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="✅" FontSize="32" />
-                        <TextBlock Text="{Binding CompleteChapterText}"
-                                   FontSize="17" FontWeight="Bold"
-                                   Foreground="{StaticResource PointsTextPrimary}" />
-                        <TextBlock Text="{Binding CompleteChapterDescText}"
-                                   FontSize="13" TextWrapping="Wrap"
-                                   Foreground="{StaticResource PointsTextSecondary}" />
-                        <TextBlock Text="+5 pts" FontSize="20" FontWeight="Black"
-                                   Foreground="{StaticResource PointsAccent}" />
-                    </StackPanel>
-                </Border>
-
-                <!-- Añadir a biblioteca -->
-                <Border Classes="PointsCard" Width="260">
-                    <StackPanel Spacing="10">
-                        <TextBlock Text="📚" FontSize="32" />
-                        <TextBlock Text="{Binding AddToLibraryText}"
-                                   FontSize="17" FontWeight="Bold"
-                                   Foreground="{StaticResource PointsTextPrimary}" />
-                        <TextBlock Text="{Binding AddToLibraryDescText}"
-                                   FontSize="13" TextWrapping="Wrap"
-                                   Foreground="{StaticResource PointsTextSecondary}" />
-                        <TextBlock Text="+15 pts" FontSize="20" FontWeight="Black"
-                                   Foreground="{StaticResource PointsAccent}" />
-                    </StackPanel>
-                </Border>
-            </WrapPanel>
+            <!-- Points are currently disabled because point earning is not implemented. -->
+            <TextBlock Text="{Binding PointsEarningUnavailableText}"
+                       FontSize="13" TextWrapping="Wrap"
+                       Foreground="{StaticResource PointsTextSecondary}" />
 
             <!-- Recompensas -->
             <TextBlock Text="{Binding RewardsText}"
@@ -157,38 +105,9 @@
                        Foreground="{StaticResource PointsTextPrimary}"
                        Margin="0,8,0,0" />
 
-            <ItemsControl ItemsSource="{Binding Rewards}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type points:RewardItem}">
-                        <Border Classes="PointsCard">
-                            <Grid ColumnDefinitions="Auto,*,Auto">
-                                <TextBlock Grid.Column="0" Text="{Binding Icon}"
-                                           FontSize="36" VerticalAlignment="Center"
-                                           Margin="0,0,16,0" />
-                                <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}"
-                                               FontSize="16" FontWeight="Bold"
-                                               Foreground="{StaticResource PointsTextPrimary}" />
-                                    <TextBlock Text="{Binding Description}"
-                                               FontSize="13" TextWrapping="Wrap"
-                                               Foreground="{StaticResource PointsTextSecondary}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="6"
-                                            HorizontalAlignment="Right" Margin="16,0,0,0">
-                                    <TextBlock Text="{Binding Cost, StringFormat='{}{0} pts'}"
-                                               FontSize="15" FontWeight="Bold"
-                                               Foreground="{StaticResource PointsAccent}"
-                                               HorizontalAlignment="Center" />
-                                    <Button Classes="RedeemButton"
-                                            Content="{Binding $parent[ItemsControl].((points:PointsPageViewModel)DataContext).RedeemText}"
-                                            Command="{Binding $parent[ItemsControl].((points:PointsPageViewModel)DataContext).RedeemRewardCommand}"
-                                            CommandParameter="{Binding}" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <TextBlock Text="{Binding RewardsUnavailableText}"
+                       FontSize="13" TextWrapping="Wrap"
+                       Foreground="{StaticResource PointsTextSecondary}" />
 
         </StackPanel>
     </ScrollViewer>

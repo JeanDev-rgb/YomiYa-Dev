@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using YomiYa.Features;
 using YomiYa.Features.Navigation;
@@ -11,6 +12,7 @@ public static class NavigationHelper
 {
     private static ViewModelBase _currentViewModel;
     private static readonly Stack<ViewModelBase> NavigationStack = new();
+    private static readonly HashSet<ReaderView> ReaderWindows = [];
 
     static NavigationHelper()
     {
@@ -32,6 +34,9 @@ public static class NavigationHelper
     }
 
     public static event Action<ViewModelBase>? OnCurrentViewModelChanged;
+    public static event Action<bool>? ReaderVisibilityChanged;
+
+    public static bool IsReaderOpen => ReaderWindows.Count > 0;
 
     public static void NavigateTo(ViewModelBase? viewModel)
     {
@@ -63,11 +68,23 @@ public static class NavigationHelper
                 DataContext = readerViewModel
             };
 
+            reader.Closed += OnReaderClosed;
             reader.Show();
+            if (ReaderWindows.Add(reader))
+                ReaderVisibilityChanged?.Invoke(true);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error al abrir el lector: {ex.Message}");
         }
+    }
+
+    private static void OnReaderClosed(object? sender, EventArgs e)
+    {
+        if (sender is not ReaderView reader || !ReaderWindows.Remove(reader))
+            return;
+
+        if (!ReaderWindows.Any())
+            ReaderVisibilityChanged?.Invoke(false);
     }
 }

@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Platform;
+using YomiYa.Features.Ads;
 
 namespace YomiYa.Features.Store;
 
@@ -8,7 +11,9 @@ public partial class StorePageView : UserControl
 {
     private StorePageViewModel? _viewModel;
     private NativeWebDialog? _storeDialog;
+    private NativeWebViewAdapterLifetime? _storeDialogLifetime;
     private bool _openedOnAttach;
+    private bool _isAttached;
 
     public StorePageView()
     {
@@ -23,14 +28,17 @@ public partial class StorePageView : UserControl
             _viewModel.OpenStoreRequested -= OnOpenStoreRequested;
 
         _viewModel = DataContext as StorePageViewModel;
-
-        if (_viewModel is not null)
+        if (_isAttached && _viewModel is not null)
             _viewModel.OpenStoreRequested += OnOpenStoreRequested;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        _isAttached = true;
+
+        if (_viewModel is not null)
+            _viewModel.OpenStoreRequested += OnOpenStoreRequested;
 
         if (_openedOnAttach)
             return;
@@ -41,6 +49,7 @@ public partial class StorePageView : UserControl
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _isAttached = false;
         if (_viewModel is not null)
             _viewModel.OpenStoreRequested -= OnOpenStoreRequested;
 
@@ -61,33 +70,72 @@ public partial class StorePageView : UserControl
             return;
         }
 
-        _storeDialog = new NativeWebDialog
+        var dialog = new NativeWebDialog
         {
             Title = _viewModel?.StoreTitleText ?? "Lootbar",
             Source = StorePageViewModel.LootbarUri,
             CanUserResize = true
         };
-        
-        _storeDialog.Closing += (_, _) =>
-        {
-            _storeDialog?.Dispose();
-            _storeDialog = null;
-        };
+        _storeDialog = dialog;
+        _storeDialogLifetime = new NativeWebViewAdapterLifetime(dialog);
 
-        _storeDialog.NewWindowRequested += (_, args) =>
-        {
-            args.Handled = true;
-            if (args.Request is not null)
-                OpenExternal(args.Request);
-        };
+        dialog.EnvironmentRequested += OnEnvironmentRequested;
+        dialog.AdapterDestroyed += OnStoreAdapterDestroyed;
+        dialog.TryGetWindow()?.Closed += OnStoreWindowClosed;
+        dialog.NewWindowRequested += OnNewWindowRequested;
 
         if (TopLevel.GetTopLevel(this) is { } owner)
-            _storeDialog.Show(owner);
+            dialog.Show(owner);
         else
-            _storeDialog.Show();
+            dialog.Show();
 
-        _storeDialog.Resize(1100, 760);
-        _storeDialog.TryGetWindow()?.Activate();
+        dialog.Resize(1100, 760);
+        dialog.TryGetWindow()?.Activate();
+    }
+
+    private static void OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs args)
+    {
+        if (args is WindowsWebView2EnvironmentRequestedEventArgs webView2)
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            webView2.UserDataFolder = Path.Combine(localAppData, "YomiYa", "WebView2");
+            webView2.ProfileName = "Store";
+        }
+    }
+
+    private void OnStoreWindowClosed(object? sender, EventArgs e)
+    {
+        if (_storeDialogLifetime?.IsAdapterAlive != true)
+            DisposeStoreDialog();
+    }
+
+    private void OnStoreAdapterDestroyed(object? sender, EventArgs e)
+    {
+        if (_storeDialog?.TryGetWindow() is null)
+            DisposeStoreDialog();
+    }
+
+    private static void OnNewWindowRequested(object? sender, WebViewNewWindowRequestedEventArgs args)
+    {
+        args.Handled = true;
+        if (args.Request is not null)
+            OpenExternal(args.Request);
+    }
+
+    private void DisposeStoreDialog()
+    {
+        var dialog = _storeDialog;
+        if (dialog is null)
+            return;
+
+        _storeDialog = null;
+        _storeDialogLifetime?.Dispose();
+        _storeDialogLifetime = null;
+        dialog.EnvironmentRequested -= OnEnvironmentRequested;
+        dialog.AdapterDestroyed -= OnStoreAdapterDestroyed;
+        dialog.TryGetWindow()?.Closed -= OnStoreWindowClosed;
+        dialog.NewWindowRequested -= OnNewWindowRequested;
+        dialog.Dispose();
     }
 
     private static void OpenExternal(Uri uri)

@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:main="clr-namespace:YomiYa.Features.Main"
+             xmlns:ads="clr-namespace:YomiYa.Features.Ads"
+             x:Class="YomiYa.Features.Ads.AdSidebarView"
+             x:DataType="main:MainWindowViewModel">
+    <Grid RowDefinitions="Auto,*">
+        <TextBlock Grid.Row="0"
+                   Text="{Binding AdSidebarHeaderText}"
+                   Margin="12,10"
+                   FontSize="11" FontWeight="SemiBold" LetterSpacing="1.2"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Visible"
+                      HorizontalScrollBarVisibility="Disabled"
+                      AllowAutoHide="False">
+            <StackPanel Spacing="12" Margin="8,0,8,12">
+                <ads:BannerAdView x:Name="BannerAd" HorizontalAlignment="Stretch" />
+                <ads:NativeAdView x:Name="NativeAd" HorizontalAlignment="Stretch" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

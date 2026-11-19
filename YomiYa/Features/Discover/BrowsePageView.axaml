@@ -127,6 +127,7 @@
                  Text="{Binding SearchText, Mode=TwoWay}" />
 
         <ScrollViewer Grid.Row="2">
+            <StackPanel Spacing="12">
             <ItemsControl HorizontalAlignment="Stretch" ItemsSource="{Binding Plugins}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -171,6 +172,7 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
 
         <StackPanel Grid.Row="2"
