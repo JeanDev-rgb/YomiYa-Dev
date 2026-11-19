@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -7,6 +8,7 @@ namespace YomiYa.Features.Ads;
 
 public partial class BannerAdView : UserControl
 {
+    private const double WideBannerScale = 320d / 728d;
     private readonly NativeWebViewAdapterLifetime _wideBannerLifetime;
     private readonly NativeWebViewAdapterLifetime _compactBannerLifetime;
 
@@ -36,7 +38,29 @@ public partial class BannerAdView : UserControl
     private void OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e) =>
         AdWebViewConfiguration.ConfigureEnvironment(sender, e);
 
-    private void OnLanguageChanged(object? sender, System.EventArgs e) => UpdateDisclosureLabel();
+    private async void OnWideBannerNavigationCompleted(
+        object? sender, WebViewNavigationCompletedEventArgs e)
+    {
+        if (!e.IsSuccess)
+            return;
+
+        try
+        {
+            // Mantiene el viewport nativo en 320 px y reduce el creativo 728x90
+            // proporcionalmente dentro del propio motor web, no mediante RenderTransform.
+            var zoom = WideBannerScale.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+            await WideBannerWebView.InvokeScript(
+                $"document.documentElement.style.zoom='{zoom}';" +
+                "document.body.style.margin='0';");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"No se pudo escalar el banner 728x90: {ex.Message}");
+        }
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e) => UpdateDisclosureLabel();
 
     private void UpdateDisclosureLabel() => DisclosureLabel.Text = LanguageHelper.GetText("AdDisclosure");
 
