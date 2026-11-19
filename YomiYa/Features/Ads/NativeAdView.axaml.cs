@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.VisualTree;
@@ -7,9 +8,12 @@ namespace YomiYa.Features.Ads;
 
 public partial class NativeAdView : UserControl
 {
+    private readonly NativeWebViewAdapterLifetime _webViewLifetime;
+
     public NativeAdView()
     {
         InitializeComponent();
+        _webViewLifetime = new NativeWebViewAdapterLifetime(NativeWebViewControl);
         NativeWebViewControl.Source = AdWebViewConfiguration.Native;
         UpdateDisclosureLabel();
         StatusText.Text = LanguageHelper.GetText("AdLoadingText");
@@ -34,6 +38,15 @@ public partial class NativeAdView : UserControl
     private void OnLanguageChanged(object? sender, System.EventArgs e) => UpdateDisclosureLabel();
 
     private void UpdateDisclosureLabel() => DisclosureLabel.Text = LanguageHelper.GetText("AdDisclosure");
+
+    public async Task DetachWebViewForShutdownAsync()
+    {
+        var shutdownTask = _webViewLifetime.WaitForAdapterDestroyedAsync();
+        NativeWebViewControl.Stop();
+        NativeAdHost.Children.Remove(NativeWebViewControl);
+        await shutdownTask;
+        _webViewLifetime.Dispose();
+    }
 
     private void OnNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
     {

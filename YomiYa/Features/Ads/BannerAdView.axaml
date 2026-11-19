@@ -2,13 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="YomiYa.Features.Ads.BannerAdView"
              HorizontalAlignment="Stretch">
-    <StackPanel HorizontalAlignment="Center" Spacing="3" Margin="0,8">
+    <Grid x:Name="BannerHost" RowDefinitions="Auto,90,50" Margin="0,8">
         <TextBlock x:Name="DisclosureLabel" FontSize="10"
-                   Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                   HorizontalAlignment="Center" />
-        <NativeWebView x:Name="BannerWebView"
-                       HorizontalAlignment="Center"
-                       Width="320" Height="50"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        <NativeWebView x:Name="WideBannerWebView" Grid.Row="1"
+                       HorizontalAlignment="Stretch"
                        EnvironmentRequested="OnEnvironmentRequested" />
-    </StackPanel>
+        <NativeWebView x:Name="CompactBannerWebView" Grid.Row="2"
+                       HorizontalAlignment="Stretch"
+                       EnvironmentRequested="OnEnvironmentRequested" />
+    </Grid>
 </UserControl>

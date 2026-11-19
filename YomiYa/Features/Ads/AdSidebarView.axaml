@@ -5,39 +5,20 @@
              x:Class="YomiYa.Features.Ads.AdSidebarView"
              x:DataType="main:MainWindowViewModel">
     <Grid RowDefinitions="Auto,*">
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" MinHeight="48" Margin="8,4">
-            <TextBlock Grid.Column="0"
-                       Text="{Binding AdSidebarHeaderText}"
-                       FontSize="11" FontWeight="SemiBold" LetterSpacing="1.2"
-                       VerticalAlignment="Center"
-                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                       IsVisible="{Binding IsAdSidebarExpanded}" />
-            <Button Grid.Column="1"
-                    Command="{Binding ToggleAdSidebarCommand}"
-                    Content="{Binding AdSidebarToggleGlyph}"
-                    ToolTip.Tip="{Binding AdSidebarToggleText}"
-                    AutomationProperties.Name="{Binding AdSidebarToggleText}"
-                    Width="36" Height="36" Padding="0"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Background="Transparent"
-                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-        </Grid>
-
-        <Grid Grid.Row="1"
-              Opacity="{Binding AdSidebarContentOpacity}"
-              IsHitTestVisible="{Binding IsAdSidebarExpanded}">
-            <ScrollViewer VerticalScrollBarVisibility="Visible"
-                          HorizontalScrollBarVisibility="Disabled"
-                          AllowAutoHide="False">
-                <StackPanel Spacing="12" Margin="8,0,8,12">
-                    <!-- Banner horizontal adaptativo (320x50 en el ancho del sidebar). -->
-                    <ads:BannerAdView />
-
-                    <!-- El anuncio nativo conserva su altura completa dentro del scroll. -->
-                    <ads:NativeAdView />
-                </StackPanel>
-            </ScrollViewer>
-        </Grid>
+        <TextBlock Grid.Row="0"
+                   Text="{Binding AdSidebarHeaderText}"
+                   Margin="12,10"
+                   FontSize="11" FontWeight="SemiBold" LetterSpacing="1.2"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Visible"
+                      HorizontalScrollBarVisibility="Disabled"
+                      AllowAutoHide="False">
+            <StackPanel Spacing="12" Margin="8,0,8,12">
+                <ads:BannerAdView x:Name="BannerAd" HorizontalAlignment="Stretch" />
+                <ads:NativeAdView x:Name="NativeAd" HorizontalAlignment="Stretch" />
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

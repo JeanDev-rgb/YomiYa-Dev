@@ -29,7 +29,8 @@
         </Border>
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
             <TransitioningContentControl Grid.Column="0" Content="{Binding CurrentPage}" />
-            <Border Grid.Column="1"
+            <Border x:Name="AdSidebarHost"
+                    Grid.Column="1"
                     Width="{Binding AdSidebarWidth}"
                     ClipToBounds="True"
                     Background="{DynamicResource ControlFillColorDefaultBrush}"
@@ -40,7 +41,7 @@
                         <DoubleTransition Property="Width" Duration="0:0:0.18" />
                     </Transitions>
                 </Border.Transitions>
-                <ads:AdSidebarView />
+                <ads:AdSidebarView x:Name="AdSidebarControl" />
             </Border>
         </Grid>
     </Grid>

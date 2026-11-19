@@ -3,6 +3,7 @@ using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
+using YomiYa.Features.Ads;
 
 namespace YomiYa.Features.Store;
 
@@ -10,6 +11,7 @@ public partial class StorePageView : UserControl
 {
     private StorePageViewModel? _viewModel;
     private NativeWebDialog? _storeDialog;
+    private NativeWebViewAdapterLifetime? _storeDialogLifetime;
     private bool _openedOnAttach;
     private bool _isAttached;
 
@@ -75,6 +77,7 @@ public partial class StorePageView : UserControl
             CanUserResize = true
         };
         _storeDialog = dialog;
+        _storeDialogLifetime = new NativeWebViewAdapterLifetime(dialog);
 
         dialog.EnvironmentRequested += OnEnvironmentRequested;
         dialog.AdapterDestroyed += OnStoreAdapterDestroyed;
@@ -100,7 +103,11 @@ public partial class StorePageView : UserControl
         }
     }
 
-    private void OnStoreWindowClosed(object? sender, EventArgs e) => DisposeStoreDialog();
+    private void OnStoreWindowClosed(object? sender, EventArgs e)
+    {
+        if (_storeDialogLifetime?.IsAdapterAlive != true)
+            DisposeStoreDialog();
+    }
 
     private void OnStoreAdapterDestroyed(object? sender, EventArgs e)
     {
@@ -122,6 +129,8 @@ public partial class StorePageView : UserControl
             return;
 
         _storeDialog = null;
+        _storeDialogLifetime?.Dispose();
+        _storeDialogLifetime = null;
         dialog.EnvironmentRequested -= OnEnvironmentRequested;
         dialog.AdapterDestroyed -= OnStoreAdapterDestroyed;
         dialog.TryGetWindow()?.Closed -= OnStoreWindowClosed;

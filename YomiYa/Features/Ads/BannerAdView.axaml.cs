@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using YomiYa.Core.Localization;
@@ -6,13 +7,17 @@ namespace YomiYa.Features.Ads;
 
 public partial class BannerAdView : UserControl
 {
-    private bool _usingWideBanner;
+    private readonly NativeWebViewAdapterLifetime _wideBannerLifetime;
+    private readonly NativeWebViewAdapterLifetime _compactBannerLifetime;
 
     public BannerAdView()
     {
         InitializeComponent();
-        SizeChanged += OnSizeChanged;
+        _wideBannerLifetime = new NativeWebViewAdapterLifetime(WideBannerWebView);
+        _compactBannerLifetime = new NativeWebViewAdapterLifetime(CompactBannerWebView);
         UpdateDisclosureLabel();
+        WideBannerWebView.Source = AdWebViewConfiguration.WideBanner;
+        CompactBannerWebView.Source = AdWebViewConfiguration.CompactBanner;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -20,7 +25,6 @@ public partial class BannerAdView : UserControl
         base.OnAttachedToVisualTree(e);
         LanguageHelper.LanguageChanged += OnLanguageChanged;
         UpdateDisclosureLabel();
-        UpdateBanner();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -29,8 +33,6 @@ public partial class BannerAdView : UserControl
         base.OnDetachedFromVisualTree(e);
     }
 
-    private void OnSizeChanged(object? sender, SizeChangedEventArgs e) => UpdateBanner();
-
     private void OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e) =>
         AdWebViewConfiguration.ConfigureEnvironment(sender, e);
 
@@ -38,17 +40,20 @@ public partial class BannerAdView : UserControl
 
     private void UpdateDisclosureLabel() => DisclosureLabel.Text = LanguageHelper.GetText("AdDisclosure");
 
-    private void UpdateBanner()
+    public async Task DetachWebViewsForShutdownAsync()
     {
-        var useWideBanner = Bounds.Width >= 728;
-        if (Bounds.Width <= 0 || (useWideBanner == _usingWideBanner && BannerWebView.Source is not null))
-            return;
+        var shutdownTasks = new[]
+        {
+            _wideBannerLifetime.WaitForAdapterDestroyedAsync(),
+            _compactBannerLifetime.WaitForAdapterDestroyedAsync()
+        };
 
-        _usingWideBanner = useWideBanner;
-        BannerWebView.Width = useWideBanner ? 728 : 320;
-        BannerWebView.Height = useWideBanner ? 90 : 50;
-        BannerWebView.Source = useWideBanner
-            ? AdWebViewConfiguration.WideBanner
-            : AdWebViewConfiguration.CompactBanner;
+        WideBannerWebView.Stop();
+        CompactBannerWebView.Stop();
+        BannerHost.Children.Remove(WideBannerWebView);
+        BannerHost.Children.Remove(CompactBannerWebView);
+        await Task.WhenAll(shutdownTasks);
+        _wideBannerLifetime.Dispose();
+        _compactBannerLifetime.Dispose();
     }
 }
