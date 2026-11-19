@@ -6,13 +6,17 @@
         <TextBlock x:Name="DisclosureLabel" FontSize="10"
                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
         <Grid x:Name="NativeAdHost" Grid.Row="1">
-            <NativeWebView x:Name="NativeWebViewControl"
-                           HorizontalAlignment="Stretch"
-                           VerticalAlignment="Stretch"
-                           MinHeight="300"
-                           EnvironmentRequested="OnEnvironmentRequested"
-                           NavigationStarted="OnNavigationStarted"
-                           NavigationCompleted="OnNavigationCompleted" />
+            <Viewbox HorizontalAlignment="Stretch"
+                     VerticalAlignment="Top"
+                     Stretch="Uniform"
+                     StretchDirection="DownOnly">
+                <NativeWebView x:Name="NativeWebViewControl"
+                               Width="320"
+                               Height="960"
+                               EnvironmentRequested="OnEnvironmentRequested"
+                               NavigationStarted="OnNavigationStarted"
+                               NavigationCompleted="OnNavigationCompleted" />
+            </Viewbox>
             <Border x:Name="StatusPanel"
                     Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
