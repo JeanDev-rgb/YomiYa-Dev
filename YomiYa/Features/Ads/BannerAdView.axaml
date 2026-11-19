@@ -2,12 +2,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="YomiYa.Features.Ads.BannerAdView"
              HorizontalAlignment="Stretch">
-    <Grid x:Name="BannerHost" RowDefinitions="Auto,90,50" Margin="0,8">
+    <Grid x:Name="BannerHost" RowDefinitions="Auto,Auto,50" Margin="0,8">
         <TextBlock x:Name="DisclosureLabel" FontSize="10"
                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-        <NativeWebView x:Name="WideBannerWebView" Grid.Row="1"
-                       HorizontalAlignment="Stretch"
-                       EnvironmentRequested="OnEnvironmentRequested" />
+
+        <!-- El creativo 728x90 conserva su viewport nativo. Viewbox lo reduce
+             proporcionalmente al ancho disponible del sidebar (320 px). -->
+        <Viewbox Grid.Row="1"
+                 Width="320"
+                 Height="39.56"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Top"
+                 Stretch="Uniform"
+                 StretchDirection="DownOnly"
+                 ClipToBounds="True">
+            <NativeWebView x:Name="WideBannerWebView"
+                           Width="728"
+                           Height="90"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           EnvironmentRequested="OnEnvironmentRequested" />
+        </Viewbox>
+
         <NativeWebView x:Name="CompactBannerWebView" Grid.Row="2"
                        HorizontalAlignment="Stretch"
                        EnvironmentRequested="OnEnvironmentRequested" />
